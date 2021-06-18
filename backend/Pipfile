@@ -16,6 +16,7 @@ pyjwt = "*"
 pyzenhub = "*"
 devtools = "*"
 email-validator = "*"
+schedule = "*"
 
 [dev-packages]
 
