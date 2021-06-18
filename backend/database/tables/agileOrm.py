@@ -1,15 +1,13 @@
 from sqlalchemyConnect import SQLBase, toString
 from sqlalchemy import Column, Integer, String, Date, DateTime
-from users import Roles
-from enum import Enum
 
 
 class Sprints(SQLBase):
     ___tablename__ = 'Sprints'
     id = Column(Integer, primary_key=True)
-    semester = Column(String, ForeignKey="Class.semester", primary_key=True)
-    start_date = Column(Date, nullable=False)
-    end_date = Column(Date, nullable=False)
+    semester = Column(String, ForeignKey="Classes.semester", primary_key=True)
+    startDate = Column(Date, nullable=False)
+    endDate = Column(Date, nullable=False)
 
     def __repr__(self):
         return toString(self)
@@ -18,12 +16,12 @@ class Sprints(SQLBase):
 class Issues(SQLBase):
     __table__ = 'Issues'
     id = Column(Integer, primary_key=True)
-    created_by = Column(Integer, ForeignKey="Users.id")
-    repo_id = Column(Integer, primary_key=True, ForeignKey="Repo.id")
-    epic_id = Column(Integer)
+    createdBy = Column(Integer)
+    repoId = Column(Integer, primary_key=True, ForeignKey="Repos.id")
+    epicId = Column(Integer)
     state = Column(String, nullable=False)
-    sprint_id = Column(Integer, ForeignKey="Sprints.id")
-    semester = Column(String, ForeignKey="Class.semester", primary_key=True)
+    sprintId = Column(Integer, ForeignKey="Sprints.id")
+    semester = Column(String, ForeignKey="Sprints.semester", primary_key=True)
     story_points = Column(Integer)
     opened = Column(DateTime)
     closed = Column(DateTime)
@@ -35,7 +33,7 @@ class Issues(SQLBase):
 class Epics(SQLBase):
     __table__ = 'Epics'
     id = Column(Integer, primary_key=True)
-    issueId = Column(Integer, ForeignKey="Issues.semester")
+    issueId = Column(Integer, ForeignKey="Issues.id")
 
     def __repr__(self):
         return toString(self)

@@ -8,19 +8,19 @@ class Sprint(BaseModel):
     id: int
     semester: str = Field(
         None, regex=r'^(spring|fall)20[0-9][0-9]$')
-    start_date: date
-    end_date: date
+    startDate: date
+    endDate: date
 
 
 class Issue(BaseModel):
     id: int
     created_by: User
-    repo_id: int
-    epic_id: int
+    repoId: int
+    epicId: int
     state: str
     sprint: Sprint
     pipeline: str
-    story_points: int
+    storyPoints: int
     opened: datetime
     closed: Optional[datetime]
 

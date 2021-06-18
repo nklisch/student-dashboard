@@ -11,7 +11,7 @@ class Users(SQLBase):
     github_login = Column(String, nullable=False)
     oauth = Column(String)
     role = Column(Enum(Roles))
-    semester = Column(String, ForeignKey="Class.semester")
+    semester = Column(String, ForeignKey="Classes.semester")
     team_number = Column(Integer)
 
     def __repr__(self):
@@ -21,9 +21,9 @@ class Users(SQLBase):
 class Teams(SQLBase):
     __table__ = 'Teams'
     id = Column(Integer, primary_key=True)
-    semester = Column(String, ForeignKey="Class.semester", primary_key=True)
+    semester = Column(String, ForeignKey="Classes.semester", primary_key=True)
     name = Column(String)
-    repo_id = Column(Integer, nullable=False, ForeignKey="Repo.id")
+    repoId = Column(Integer, nullable=False, ForeignKey="Repos.id")
 
     def __repr__(self):
         return toString(self)
