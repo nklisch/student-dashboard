@@ -1,0 +1,4 @@
+Server: fastapi
+DB connection: sqlalchemy
+Unit test: pytest
+DB: postgres docker container
