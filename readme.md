@@ -10,3 +10,5 @@ https://github.com/PyGithub/PyGithub
 https://www.sqlalchemy.org/
 
 https://github.com/oauthlib/oauthlib
+
+https://pipenv.pypa.io/en/latest/
