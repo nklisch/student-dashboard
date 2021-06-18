@@ -9,6 +9,13 @@ uvicorn = {extras = ["standard"], version = "*"}
 pygithub = "*"
 sqlalchemy = "*"
 ipykernel = "*"
+pydantic = "*"
+oauthlib = "*"
+cryptography = "*"
+pyjwt = "*"
+pyzenhub = "*"
+devtools = "*"
+email-validator = "*"
 
 [dev-packages]
 
