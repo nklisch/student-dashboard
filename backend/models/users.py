@@ -1,34 +1,34 @@
 from pydantic import BaseModel, EmailStr, Field
 from datetime import date
 from typing import List, Optional, FrozenSet
-from enum import Enum
-
-
-class Roles(str, Enum):
-    SuperUser = 'SuperUser'
-    Instructor = 'Instructor'
-    TeachingAssistant = 'TeachingAssistant'
-    Student = 'Student'
+from globals import Roles
+from repo import Repo
 
 
 class User(BaseModel):
+    id: int
     name: str
-    github_login: str
     email: EmailStr
+    github_login: str
     oauth: Optional[str]
     role: Optional[Roles]
-    semester: Optional[date]
+    semester: Optional[date] = Field(
+        None, regex=r'^(spring|fall)20[0-9][0-9]$')
     team: Optional[Team]
 
 
 class Team(BaseModel):
+    id: int
     name: str
-    number: int
-    repo: str
+    semester: str = Field(
+        None, regex=r'^(spring|fall)20[0-9][0-9]$')
+    repo: Repo
     members: List[User]
 
 
 class Class(BaseModel):
-    semester: str = Field(regex=r'^(spring|fall)20[0-9][0-9]$')
+    semester: str = Field(
+        None, regex=r'^(spring|fall)20[0-9][0-9]$')
     teams: List[Team]
     teaching_assistents: List[User]
+    instructor: User
