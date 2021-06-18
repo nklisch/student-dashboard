@@ -7,7 +7,7 @@ from typing import (List, Optional)
 class Sprint(BaseModel):
     id: int
     semester: str = Field(
-        None, regex=r'^(spring|fall)20[0-9][0-9]$')
+        None, regex=r'^(spring|fall|summer)20[0-9][0-9]$')
     startDate: date
     endDate: date
 

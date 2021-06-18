@@ -24,7 +24,7 @@ class Pull(BaseModel):
 
 class Repo(BaseModel):
     id: int
-    semester: str = Field(None, regex=r'^(spring|fall)20[0-9][0-9]$')
+    semester: str = Field(None, regex=r'^(spring|fall|summer)20[0-9][0-9]$')
     fullName: str
     team: Team
     repoUrl: HttpUrl
