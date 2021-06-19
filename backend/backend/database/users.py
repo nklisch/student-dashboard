@@ -1,4 +1,4 @@
-from .repoOrm import SQLBase
+from .repo import SQLBase
 from sqlalchemy import Column, Integer, String, Date, DateTime, ForeignKey
 from .util import toString
 from sqlalchemy.dialects.postgresql import ENUM

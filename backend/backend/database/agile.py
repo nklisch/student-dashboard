@@ -1,8 +1,7 @@
 from sqlalchemy.orm import declarative_base
 from sqlalchemy import Column, Integer, String, Date, DateTime, ForeignKey
 from .util import toString
-
-SQLBase = declarative_base()
+from .db import SQLBase
 
 
 class Sprints(SQLBase):

@@ -1,4 +1,4 @@
-from .agileOrm import SQLBase
+from .agile import SQLBase
 from sqlalchemy import Column, Integer, String, Date, DateTime, ForeignKey
 from .util import toString
 

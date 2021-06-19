@@ -1,9 +1,8 @@
 from fastapi import Depends, FastAPI, HTTPException
 from pydantic import UUID4
 from sqlalchemy.orm import Session
-from .database.usersOrm import SQLBase
-from .db import SessionLocal, engine
-from .models import *
+from .database import SQLBase, SessionLocal, engine
+from .models import User
 
 app = FastAPI()
 
