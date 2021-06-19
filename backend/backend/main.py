@@ -2,7 +2,9 @@ from fastapi import Depends, FastAPI, HTTPException
 from pydantic import UUID4
 from sqlalchemy.orm import Session
 from .database import SQLBase, SessionLocal, engine
+from .database.users import Classes
 from .models import User
+from .processing.getRepos import generate_repos_inserts
 
 app = FastAPI()
 

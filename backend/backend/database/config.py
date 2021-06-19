@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str
+    DB_ENCRYPT_KEY: str
 
     SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
 

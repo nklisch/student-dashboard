@@ -9,6 +9,7 @@ class User(BaseModel):
     name: str
     email: EmailStr
     githubLogin: str
+    fullName: Optional[str]
     oauth: Optional[str]
     role: Optional[Roles]
     semester: str = Field(None, regex=r"^(spring|fall|summer)20[0-9][0-9]$")
@@ -24,6 +25,7 @@ class Team(BaseModel):
 
 class Class(BaseModel):
     semester: str = Field(None, regex=r"^(spring|fall|summer)20[0-9][0-9]$")
+    gitOrganization: str
     teams: List[Team]
     teachingAssistents: List[User]
     instructor: User
