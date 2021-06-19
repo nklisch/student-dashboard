@@ -1,16 +1,7 @@
 from .repo import SQLBase
-from sqlalchemy import Column, Integer, String, Date, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Date, DateTime, ForeignKey, Enum
 from .util import toString
-from sqlalchemy.dialects.postgresql import ENUM
-
-roles = ENUM(
-    "SuperUser",
-    "Instructor",
-    "TeachingAssistant",
-    "Student",
-    name="Roles",
-    metadata=SQLBase.metadata,
-)
+from ..globals import Roles
 
 
 class Users(SQLBase):
@@ -19,7 +10,7 @@ class Users(SQLBase):
     email = Column(String, nullable=False)
     github_login = Column(String, nullable=False)
     oauth = Column(String(250))
-    role = Column(roles, nullable=False)
+    role = Column(Enum(Roles), nullable=False)
     semester = Column(String(10), ForeignKey("Classes.semester"))
     team_number = Column(Integer)
 

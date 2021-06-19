@@ -1,14 +1,7 @@
 from datetime import datetime
 from pydantic import BaseModel, Field, EmailStr
 from typing import List, Optional
-from enum import Enum
-
-
-class Roles(str, Enum):
-    SuperUser = "SuperUser"
-    Instructor = "Instructor"
-    TeachingAssistant = "TeachingAssistant"
-    Student = "Student"
+from ..globals import Roles
 
 
 class User(BaseModel):
