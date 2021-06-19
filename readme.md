@@ -11,6 +11,6 @@ https://www.sqlalchemy.org/
 
 https://github.com/oauthlib/oauthlib
 
-https://pipenv.pypa.io/en/latest/
+https://python-poetry.org/
 
 https://github.com/dbader/schedule

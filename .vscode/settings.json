@@ -1,6 +1,6 @@
 {
     "python.venvPath": "${workspaceFolder}/.venv/bin/python",
-    "python.pythonPath": "/home/nathan/.local/share/virtualenvs/backend-KiE1RCP5/bin/python",
+    "python.pythonPath": "/home/nathan/.cache/pypoetry/virtualenvs/backend-CtRCVJNP-py3.8/bin/python3",
     "python.linting.pylintEnabled": false,
     "python.linting.enabled": true,
     "python.linting.banditEnabled": false,
