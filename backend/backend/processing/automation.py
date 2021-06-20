@@ -22,6 +22,7 @@ def populate_repos(db: Session, semester: str):
     if no_dup_repos(repos, old_repos):
         db.add_all()
         db.commit()
+        return get_repos(db=db, semester=semester)
     return old_repos
 
 
