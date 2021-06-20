@@ -2,6 +2,5 @@
 # upper level packadges to not have to drill down anouther level
 # to access these classes
 
-from .agile import Issue, Sprint, Epic
-from .repo import Repo, Pull, Commit
-from .users import User, Team, Class
+from .schemas import Issue, Sprint, Epic, Repo, Pull, Commit, User, Team, Class
+from pydantic import BaseModel

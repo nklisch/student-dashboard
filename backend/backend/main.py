@@ -1,10 +1,11 @@
-from fastapi import Depends, FastAPI, HTTPException
-from pydantic import UUID4
+from fastapi import Depends, FastAPI, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from .database import SQLBase, SessionLocal, engine
-from .database.users import Classes
-from .models import User
-from .processing.getRepos import generate_repos_inserts
+from .database.models import Classes
+from typing import List, Optional
+from .schemas import Class, Repo
+from .processing.automation import populate_repos
+from .globals import determine_semester
 
 app = FastAPI()
 
@@ -20,6 +21,22 @@ def get_db():
 
 
 @app.get("/")
-async def root():
-    s = User(id=1, name="Nathan", email="nklisch@gmail.com", githubLogin="nklisch")
-    return s.dict()
+def root():
+    return {"hello": "world"}
+
+
+@app.post(
+    "/automate/repos", response_model=List[Repo], status_code=status.HTTP_201_CREATED
+)
+def automatic_populate_repos(
+    semester: Optional[str] = Query(
+        None,
+        regex=r"^(spring|fall|summer)20[0-9][0-9]$",
+        title="Populate Semester Repos",
+        description="Populates the recieved semester's repositories.",
+    ),
+    db: Session = Depends(get_db),
+):
+    if not semester:
+        semester = determine_semester()
+    return populate_repos(db=db, semester=semester)
