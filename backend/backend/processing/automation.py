@@ -13,15 +13,16 @@ def populate_repos(db: Session, semester: str):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"The current Semester of {semester} and Orginization have not been setup.",
         )
-    db.add_all(
-        [
-            Repos(**create_repo_dict(repo, semester))
-            for repo in github.get_organization(result.gitOrganization).get_repos()
-            if isTeamRepo(repo)
-        ]
-    )
-    db.commit()
-    return get_repos(db=db, semester=semester)
+    repos = [
+        Repos(**create_repo_dict(repo, semester))
+        for repo in github.get_organization(result.gitOrganization).get_repos()
+        if isTeamRepo(repo)
+    ]
+    old_repos = get_repos(db=db, semester=semester)
+    if no_dup_repos(repos, old_repos):
+        db.add_all()
+        db.commit()
+    return old_repos
 
 
 def isTeamRepo(repo):
@@ -35,3 +36,7 @@ def create_repo_dict(repo, semester):
         "fullName": repo.full_name,
         "url": repo.url,
     }
+
+
+def no_dup_repos(repos, old_repos):
+    return len(repos) != len(old_repos)
