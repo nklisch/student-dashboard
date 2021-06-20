@@ -75,17 +75,20 @@ class Repos(SQLBase):
 class Users(SQLBase):
     __tablename__ = "Users"
     id = Column(Integer, primary_key=True)
-    teamId = Column(Integer, ForeignKey("Teams.id"), unique=True)
-    github_login = Column(String(250), nullable=False)
+    teamId = Column(Integer)
+    semester = Column(String(10))
+    githubLogin = Column(String(250), nullable=False)
     email = Column(String(100))
     name = Column(String(250))
     oauth = Column(
         StringEncryptedType(String, settings.DB_ENCRYPT_KEY, AesGcmEngine, "pkcs7")
     )
     role = Column(Enum(Roles))
-    semester = Column(String(10), ForeignKey("Classes.semester"))
     active = Column(Boolean)
     team = relationship("Teams", back_populates="members")
+    __table_args__ = (
+        ForeignKeyConstraint(["teamId", "semester"], ["Teams.id", "Teams.semester"]),
+    )
 
     def __repr__(self):
         return toString(self)
@@ -93,11 +96,11 @@ class Users(SQLBase):
 
 class Teams(SQLBase):
     __tablename__ = "Teams"
-    id = Column(Integer, primary_key=True, unique=True)
+    id = Column(Integer, primary_key=True)
     semester = Column(String(10), ForeignKey("Classes.semester"), primary_key=True)
     name = Column(String(250))
     repoId = Column(Integer, ForeignKey("Repos.id"), nullable=False)
-    repo = relationship("Repos", back_populates="team")
+    repo = relationship("Repos", back_populates="team", uselist=False)
     members = relationship("Users", back_populates="team")
     Class = relationship("Classes", back_populates="teams")
 

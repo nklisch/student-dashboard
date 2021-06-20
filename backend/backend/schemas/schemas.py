@@ -13,21 +13,33 @@ class User(BaseModel):
     role: Optional[Roles]
     active: Optional[bool]
 
+    class Config:
+        orm_mode = True
+
 
 class Team(BaseModel):
     id: int
-    semester: str = Field(None, regex=r"^(spring|fall|summer)20[0-9][0-9]$")
-    name: str
-    members: List[User]
     repoId: int
+    semester: str = Field(None, regex=r"^(spring|fall|summer)20[0-9][0-9]$")
+    name: Optional[str]
+    members: Optional[List[User]]
+
+    class Config:
+        orm_mode = True
 
 
-class Class(BaseModel):
+class ClassCreate(BaseModel):
     semester: str = Field(None, regex=r"^(spring|fall|summer)20[0-9][0-9]$")
     gitOrganization: str
+
+
+class Class(ClassCreate):
     teams: Optional[List[Team]]
     instructor: Optional[User]
     teachingAssistants: Optional[List[User]]
+
+    class Config:
+        orm_mode = True
 
 
 class Sprint(BaseModel):
@@ -35,6 +47,9 @@ class Sprint(BaseModel):
     semester: str = Field(None, regex=r"^(spring|fall|summer)20[0-9][0-9]$")
     startDate: date
     endDate: date
+
+    class Config:
+        orm_mode = True
 
 
 class Issue(BaseModel):
@@ -49,10 +64,16 @@ class Issue(BaseModel):
     opened: datetime
     closed: Optional[datetime]
 
+    class Config:
+        orm_mode = True
+
 
 class Epic(Issue):
     title: str
     issues: List[Issue]
+
+    class Config:
+        orm_mode = True
 
 
 class Commit(BaseModel):
@@ -62,6 +83,9 @@ class Commit(BaseModel):
     author: User
     sprint: Sprint
 
+    class Config:
+        orm_mode = True
+
 
 class Pull(BaseModel):
     id: int
@@ -70,6 +94,9 @@ class Pull(BaseModel):
     opened_by: User
     assigned_to: User
     sprint: Sprint
+
+    class Config:
+        orm_mode = True
 
 
 class Repo(BaseModel):

@@ -2,5 +2,16 @@
 # upper level packadges to not have to drill down anouther level
 # to access these classes
 
-from .schemas import Issue, Sprint, Epic, Repo, Pull, Commit, User, Team, Class
+from .schemas import (
+    Issue,
+    Sprint,
+    Epic,
+    Repo,
+    Pull,
+    Commit,
+    User,
+    Team,
+    Class,
+    ClassCreate,
+)
 from pydantic import BaseModel

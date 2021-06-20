@@ -11,9 +11,9 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
 def toString(orm):
-    s = {
-        a: self[a]
-        for a in dir(obj)
-        if not a.startswith("__") and not callable(getattr(obj, a))
-    }
-    return f"{s}"
+    # s = {
+    #     attr: value
+    #     for attr, value in orm.__dict__.iteritems()
+    #     if not attr.startswith("__") and not callable(getattr(orm, attr))
+    # }
+    return f"{vars(orm)}"
