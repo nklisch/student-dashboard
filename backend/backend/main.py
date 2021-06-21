@@ -3,10 +3,15 @@ from sqlalchemy.orm import Session
 from .database import SQLBase, SessionLocal, engine
 from .database.models import Classes
 from typing import List, Optional
-from .schemas import ClassCreate, Repo, Team, Class
-from .processing.automation import populate_repos, populate_users_and_teams
+from .schemas import ClassCreate, Repo, Team, Class, Sprint
+from .processing.automation import (
+    populate_repos,
+    populate_users_and_teams,
+    populate_commits,
+)
 from .processing.setup import setup_semester
 from .globals import determine_semester
+from datetime import date, datetime
 
 app = FastAPI()
 
@@ -26,9 +31,11 @@ def root():
     return {"hello": "world"}
 
 
-@app.post("/setup/semester", response_model=Class, status_code=status.HTTP_201_CREATED)
-def handle_setup_semester(c: ClassCreate, db: Session = Depends(get_db)):
-    return setup_semester(db, c)
+@app.post("/setup/semester", status_code=status.HTTP_201_CREATED)
+def handle_setup_semester(
+    newClass: ClassCreate, sprints: List[Sprint], db: Session = Depends(get_db)
+):
+    return setup_semester(db, newClass, sprints)
 
 
 @app.post(
@@ -44,7 +51,7 @@ def automatic_populate_repos(
     db: Session = Depends(get_db),
 ):
     if not semester:
-        semester = determine_semester()
+        semester = determine_semester(date.today())
     return populate_repos(db=db, semester=semester)
 
 
@@ -61,5 +68,13 @@ def automatic_populate_teams(
     db: Session = Depends(get_db),
 ):
     if not semester:
-        semester = determine_semester()
+        semester = determine_semester(date.today())
     return populate_users_and_teams(db=db, semester=semester)
+
+
+@app.post("/automate/commits", status_code=status.HTTP_201_CREATED)
+def automatic_populate_commits(
+    start_date: datetime, end_date: datetime, db: Session = Depends(get_db)
+):
+    semester = determine_semester(start_date)
+    return populate_commits(db, semester, start_date, end_date)

@@ -1,11 +1,12 @@
 from .gitconnection import github
-from ..database.models import Repos, Classes, Users, Teams
+from ..database.models import Repos, Classes, Users, Teams, Commits, Sprints
 from ..schemas import Repo, Team
 from sqlalchemy.orm import Session
-from ..globals import determine_semester
+from ..globals import determine_semester, determine_sprint
 from fastapi import HTTPException, status
 from ..actions.actions import Action
 from typing import Tuple, List
+from datetime import datetime, date
 
 # <------------------Repos------------------>
 def populate_repos(db: Session, semester: str):
@@ -98,4 +99,52 @@ def create_user_dict(user, semester, teamNumber, active):
         "email": user.email,
         "semester": semester,
         "active": active,
+    }
+
+
+# <------Commits----->
+
+
+def populate_commits(
+    db: Session, semester: str, start_date: datetime, end_date: datetime
+):
+    result = check_semester_setup(db, semester)
+    commits = get_commits(
+        db=db,
+        semester=semester,
+        org=result.gitOrganization,
+        start_date=start_date,
+        end_date=end_date,
+    )
+    Action(db, Commits).create_or_update_all(commits)
+
+
+def get_commits(
+    db: Session, semester: str, org: str, start_date: datetime, end_date: datetime
+) -> List[dict]:
+    sprints = Action(db, Sprints).get_all(filter_by={"semester": semester})
+    commits = []
+    for repo in github.get_organization(org).get_repos():
+        if repo.name[0] == "t" and len(repo.name) == 3:
+            teamNumber = int(repo.name[1:])
+            for commit in repo.get_commits(since=start_date, until=end_date):
+                d = commit.commit.author.date.date()
+                commits.append(
+                    create_commit_dict(
+                        commit, repo.id, determine_sprint(sprints, d), semester
+                    )
+                )
+    return commits
+
+
+def create_commit_dict(commit, repoId, sprintId, semester):
+    return {
+        "id": commit.sha,
+        "repoId": repoId,
+        "date": commit.commit.author.date,
+        "authorId": commit.author.id if commit.author else 0,
+        "authorName": commit.commit.author.name,
+        "authorEmail": commit.commit.author.email,
+        "sprintId": sprintId,
+        "semester": semester,
     }
