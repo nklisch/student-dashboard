@@ -1,4 +1,5 @@
 from enum import Enum
+from sqlalchemy.orm import Session
 from datetime import date
 
 
@@ -9,13 +10,26 @@ class Roles(str, Enum):
     Student = "Student"
 
 
-def determine_semester():
-    today = date.today()
+def determine_semester(d):
     semester = ""
-    if 1 <= today.month <= 5:
+    if 1 <= d.month <= 5:
         semester += "spring"
-    elif 9 <= today.month <= 12:
+    elif 9 <= d.month <= 12:
         semester += "fall"
     else:
         semester += "summer"
-    return semester + today.strftime("%Y")
+    return semester + d.strftime("%Y")
+
+
+def determine_sprint(sprints, d: date) -> int:
+    sprint = 0
+    for s in sprints:
+        if s.startDate <= d <= s.endDate:
+            sprint = s.id
+    if sprint == 0:
+        minimum = date(5000, 1, 1) - d
+        for s in sprints:
+            if s.endDate - d < minimum:
+                minimum = s.endDate - d
+                sprint = s.id
+    return sprint
