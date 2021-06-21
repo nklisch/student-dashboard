@@ -1,5 +1,4 @@
-# Technologies and Libraries used
-### Backend
+## Technologies and Libraries used
 https://pypi.org/project/pyzenhub/
 
 https://fastapi.tiangolo.com/
@@ -15,7 +14,3 @@ https://github.com/oauthlib/oauthlib
 https://python-poetry.org/
 
 https://github.com/dbader/schedule
-
-
-### Front End
-https://github.com/coreui/coreui-free-vue-admin-template

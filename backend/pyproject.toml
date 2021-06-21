@@ -1,0 +1,38 @@
+[tool.poetry]
+name = "backend"
+version = "0.1.0"
+description = ""
+authors = ["Nathan Klisch <nklisch@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+fastapi = "^0.65.2"
+SQLAlchemy = {extras = ["mypy"], version = "^1.4.18"}
+psycopg2-binary = "^2.9.1"
+uvicorn = "^0.14.0"
+PyGithub = "^1.55"
+pyzenhub = "^0.2.1"
+email-validator = "^1.1.3"
+schedule = "^1.1.0"
+oauthlib = "^3.1.1"
+cryptography = "^3.4.7"
+PyJWT = "^2.1.0"
+devtools = "^0.6.1"
+python-dotenv = "^0.17.1"
+urllib3 = "^1.26.5"
+SQLAlchemy-Utils = "^0.37.7"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+mypy = "^0.902"
+sqlalchemy-stubs = "^0.4"
+flake8 = "^3.9.2"
+autoflake = "^1.4"
+isort = "^5.8.0"
+black = "^21.6b0"
+ipykernel = "^5.5.5"
+
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
