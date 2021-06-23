@@ -92,8 +92,8 @@ class Automate(Generic[ModelType, SchemaType]):
 
 
 class AutomateRepos(Automate[Repos, Repo]):
-    def __init__(self, db: Session, semester: str):
-        super().__init__(db, semester, self.get_data)
+    def __init__(self, db: Session, semester: str, request_config: RequestConfig):
+        super().__init__(db, semester, self.get_data, request_config)
 
     def get_data(self) -> List[Tuple[List[Repo], Type[Repo], Type[Repos]]]:
         repos = [
@@ -109,8 +109,8 @@ class AutomateRepos(Automate[Repos, Repo]):
 
 
 class AutomateUserTeams(Automate[ModelType, SchemaType]):
-    def __init__(self, db: Session, semester: str):
-        super().__init__(db, semester, self.get_data)
+    def __init__(self, db: Session, semester: str, request_config: RequestConfig):
+        super().__init__(db, semester, self.get_data, request_config)
 
     def get_data(
         self,
@@ -148,9 +148,14 @@ class AutomateUserTeams(Automate[ModelType, SchemaType]):
 
 class AutomateCommits(Automate[Commits, Commit]):
     def __init__(
-        self, db: Session, semester: str, start_date: datetime, end_date: datetime
+        self,
+        db: Session,
+        semester: str,
+        start_date: datetime,
+        end_date: datetime,
+        request_config: RequestConfig,
     ):
-        super().__init__(db, semester, self.get_data)
+        super().__init__(db, semester, self.get_data, request_config)
         self.start_date = start_date
         self.end_date = end_date
 
@@ -175,14 +180,20 @@ class AutomateCommits(Automate[Commits, Commit]):
 
 
 class AutomateIssues(Automate[Issues, Issue]):
-    def __init__(self, db: Session, semester: str, since: datetime):
-        super().__init__(db, semester, self.get_data)
-        self.since = datetime
+    def __init__(
+        self,
+        db: Session,
+        semester: str,
+        since: datetime,
+        request_config: RequestConfig,
+    ):
+        super().__init__(db, semester, self.get_data, request_config)
+        self.since = since
 
     def get_data(self) -> List[Tuple[List[Issues], Type[Issue], Type[Issues]]]:
         issues = []
         for repo, _ in super().get_valid_team_repos():
-            for issue in repo.get_issues(state="all"):
+            for issue in repo.get_issues(state="all", since=self.since):
                 zenIssue = zh.get_issue_data(repo_id=repo.id, issue_number=issue.number)
                 sleep(0.65)
                 issues.append(
