@@ -1,13 +1,16 @@
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from pydantic import BaseModel, HttpUrl, conint, EmailStr, Field
 from typing import List, Optional
 from ..globals import Roles
+
+Semester = Field(None, regex=r"^(spring|fall|summer)20[0-9][0-9]$")
 
 
 class User(BaseModel):
     id: int
     githubLogin: str
-    semester: str = Field(None, regex=r"^(spring|fall|summer)20[0-9][0-9]$")
+    semester: str = Semester
+    teamId: Optional[int]
     email: Optional[EmailStr]
     name: Optional[str]
     role: Optional[Roles]
@@ -20,7 +23,7 @@ class User(BaseModel):
 class Team(BaseModel):
     id: int
     repoId: int
-    semester: str = Field(None, regex=r"^(spring|fall|summer)20[0-9][0-9]$")
+    semester: str = Semester
     name: Optional[str]
     members: Optional[List[User]]
 
@@ -29,7 +32,7 @@ class Team(BaseModel):
 
 
 class ClassCreate(BaseModel):
-    semester: str = Field(None, regex=r"^(spring|fall|summer)20[0-9][0-9]$")
+    semester: str = Semester
     gitOrganization: str
 
 
@@ -44,7 +47,7 @@ class Class(ClassCreate):
 
 class Sprint(BaseModel):
     id: int
-    semester: str = Field(None, regex=r"^(spring|fall|summer)20[0-9][0-9]$")
+    semester: str = Semester
     startDate: date
     endDate: date
 
@@ -54,23 +57,19 @@ class Sprint(BaseModel):
 
 class Issue(BaseModel):
     id: int
-    created_by: int
+    number: int
+    createdBy: int
     repoId: int
-    epicId: int
+    isEpic: bool
     state: str
-    sprint: Sprint
-    pipeline: str
-    storyPoints: int
+    sprintId: int
+    semester: str = Semester
+    sprint: Optional[Sprint]
+    pipeline: Optional[str]
     opened: datetime
+    epicId: Optional[int]
+    storyPoints: Optional[int]
     closed: Optional[datetime]
-
-    class Config:
-        orm_mode = True
-
-
-class Epic(Issue):
-    title: str
-    issues: List[Issue]
 
     class Config:
         orm_mode = True
@@ -80,8 +79,10 @@ class Commit(BaseModel):
     id: str = Field(None, title="The unique SHA string attach to the commit.")
     repoId: int
     date: datetime
-    sprint: Sprint
-    authorId: int
+    semester: str
+    sprintId: int
+    authorId: Optional[int] = None
+    sprint: Optional[Sprint]
     authorName: Optional[str]
     authorEmail: Optional[EmailStr]
 
@@ -103,10 +104,10 @@ class Pull(BaseModel):
 
 class Repo(BaseModel):
     id: int
-    semester: str = Field(None, regex=r"^(spring|fall|summer)20[0-9][0-9]$")
+    semester: str = Semester
     fullName: str
-    team: Optional[Team]
     url: HttpUrl
+    team: Optional[Team]
     accessKey: Optional[str]
     issues: Optional[List[Issue]]
     commits: Optional[List[Commit]]
@@ -114,3 +115,10 @@ class Repo(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+# class Job(BaseModel):
+#     id: int
+#     frequency: timedelta
+#     endpoint:
+#     options:

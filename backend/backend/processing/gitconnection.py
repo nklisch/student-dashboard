@@ -1,10 +1,12 @@
 from pydantic import BaseSettings, PostgresDsn, validator
 from pydantic import BaseSettings
 from github import Github
+from zenhub import Zenhub
 
 
 class Settings(BaseSettings):
     GITHUB_KEY: str
+    ZENHUB_KEY: str
 
     class Config:
         case_sensitive = True
@@ -14,3 +16,4 @@ class Settings(BaseSettings):
 settings = Settings()
 
 github = Github(settings.GITHUB_KEY)
+zh = Zenhub(settings.ZENHUB_KEY)

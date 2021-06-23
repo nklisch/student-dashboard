@@ -5,7 +5,6 @@
 from .schemas import (
     Issue,
     Sprint,
-    Epic,
     Repo,
     Pull,
     Commit,
@@ -14,4 +13,3 @@ from .schemas import (
     Class,
     ClassCreate,
 )
-from pydantic import BaseModel

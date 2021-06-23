@@ -25,7 +25,7 @@ class Commits(SQLBase):
     id = Column(String(150), autoincrement=False, primary_key=True)
     repoId = Column(Integer, ForeignKey("Repos.id"), primary_key=True)
     date = Column(DateTime, nullable=False)
-    authorId = Column(Integer, nullable=False)
+    authorId = Column(Integer)
     authorName = Column(String(150))
     authorEmail = Column(String(200))
     sprintId = Column(Integer)
@@ -135,7 +135,9 @@ class Sprints(SQLBase):
 class Issues(SQLBase):
     __tablename__ = "Issues"
     id = Column(Integer, autoincrement=False, primary_key=True)
+    number = Column(Integer)
     createdBy = Column(Integer)
+    closedBy = Column(Integer)
     repoId = Column(Integer, ForeignKey("Repos.id"), primary_key=True)
     epicId = Column(Integer)
     state = Column(String(10), nullable=False)
@@ -145,23 +147,13 @@ class Issues(SQLBase):
     storyPoints = Column(Integer)
     opened = Column(DateTime)
     closed = Column(DateTime)
+    isEpic = Column(Boolean)
     __table_args__ = (
         ForeignKeyConstraint(
             ["sprintId", "semester"], ["Sprints.id", "Sprints.semester"]
         ),
     )
     repo = relationship("Repos", back_populates="issues")
-
-    def __repr__(self):
-        return toString(self)
-
-
-class Epics(SQLBase):
-    __tablename__ = "Epics"
-    id = Column(Integer, autoincrement=False, primary_key=True)
-    issueId = Column(Integer)
-    repoId = Column(Integer)
-    title = Column(String)
 
     def __repr__(self):
         return toString(self)

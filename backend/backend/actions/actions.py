@@ -74,7 +74,10 @@ class Action:
         return data
 
     def convert_data_to_model(self, data: Union[dict, SchemaType]) -> ModelType:
-        return self.model(**self.convert_schema_to_dict(data))
+        d = {
+            k: v for k, v in self.convert_schema_to_dict(data).items() if v is not None
+        }
+        return self.model(**d)
 
 
 # UPDATES
