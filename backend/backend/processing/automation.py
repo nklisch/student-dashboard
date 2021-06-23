@@ -1,6 +1,6 @@
 from .gitconnection import github, zh
 from ..database.models import Repos, Classes, Users, Teams, Commits, Sprints, Issues
-from ..schemas import Repo, Team, User, Commit, Issue
+from ..schemas.db_schemas import Repo, Team, User, Commit, Issue
 from sqlalchemy.orm import Session
 from ..globals import determine_semester, determine_sprint
 from fastapi import HTTPException, status
@@ -11,18 +11,26 @@ from pydantic import BaseModel
 from ..database import SQLBase
 from devtools import debug
 from time import sleep
+from ..schemas.requests import RequestConfig
 
 ModelType = TypeVar("ModelType", bound=SQLBase)
 SchemaType = TypeVar("SchemaType", bound=BaseModel)
 
 
 class Automate(Generic[ModelType, SchemaType]):
-    def __init__(self, db: Session, semester: str, get_data: Callable):
+    def __init__(
+        self,
+        db: Session,
+        semester: str,
+        get_data: Callable,
+        request_config: RequestConfig,
+    ):
         self.db = db
         self.semester = semester
         self.semester_setup = self.__check_semester_setup()
         self.sprints = Action(db, Sprints).get_all(filter_by={"semester": semester})
         self.get_data = get_data
+        self.request_config = request_config
 
     def populate(self) -> Union[List[List[SchemaType]], List[SchemaType]]:
         action_schemas = self.__create_or_update_data(self.get_data())
@@ -31,7 +39,10 @@ class Automate(Generic[ModelType, SchemaType]):
             return action.get_all(filter_by={"semester": self.semester}, schema=schema)
 
         return [
-            action.get_all(filter_by={"semester": self.semester}, schema=schema)
+            action.get_all(
+                filter_by={"semester": self.semester},
+                schema=schema,
+            )
             for action, schema in action_schemas
         ]
 
@@ -42,7 +53,14 @@ class Automate(Generic[ModelType, SchemaType]):
         ],
     ) -> List[Tuple[Action, Type[SchemaType]]]:
         return [
-            (Action(self.db, model=model).create_or_update_all(data), schema)
+            (
+                Action(
+                    self.db,
+                    model=model,
+                    request_config=self.request_config,
+                ).create_or_update_all(data),
+                schema,
+            )
             for data, schema, model in data_schema_model
         ]
 

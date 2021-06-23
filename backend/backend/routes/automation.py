@@ -1,6 +1,7 @@
 from fastapi import APIRouter, status, Depends
-from ..schemas import Repo, Commit, Team, Issue
+from ..schemas.db_schemas import Repo, Commit, Issue, Team
 from ..schemas.requests import RequestConfig
+from ..schemas.requests import ClassCreate
 from typing import List, Optional
 from ..dependencies import get_semester, get_db
 from sqlalchemy.orm import Session

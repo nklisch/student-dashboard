@@ -1,9 +1,10 @@
+from pydantic import BaseModel
+from typing import Optional
+from . import Semester
 from datetime import datetime, date, timedelta
 from pydantic import BaseModel, HttpUrl, conint, EmailStr, Field
 from typing import List, Optional
 from ..globals import Roles
-
-Semester = Field(None, regex=r"^(spring|fall|summer)20[0-9][0-9]$")
 
 
 class User(BaseModel):
@@ -31,12 +32,9 @@ class Team(BaseModel):
         orm_mode = True
 
 
-class ClassCreate(BaseModel):
+class Class(BaseModel):
     semester: str = Semester
     gitOrganization: str
-
-
-class Class(ClassCreate):
     teams: Optional[List[Team]]
     instructor: Optional[User]
     teachingAssistants: Optional[List[User]]
@@ -115,10 +113,3 @@ class Repo(BaseModel):
 
     class Config:
         orm_mode = True
-
-
-# class Job(BaseModel):
-#     id: int
-#     frequency: timedelta
-#     endpoint:
-#     options:

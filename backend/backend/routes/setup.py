@@ -2,7 +2,8 @@ from fastapi import APIRouter, status, Depends
 from typing import List
 from ..processing.setup import setup_semester
 from ..dependencies import get_db
-from ..schemas import ClassCreate, Sprint
+from ..schemas.db_schemas import Sprint
+from ..schemas.requests import ClassCreate
 from sqlalchemy.orm import Session
 from ..database import SQLBase
 
