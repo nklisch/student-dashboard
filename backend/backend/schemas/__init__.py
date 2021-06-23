@@ -1,17 +1,3 @@
-# This allows us to remove the nesting of namespaces if we would
-# upper level packadges to not have to drill down anouther level
-# to access these classes
+from pydantic import Field
 
-from .schemas import (
-    Issue,
-    Sprint,
-    Epic,
-    Repo,
-    Pull,
-    Commit,
-    User,
-    Team,
-    Class,
-    ClassCreate,
-)
-from pydantic import BaseModel
+Semester = Field(None, regex=r"^(spring|fall|summer)20[0-9][0-9]$")

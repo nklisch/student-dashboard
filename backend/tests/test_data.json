@@ -1,0 +1,44 @@
+[
+    {
+        "newClass": {
+            "semester": "spring2021",
+            "gitOrganization": "csucs314s21"
+        },
+        "sprints": [
+            {
+                "id": 1,
+                "semester": "spring2021",
+                "startDate": "2021-01-25",
+                "endDate": "2021-02-14"
+            },
+            {
+                "id": 2,
+                "semester": "spring2021",
+                "startDate": "2021-02-15",
+                "endDate": "2021-03-08"
+            },
+            {
+                "id": 3,
+                "semester": "spring2021",
+                "startDate": "2021-03-09",
+                "endDate": "2021-03-28"
+            },
+            {
+                "id": 4,
+                "semester": "spring2021",
+                "startDate": "2021-03-29",
+                "endDate": "2021-04-25"
+            },
+            {
+                "id": 5,
+                "semester": "spring2021",
+                "startDate": "2021-04-26",
+                "endDate": "2021-05-14"
+            }
+        ]
+    },
+    {
+        "start_date": "2021-01-25T00:00:00",
+        "end_date": "2021-05-15T00:00:00"
+    }
+]

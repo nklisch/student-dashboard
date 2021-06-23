@@ -1,5 +1,6 @@
 from ..database.models import Repos, Classes, Users, Teams, Sprints
-from ..schemas import ClassCreate, Class, Sprint
+from ..schemas.db_schemas import Class, Sprint
+from ..schemas.requests import ClassCreate
 from sqlalchemy.orm import Session
 from ..actions.actions import Action
 from typing import Tuple, List
