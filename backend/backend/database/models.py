@@ -45,11 +45,13 @@ class Pulls(SQLBase):
     __tablename__ = "Pulls"
     id = Column(Integer, autoincrement=False, primary_key=True)
     repoId = Column(Integer, ForeignKey("Repos.id"), primary_key=True)
+    additions = Column(Integer)
+    deletions = Column(Integer)
+    commits = Column(Integer)
+    changed_files = Column(Integer)
     merged_at = Column(DateTime)
     opened_by = Column(Integer, nullable=False)
-    assigned_to = Column(
-        Integer,
-    )
+    assigned_to = Column(Integer)
     sprintId = Column(Integer)
     semester = Column(String(10))
     __table_args__ = (

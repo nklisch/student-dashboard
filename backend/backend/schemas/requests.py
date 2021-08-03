@@ -4,7 +4,7 @@ from . import Semester
 
 
 class RequestConfig(BaseModel):
-    get_response_body: Optional[bool] = False
+    get_response_body: Optional[bool] = True
     limit: Optional[int] = 100
     skip: Optional[int] = 0
 

@@ -91,6 +91,12 @@ class Commit(BaseModel):
 class Pull(BaseModel):
     id: int
     repoId: int
+    additions: int
+    deletions: int
+    commits: int
+    changed_files: int
+    sprintId: int
+    semester: str = Semester
     sprint: Sprint
     merged_at: datetime
     opened_by: User

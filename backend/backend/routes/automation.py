@@ -27,8 +27,10 @@ def automatic_populate_repos(
     semester: str = Depends(get_semester),
     request_config: Optional[RequestConfig] = RequestConfig(),
 ):
-    response = AutomateRepos(db=db, semester=semester).populate()
-    if get_response:
+    response = AutomateRepos(
+        db=db, semester=semester, request_config=request_config
+    ).populate()
+    if request_config.get_response_body:
         return response
 
 
@@ -40,8 +42,10 @@ def automatic_populate_teams(
     semester: str = Depends(get_semester),
     request_config: Optional[RequestConfig] = RequestConfig(),
 ):
-    response = AutomateUserTeams(db=db, semester=semester).populate()[0]
-    if get_response:
+    response = AutomateUserTeams(
+        db=db, semester=semester, request_config=request_config
+    ).populate()[0]
+    if request_config.get_response_body:
         return response
 
 
@@ -58,9 +62,13 @@ def automatic_populate_commits(
 ):
     semester = determine_semester(start_date)
     response = AutomateCommits(
-        db=db, semester=semester, start_date=start_date, end_date=end_date
+        db=db,
+        semester=semester,
+        start_date=start_date,
+        end_date=end_date,
+        request_config=request_config,
     ).populate()
-    if get_response:
+    if request_config.get_response_body:
         return response
 
 
@@ -73,6 +81,8 @@ def automatic_populate_issues(
     since: datetime = datetime.now(),
     request_config: Optional[RequestConfig] = RequestConfig(),
 ):
-    response = AutomateIssues(db=db, semester=semester, since=since).populate()
-    if get_response:
+    response = AutomateIssues(
+        db=db, semester=semester, since=since, request_config=request_config
+    ).populate()
+    if request_config.get_response_body:
         return response

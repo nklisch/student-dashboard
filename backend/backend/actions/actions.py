@@ -11,22 +11,24 @@ SchemaType = TypeVar("SchemaType", bound=BaseModel)
 
 
 class Action:
-    def __init__(self, db: Session, model: ModelType, request_config: RequestConfig):
+    def __init__(
+        self, db: Session, model: ModelType, request_config: RequestConfig = None
+    ):
         self.model = model
         self.db = db
+        self.request_config = request_config
 
     def get_all(
         self,
         filter_by: dict = {},
         schema: SchemaType = None,
     ) -> Union[List[ModelType], List[SchemaType]]:
-        result = (
-            self.db.query(self.model)
-            .filter_by(**filter_by)
-            .offset(self.request_config.skip)
-            .limit(self.request_config.limit)
-            .all()
-        )
+        query = self.db.query(self.model).filter_by(**filter_by)
+        if self.request_config:
+            query = query.offset(self.request_config.skip).limit(
+                self.request_config.limit
+            )
+        result = query.all()
         if schema:
             return [schema.from_orm(m) for m in result]
         return result
