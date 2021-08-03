@@ -3,6 +3,12 @@ from sqlalchemy.orm import Session
 from datetime import date
 
 
+class Metrics(str, Enum):
+    Commits = "Commits"
+    Pulls = "Pulls"
+    Issues = "Issues"
+
+
 class Roles(str, Enum):
     SuperUser = "SuperUser"
     Instructor = "Instructor"
