@@ -15,5 +15,5 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-github = Github(settings.GITHUB_KEY)
+github = Github(settings.GITHUB_KEY, per_page=100)
 zh = Zenhub(settings.ZENHUB_KEY)
