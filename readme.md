@@ -14,3 +14,5 @@ https://github.com/oauthlib/oauthlib
 https://python-poetry.org/
 
 https://github.com/dbader/schedule
+
+https://github.com/coreui/coreui-free-react-admin-template#installation

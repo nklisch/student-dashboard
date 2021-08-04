@@ -5,42 +5,37 @@ from datetime import date
 from ..globals import Metrics
 
 
-class Average(BaseModel):
-    activity: Metrics
-    mean: float
-    median: float
-
-
 class Metric(BaseModel):
     activity: Metrics
-    date: date
-    number: int
+    score: int
+    target: int
 
 
-class UserIndex(BaseModel):
-    index: int
-    userId: int
-    name: Optional[str]
-    email: EmailStr
-    githubLogin: str
-
-
-class TeamIndex(BaseModel):
-    index: int
-    teamId: int
-    name: Optional[str]
+class InstructorMetric(Metric):
+    mean: float
+    median: float
+    min: float
+    max: float
 
 
 class BaseReport(BaseModel):
     sprint: Sprint
     semester: str = Semester
-    avgs: List[Metric]
-    data: List[List[Metric]]
 
 
-class StudentReport(BaseReport):
-    index: Union[UserIndex, TeamIndex]
+class StudentActivity(BaseModel):
+    issues: InstructorMetric
+    pulls: InstructorMetric
+    commits: InstructorMetric
+    active_days: InstructorMetric
 
 
-class InstructorReport(BaseReport):
-    indexes: Union[List[UserIndex], List[TeamIndex]]
+class StudentActivityReport(BaseReport):
+    issues: Metric
+    pulls: Metric
+    commits: Metric
+    active_days: Metric
+
+
+class InstructorActivityReport(BaseReport):
+    student_activities: List[StudentActivity]

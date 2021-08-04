@@ -7,6 +7,7 @@ class Metrics(str, Enum):
     Commits = "Commits"
     Pulls = "Pulls"
     Issues = "Issues"
+    ActiveDays = "ActiveDays"
 
 
 class Roles(str, Enum):
