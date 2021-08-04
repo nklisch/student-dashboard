@@ -50,6 +50,7 @@ class Pulls(SQLBase):
     commits = Column(Integer)
     changed_files = Column(Integer)
     merged_at = Column(DateTime)
+    merged_by = Column(Integer)
     opened_by = Column(Integer, nullable=False)
     assigned_to = Column(Integer)
     sprintId = Column(Integer)
@@ -156,6 +157,26 @@ class Issues(SQLBase):
         ),
     )
     repo = relationship("Repos", back_populates="issues")
+
+    def __repr__(self):
+        return toString(self)
+
+
+class Metrics(SQLBase):
+    __tablename__ = "Metrics"
+    userId = Column(Integer, autoincrement=False, primary_key=True)
+    sprintId = Column(Integer, autoincrement=False, primary_key=True)
+    semester = Column(String(10), primary_key=True)
+    commits = Column(Integer)
+    pulls = Column(Integer)
+    issues = Column(Integer)
+    activeDays = Column(Integer)
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["sprintId", "semester"], ["Sprints.id", "Sprints.semester"]
+        ),
+    )
 
     def __repr__(self):
         return toString(self)

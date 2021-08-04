@@ -1,6 +1,15 @@
 from .gitconnection import github, zh
-from ..database.models import Repos, Classes, Users, Teams, Commits, Sprints, Issues
-from ..schemas.db_schemas import Repo, Team, User, Commit, Issue
+from ..database.models import (
+    Repos,
+    Classes,
+    Users,
+    Teams,
+    Commits,
+    Sprints,
+    Issues,
+    Pulls,
+)
+from ..schemas.db_schemas import Repo, Team, User, Commit, Issue, Pull
 from sqlalchemy.orm import Session
 from ..globals import determine_semester, determine_sprint
 from fastapi import HTTPException, status
@@ -220,3 +229,40 @@ class AutomateIssues(Automate[Issues, Issue]):
                     )
                 )
         return [(issues, Issue, Issues)]
+
+
+class AutomatePulls(Automate[Pulls, Pull]):
+    def __init__(
+        self,
+        db: Session,
+        semester: str,
+        request_config: RequestConfig,
+    ):
+        super().__init__(db, semester, self.get_data, request_config)
+
+    def get_data(self) -> List[Tuple[List[Pulls], Type[Pull], Type[Pulls]]]:
+        pulls = []
+        for repo, _ in super().get_valid_team_repos():
+            for pull in repo.get_pulls(state="all"):
+                pulls.append(
+                    Pull(
+                        id=pull.id,
+                        repoId=repo.id,
+                        additions=pull.additions,
+                        deletions=pull.deletions,
+                        commits=pull.commits,
+                        changed_files=pull.changed_files,
+                        sprintId=determine_sprint(
+                            self.sprints,
+                            pull.merged_at.date()
+                            if pull.merged_at
+                            else pull.created_at.date(),
+                        ),
+                        semester=self.semester,
+                        merged_at=pull.merged_at,
+                        opened_by=pull.user.id,
+                        merged_by=pull.merged_by.id if pull.merged_by else None,
+                        assigned_to=pull.assignee.id if pull.assignee else None,
+                    )
+                )
+        return [(pulls, Pull, Pulls)]

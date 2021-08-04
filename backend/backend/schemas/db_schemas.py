@@ -97,10 +97,10 @@ class Pull(BaseModel):
     changed_files: int
     sprintId: int
     semester: str = Semester
-    sprint: Sprint
-    merged_at: datetime
-    opened_by: User
-    assigned_to: Optional[User]
+    merged_at: Optional[datetime]
+    opened_by: int
+    merged_by: Optional[int]
+    assigned_to: Optional[int]
 
     class Config:
         orm_mode = True

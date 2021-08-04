@@ -1,12 +1,6 @@
 {
-    "include": [
-        "./src/**/*"
-    ],
-    "compilerOptions": {
-        "module": "es2015",
-        "moduleResolution": "node",
-        "target": "es6",
-        "sourceMap": true,
-        "allowJs": true
-    }
+  "compilerOptions": {
+    "baseUrl": "."
+  },
+  "include": ["src"]
 }
