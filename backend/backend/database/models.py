@@ -159,3 +159,23 @@ class Issues(SQLBase):
 
     def __repr__(self):
         return toString(self)
+
+
+class Metrics(SQLBase):
+    __tableName__ = "Activity"
+    userId = Column(Integer, autoincrement=False, primary_key=True)
+    sprintId = Column(Integer, autoincrement=False, primary_key=True)
+    semester = Column(String(10), primary_key=True)
+    commits = Column(Integer)
+    pulls = Column(Integer)
+    issues = Column(Integer)
+    activeDays = Column(Integer)
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["sprintId", "semester"], ["Sprints.id", "Sprints.semester"]
+        ),
+    )
+
+    def __repr__(self):
+        return toString(self)

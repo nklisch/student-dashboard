@@ -13,47 +13,26 @@ from ..schemas.reports import (
     BaseReport,
 )
 
-# def get_user_commit_report():
+def get_user_commit_report():
 
 
-# def build_users_commit_reports(db: Session, semester: str, sprint: Sprint):
-#     f = {"semester": semester, "sprintId": sprint.id}
-#     users = User.from_orm(
-#         db.query(Users).filter_by(f.update({"role": "Student"})).all()
-#     )
-#     teams = Team.from_orm(db.query(Teams).filter_by(f)).all()
-#     metrics = []
-#     avgs = []
-#     usersIndexes = []
-#     studentIndex = None
-#     for index, user in enumerate(users):
-#         results = (
-#             db.query(Commits.date, functions.count(Commits.authorId))
-#             .filter_by(f.update({"authorId": user.id}))
-#             .group_by(Commit.authorId)
-#             .group_by(Commit.date)
-#             .all()
-#         )
-#         metrics.append(
-#             [
-#                 Metric(number=result[2], date=result[1], activity="Commits")
-#                 for result in results
-#             ]
-#         )
-#         usersIndexes.append(
-#             UserIndex(
-#                 index=index,
-#                 userId=user.id,
-#                 name=user.name,
-#                 email=user.email,
-#                 githubLogin=user.githubLogin,
-#             )
-#         )
-#         if user.id == autheticatedUser.id:
-#             studentIndex = usersIndexes[-1]
-#     return InstructorReport(
-#         indexes=usersIndexes,
-#         sprint=Sprint,
-#         semester=semester,
-#         data=metrics,
-#     )
+def build_student_activity_report(db: Session, semester: str, sprint: Sprint):
+    filter = {"semester": semester, "sprintId": sprint.id}
+    users = User.from_orm(
+        db.query(Users).filter_by(f.update({"role": "Student"})).all()
+    )
+    # need to filter by closed PRs here
+   filter.update({"authorId": user.id}
+    for user in users:
+        commits = db.query(Commits)
+            .filter_by()
+            .group_by(Commits.authorId)
+            .count()
+        pulls = 
+
+        issues =
+
+
+        
+    return 
+

@@ -5,13 +5,16 @@ from datetime import date
 from ..globals import Metrics
 
 
-class Metric(BaseModel):
+class BaseMetric(BaseModel):
     activity: Metrics
     score: int
+
+
+class StudentMetric(BaseMetric):
     target: int
 
 
-class InstructorMetric(Metric):
+class InstructorMetric(BaseMetric):
     mean: float
     median: float
     min: float
@@ -31,10 +34,10 @@ class StudentActivity(BaseModel):
 
 
 class StudentActivityReport(BaseReport):
-    issues: Metric
-    pulls: Metric
-    commits: Metric
-    active_days: Metric
+    issues: StudentMetric
+    pulls: StudentMetric
+    commits: StudentMetric
+    active_days: StudentMetric
 
 
 class InstructorActivityReport(BaseReport):
