@@ -50,6 +50,7 @@ class Pulls(SQLBase):
     commits = Column(Integer)
     changed_files = Column(Integer)
     merged_at = Column(DateTime)
+    merged_by = Column(Integer)
     opened_by = Column(Integer, nullable=False)
     assigned_to = Column(Integer)
     sprintId = Column(Integer)
@@ -162,7 +163,7 @@ class Issues(SQLBase):
 
 
 class Metrics(SQLBase):
-    __tableName__ = "Activity"
+    __tablename__ = "Metrics"
     userId = Column(Integer, autoincrement=False, primary_key=True)
     sprintId = Column(Integer, autoincrement=False, primary_key=True)
     semester = Column(String(10), primary_key=True)

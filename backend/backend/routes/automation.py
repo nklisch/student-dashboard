@@ -1,5 +1,5 @@
 from fastapi import APIRouter, status, Depends
-from ..schemas.db_schemas import Repo, Commit, Issue, Team
+from ..schemas.db_schemas import Repo, Commit, Issue, Team, Pull
 from ..schemas.requests import RequestConfig
 from ..schemas.requests import ClassCreate
 from typing import List, Optional
@@ -10,6 +10,7 @@ from ..processing.automation import (
     AutomateCommits,
     AutomateUserTeams,
     AutomateIssues,
+    AutomatePulls,
 )
 from datetime import datetime
 
@@ -83,6 +84,21 @@ def automatic_populate_issues(
 ):
     response = AutomateIssues(
         db=db, semester=semester, since=since, request_config=request_config
+    ).populate()
+    if request_config.get_response_body:
+        return response
+
+
+@router.post(
+    "/pulls", response_model=Optional[List[Pull]], status_code=status.HTTP_201_CREATED
+)
+def automatic_populate_issues(
+    db: Session = Depends(get_db),
+    semester: str = Depends(get_semester),
+    request_config: Optional[RequestConfig] = RequestConfig(),
+):
+    response = AutomatePulls(
+        db=db, semester=semester, request_config=request_config
     ).populate()
     if request_config.get_response_body:
         return response
