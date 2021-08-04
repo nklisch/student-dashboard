@@ -55,6 +55,7 @@ class Pulls(SQLBase):
     assigned_to = Column(Integer)
     sprintId = Column(Integer)
     semester = Column(String(10))
+    created_at = Column(DateTime)
     __table_args__ = (
         ForeignKeyConstraint(
             ["sprintId", "semester"], ["Sprints.id", "Sprints.semester"]
