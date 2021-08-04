@@ -95,10 +95,11 @@ def automatic_populate_issues(
 def automatic_populate_issues(
     db: Session = Depends(get_db),
     semester: str = Depends(get_semester),
+    since: datetime = datetime.now(),
     request_config: Optional[RequestConfig] = RequestConfig(),
 ):
     response = AutomatePulls(
-        db=db, semester=semester, request_config=request_config
+        db=db, semester=semester, since=since, request_config=request_config
     ).populate()
     if request_config.get_response_body:
         return response

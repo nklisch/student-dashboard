@@ -236,33 +236,39 @@ class AutomatePulls(Automate[Pulls, Pull]):
         self,
         db: Session,
         semester: str,
+        since: datetime,
         request_config: RequestConfig,
     ):
         super().__init__(db, semester, self.get_data, request_config)
+        self.since = since
 
     def get_data(self) -> List[Tuple[List[Pulls], Type[Pull], Type[Pulls]]]:
         pulls = []
         for repo, _ in super().get_valid_team_repos():
-            for pull in repo.get_pulls(state="all"):
-                pulls.append(
-                    Pull(
-                        id=pull.id,
-                        repoId=repo.id,
-                        additions=pull.additions,
-                        deletions=pull.deletions,
-                        commits=pull.commits,
-                        changed_files=pull.changed_files,
-                        sprintId=determine_sprint(
-                            self.sprints,
-                            pull.merged_at.date()
-                            if pull.merged_at
-                            else pull.created_at.date(),
-                        ),
-                        semester=self.semester,
-                        merged_at=pull.merged_at,
-                        opened_by=pull.user.id,
-                        merged_by=pull.merged_by.id if pull.merged_by else None,
-                        assigned_to=pull.assignee.id if pull.assignee else None,
+            for pull in repo.get_pulls(state="all", direction="desc"):
+                if self.since < pull.created_at:
+                    pulls.append(
+                        Pull(
+                            id=pull.id,
+                            repoId=repo.id,
+                            additions=pull.additions,
+                            deletions=pull.deletions,
+                            commits=pull.commits,
+                            changed_files=pull.changed_files,
+                            sprintId=determine_sprint(
+                                self.sprints,
+                                pull.merged_at.date()
+                                if pull.merged_at
+                                else pull.created_at.date(),
+                            ),
+                            semester=self.semester,
+                            merged_at=pull.merged_at,
+                            opened_by=pull.user.id,
+                            created_at=pull.created_at.date(),
+                            merged_by=pull.merged_by.id if pull.merged_by else None,
+                            assigned_to=pull.assignee.id if pull.assignee else None,
+                        )
                     )
-                )
+                else:
+                    break
         return [(pulls, Pull, Pulls)]

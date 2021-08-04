@@ -99,6 +99,7 @@ class Pull(BaseModel):
     semester: str = Semester
     merged_at: Optional[datetime]
     opened_by: int
+    created_at: datetime
     merged_by: Optional[int]
     assigned_to: Optional[int]
 
