@@ -43,6 +43,12 @@ class Action:
             return schema.from_orm(result)
         return result
 
+    def count(
+        self,
+        filter_by: dict = {},
+    ) -> Union[ModelType, SchemaType]:
+        return self.db.query(self.model).filter_by(**filter_by).count()
+
     # CREATES
     def create(data: Union[dict, SchemaType]) -> ModelType:
         db = self.db

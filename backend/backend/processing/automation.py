@@ -264,7 +264,7 @@ class AutomatePulls(Automate[Pulls, Pull]):
                             semester=self.semester,
                             merged_at=pull.merged_at,
                             opened_by=pull.user.id,
-                            created_at=pull.created_at.date(),
+                            created_at=pull.created_at,
                             merged_by=pull.merged_by.id if pull.merged_by else None,
                             assigned_to=pull.assignee.id if pull.assignee else None,
                         )

@@ -46,8 +46,8 @@ class Class(BaseModel):
 class Sprint(BaseModel):
     id: int
     semester: str = Semester
-    startDate: date
-    endDate: date
+    startDate: Optional[date]
+    endDate: Optional[date]
 
     class Config:
         orm_mode = True
@@ -117,6 +117,20 @@ class Repo(BaseModel):
     issues: Optional[List[Issue]]
     commits: Optional[List[Commit]]
     pulls: Optional[List[Pull]]
+
+    class Config:
+        orm_mode = True
+
+
+class Metric(BaseModel):
+
+    userId: int
+    sprintId: int
+    semester: str = Semester
+    commits: int
+    pulls: int
+    issues: int
+    activeDays: int
 
     class Config:
         orm_mode = True
