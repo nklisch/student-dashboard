@@ -33,10 +33,7 @@ const AppSidebar = () => {
         dispatch({ type: 'set', sidebarShow: false })
       }}
     >
-      <CSidebarBrand className="d-none d-md-flex" to="/">
-        <CIcon className="sidebar-brand-full" name="logo-negative" height={35} />
-        <CIcon className="sidebar-brand-narrow" name="sygnet" height={35} />
-      </CSidebarBrand>
+      <CSidebarBrand className="d-none d-md-flex" to="/"></CSidebarBrand>
       <CSidebarNav>
         <SimpleBar>
           <CCreateNavItem items={navigation} />
