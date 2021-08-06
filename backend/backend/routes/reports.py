@@ -14,12 +14,17 @@ router = APIRouter(
 )
 
 
-@router.post(
+@router.get(
     "/student_activity",
     response_model=StudentActivityReport,
     status_code=status.HTTP_200_OK,
 )
 def automatic_populate_repos(
-    user: User, db: Session = Depends(get_db), sprint: Sprint = Depends(get_sprint)
+    userId: int,
+    sprintId: int,
+    semester: str = Depends(get_semester),
+    db: Session = Depends(get_db),
 ):
-    return get_student_activity_report(db=db, sprint=sprint, user=user)
+    return get_student_activity_report(
+        db=db, sprintId=sprintId, semester=semester, userId=userId
+    )

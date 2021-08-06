@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from ..schemas.db_schemas import Sprint
-from ..database.models import Commits, Users, Metrics
+from ..database.models import Commits, Users, Metrics, Sprints
 from ..schemas.reports import StudentActivityReport, StudentMetric
 from ..schemas.db_schemas import User, Team, Commit, Metric
 from sqlalchemy.sql import functions
@@ -9,20 +9,20 @@ import pandas as pd
 from scipy import stats
 
 
-def get_student_activity_report(db: Session, sprint: Sprint, user: User):
+def get_student_activity_report(db: Session, sprintId: int, semester: str, userId: int):
     metrics = pd.DataFrame(
         [
             Metric.from_orm(row).dict()
             for row in Action(db=db, model=Metrics).get_all(
-                filter_by={"semester": sprint.semester, "sprintId": sprint.id}
+                filter_by={"semester": semester, "sprintId": sprintId}
             )
         ]
     )
     score = Action(db=db, model=Metrics).get(
         filter_by={
-            "semester": sprint.semester,
-            "sprintId": sprint.id,
-            "userId": user.id,
+            "semester": semester,
+            "sprintId": sprintId,
+            "userId": userId,
         }
     )
 
@@ -45,6 +45,10 @@ def get_student_activity_report(db: Session, sprint: Sprint, user: User):
         activity="ActiveDays",
         score=score.activeDays,
         target=round(stats.trim_mean(metrics["activeDays"], proportiontocut=0.25)),
+    )
+    user = Action(db=db, model=Users).get(filter_by={"id": userId}, schema=User)
+    sprint = Action(db=db, model=Sprints).get(
+        filter_by={"id": sprintId, "semester": semester}, schema=Sprint
     )
     return StudentActivityReport(
         user=user,
