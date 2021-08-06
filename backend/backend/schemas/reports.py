@@ -1,8 +1,8 @@
 from pydantic import BaseModel, EmailStr
-from .db_schemas import Sprint
-from .db_schemas import Semester
+from .db_schemas import Sprint, User
 from datetime import date
 from ..globals import Metrics
+from typing import List
 
 
 class BaseMetric(BaseModel):
@@ -23,7 +23,7 @@ class InstructorMetric(BaseMetric):
 
 class BaseReport(BaseModel):
     sprint: Sprint
-    semester: str = Semester
+    user: User
 
 
 class StudentActivity(BaseModel):

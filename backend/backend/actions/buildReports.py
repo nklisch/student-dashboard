@@ -1,38 +1,56 @@
 from sqlalchemy.orm import Session
 from ..schemas.db_schemas import Sprint
-from ..database.models import Commits, Users
-from ..schemas.db_schemas import User, Team, Commit
+from ..database.models import Commits, Users, Metrics
+from ..schemas.reports import StudentActivityReport, StudentMetric
+from ..schemas.db_schemas import User, Team, Commit, Metric
 from sqlalchemy.sql import functions
-from ..schemas.reports import (
-    Average,
-    Metric,
-    UserIndex,
-    TeamIndex,
-    StudentReport,
-    InstructorReport,
-    BaseReport,
-)
-
-def get_user_commit_report():
+from ..actions.actions import Action
+import pandas as pd
+from scipy import stats
 
 
-def build_student_activity_report(db: Session, semester: str, sprint: Sprint):
-    filter = {"semester": semester, "sprintId": sprint.id}
-    users = User.from_orm(
-        db.query(Users).filter_by(f.update({"role": "Student"})).all()
+def get_student_activity_report(db: Session, sprint: Sprint, user: User):
+    metrics = pd.DataFrame(
+        [
+            Metric.from_orm(row).dict()
+            for row in Action(db=db, model=Metrics).get_all(
+                filter_by={"semester": sprint.semester, "sprintId": sprint.id}
+            )
+        ]
     )
-    # need to filter by closed PRs here
-   filter.update({"authorId": user.id}
-    for user in users:
-        commits = db.query(Commits)
-            .filter_by()
-            .group_by(Commits.authorId)
-            .count()
-        pulls = 
+    score = Action(db=db, model=Metrics).get(
+        filter_by={
+            "semester": sprint.semester,
+            "sprintId": sprint.id,
+            "userId": user.id,
+        }
+    )
 
-        issues =
-
-
-        
-    return 
-
+    issues = StudentMetric(
+        activity="Issues",
+        score=score.issues,
+        target=round(stats.trim_mean(metrics["issues"], proportiontocut=0.25)),
+    )
+    pulls = StudentMetric(
+        activity="Pulls",
+        score=score.pulls,
+        target=round(stats.trim_mean(metrics["pulls"], proportiontocut=0.25)),
+    )
+    commits = StudentMetric(
+        activity="Commits",
+        score=score.commits,
+        target=round(stats.trim_mean(metrics["commits"], proportiontocut=0.25)),
+    )
+    active_days = StudentMetric(
+        activity="ActiveDays",
+        score=score.activeDays,
+        target=round(stats.trim_mean(metrics["activeDays"], proportiontocut=0.25)),
+    )
+    return StudentActivityReport(
+        user=user,
+        issues=issues,
+        pulls=pulls,
+        commits=commits,
+        active_days=active_days,
+        sprint=sprint,
+    )

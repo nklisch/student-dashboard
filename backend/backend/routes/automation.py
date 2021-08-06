@@ -1,10 +1,11 @@
 from fastapi import APIRouter, status, Depends
-from ..schemas.db_schemas import Repo, Commit, Issue, Team, Pull
+from ..schemas.db_schemas import Repo, Commit, Issue, Team, Pull, Metric, Sprint
 from ..schemas.requests import RequestConfig
 from ..schemas.requests import ClassCreate
 from typing import List, Optional
-from ..dependencies import get_semester, get_db
+from ..dependencies import get_semester, get_db, get_sprint
 from sqlalchemy.orm import Session
+
 from ..processing.automation import (
     AutomateRepos,
     AutomateCommits,
@@ -12,6 +13,7 @@ from ..processing.automation import (
     AutomateIssues,
     AutomatePulls,
 )
+from ..processing.metrics import calculate_metrics
 from datetime import datetime
 
 router = APIRouter(
@@ -103,3 +105,10 @@ def automatic_populate_issues(
     ).populate()
     if request_config.get_response_body:
         return response
+
+
+@router.post("/metrics", status_code=status.HTTP_201_CREATED)
+def automatic_calculate_metrics(
+    db: Session = Depends(get_db), sprint: Sprint = Depends(get_sprint)
+):
+    calculate_metrics(db=db, semester=sprint.semester, sprintId=sprint.id)
