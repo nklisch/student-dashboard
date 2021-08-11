@@ -5,6 +5,7 @@ from ..schemas.requests import ClassCreate
 from typing import List, Optional
 from ..dependencies import get_semester, get_db, get_sprint
 from sqlalchemy.orm import Session
+from ..globals import determine_semester
 
 from ..processing.automation import (
     AutomateRepos,
