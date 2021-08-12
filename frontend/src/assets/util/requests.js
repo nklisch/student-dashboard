@@ -40,38 +40,14 @@ export function addQueryParameters(parameters) {
   return url.slice(0, url.length - 1)
 }
 
-export class Authentication {
-  static #authenticated = false
-
-  static async authenticate() {
-    try {
-      const response = await get('AUTH')
-      if (response) {
-        Authentication.#authenticated = response.authenticated
-      }
-    } catch (e) {
-      LOG.error(`${e}`)
-      Authentication.#authenticated = false
+export async function authenticate() {
+  try {
+    const response = await get('AUTH')
+    if (response) {
+      return response
     }
+  } catch (e) {
+    LOG.error(`${e}`)
   }
-
-  static async updateAuthentication(code) {
-    try {
-      const response = await post('UPDATE_AUTH', { code })
-      if (response) {
-        Authentication.#authenticated = response.authenticated
-      }
-    } catch (e) {
-      LOG.error(`${e}`)
-      Authentication.#authenticated = false
-    }
-  }
-
-  static isAuthenticated() {
-    return Authentication.#authenticated
-  }
-
-  static logout() {
-    Authentication.#authenticated = false
-  }
+  return false
 }
