@@ -7,7 +7,7 @@ export const API_PATHS = {
   AUTH: 'authenticate/user',
   UPDATE_AUTH: 'authenticate/update',
 }
-export const LOGIN_PATH = 'login'
+export const LOGIN_PATH = '/login'
 
 export const GITHUB_APP_CLIENTID = '4e07e39677124ccd6c0c'
 

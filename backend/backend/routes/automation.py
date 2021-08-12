@@ -3,7 +3,7 @@ from ..schemas.db_schemas import Repo, Commit, Issue, Team, Pull, Metric, Sprint
 from ..schemas.requests import RequestConfig
 from ..schemas.requests import ClassCreate
 from typing import List, Optional
-from ..dependencies import get_semester, get_sprint, verify_user
+from ..dependencies import get_semester, get_sprint, verify_user, VerifyRole
 from sqlalchemy.orm import Session
 from ..globals import determine_semester
 
@@ -17,36 +17,12 @@ from ..processing.automation import (
 from ..processing.metrics import calculate_metrics
 from datetime import datetime
 
+requires_TeachingAssistant = VerifyRole("TeachingAssistant")
 router = APIRouter(
-    prefix="/automation", tags=["automation"], dependencies=[Depends(verify_user)]
+    prefix="/automation",
+    tags=["automation"],
+    dependencies=[Depends(requires_TeachingAssistant)],
 )
-
-
-@router.post(
-    "/repos", response_model=Optional[List[Repo]], status_code=status.HTTP_201_CREATED
-)
-def automatic_populate_repos(
-    semester: str = Depends(get_semester),
-    request_config: Optional[RequestConfig] = RequestConfig(),
-):
-    response = AutomateRepos(emester=semester, request_config=request_config).populate()
-
-    if request_config.get_response_body:
-        return response
-
-
-@router.post(
-    "/teams", response_model=Optional[List[Team]], status_code=status.HTTP_201_CREATED
-)
-def automatic_populate_teams(
-    semester: str = Depends(get_semester),
-    request_config: Optional[RequestConfig] = RequestConfig(),
-):
-    response = AutomateUserTeams(
-        semester=semester, request_config=request_config
-    ).populate()[0]
-    if request_config.get_response_body:
-        return response
 
 
 @router.post(

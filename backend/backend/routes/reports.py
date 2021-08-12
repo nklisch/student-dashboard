@@ -2,7 +2,7 @@ from fastapi import APIRouter, status, Depends
 from ..schemas.requests import RequestConfig
 from ..schemas.requests import ClassCreate
 from typing import List, Optional
-from ..dependencies import get_semester, get_sprint, verify_user
+from ..dependencies import get_semester, get_sprint, verify_user, VerifyRole
 from sqlalchemy.orm import Session
 from ..schemas.reports import StudentActivityReport
 from ..actions.buildReports import get_student_activity_report
@@ -14,7 +14,7 @@ router = APIRouter(
 
 
 @router.get(
-    "/student_activity",
+    "/student_activity/{userId}",
     response_model=StudentActivityReport,
     status_code=status.HTTP_200_OK,
 )

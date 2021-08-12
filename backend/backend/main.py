@@ -1,4 +1,5 @@
 from fastapi import Depends, FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from .routes import automation, setup, reports, authentication
 from .database import SQLBase, engine
 from .actions.actions import Action
@@ -20,6 +21,15 @@ app.include_router(authentication.router)
 @app.get("/")
 def root():
     return {"hello": "world"}
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origin_regex="http://localhost.*",
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.middleware("http")

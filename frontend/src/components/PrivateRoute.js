@@ -13,7 +13,7 @@ export default function PrivateRoute({ children, ...props }) {
           <Redirect
             to={{
               pathname: LOGIN_PATH,
-              state: { from: location ? location : '/' },
+              state: { from: location ? location && location !== LOGIN_PATH : '/' },
             }}
           />
         )
