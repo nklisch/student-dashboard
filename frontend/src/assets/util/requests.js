@@ -1,7 +1,5 @@
 import { API_PATHS, ROOT_URL, LOG } from '../globals'
 
-export const authorization = Authentication()
-
 export async function get(api, queryParameters = {}) {
   const url = ROOT_URL + API_PATHS[api] + addQueryParameters(queryParameters)
 
@@ -34,45 +32,46 @@ export async function post(api, queryParameters = {}, body = {}) {
   return response.json() || response.ok
 }
 
-function addQueryParameters(parameters) {
-  const url = '?'
-  for (const [parameter, value] in Object.entries(parameters)) {
+export function addQueryParameters(parameters) {
+  let url = '?'
+  for (const [parameter, value] of Object.entries(parameters)) {
     url += `${parameter}=${value}&`
   }
   return url.slice(0, url.length - 1)
 }
 
-class Authentication {
-  constructor() {
-    this.#authenticated = false
-  }
-  async authenticate() {
+export class Authentication {
+  static #authenticated = false
+
+  static async authenticate() {
     try {
       const response = await get('AUTH')
       if (response) {
-        this.#authenticated = response.authenticated
+        Authentication.#authenticated = response.authenticated
       }
     } catch (e) {
-      this.#authenticated = false
+      LOG.error(`${e}`)
+      Authentication.#authenticated = false
     }
   }
 
-  async createAuthentication(github_code) {
+  static async updateAuthentication(code) {
     try {
-      const response = await post('CREATE_AUTH', { github_code })
+      const response = await post('UPDATE_AUTH', { code })
       if (response) {
-        this.#authenticate = true
+        Authentication.#authenticated = response.authenticated
       }
     } catch (e) {
-      this.#authenticate = false
+      LOG.error(`${e}`)
+      Authentication.#authenticated = false
     }
   }
 
-  isAuthenticated() {
-    return this.#authenticate
+  static isAuthenticated() {
+    return Authentication.#authenticated
   }
 
-  logout() {
-    this.#authenticated = false
+  static logout() {
+    Authentication.#authenticated = false
   }
 }

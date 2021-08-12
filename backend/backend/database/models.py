@@ -18,6 +18,8 @@ from .db import toString, SQLBase
 from ..globals import Roles
 from .config import settings
 from sqlalchemy.orm import relationship
+import datetime
+from sqlalchemy.sql import func
 
 
 class Commits(SQLBase):
@@ -86,9 +88,6 @@ class Users(SQLBase):
     githubLogin = Column(String(250), nullable=False)
     email = Column(String(100))
     name = Column(String(250))
-    oauth = Column(
-        StringEncryptedType(String, settings.DB_ENCRYPT_KEY, AesGcmEngine, "pkcs7")
-    )
     role = Column(Enum(Roles))
     active = Column(Boolean)
     team = relationship("Teams", back_populates="members")
@@ -98,6 +97,30 @@ class Users(SQLBase):
 
     def __repr__(self):
         return toString(self)
+
+
+class Authentications(SQLBase):
+    __tablename__ = "Authentication"
+    userId = Column(
+        Integer, ForeignKey("Users.id"), autoincrement=False, primary_key=True
+    )
+    token = Column(
+        StringEncryptedType(String, settings.DB_ENCRYPT_KEY, AesGcmEngine, "pkcs7")
+    )
+    created = Column(DateTime, server_default=func.now())
+    updated = Column(DateTime, server_default=func.now())
+    valid = Column(Boolean)
+
+
+class Audits(SQLBase):
+    __tablename__ = "Audit"
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    userId = Column(Integer)
+    request = Column(String(50))
+    date = Column(DateTime, server_default=func.now())
+    success = Column(Boolean)
+    message = Column(String)
+    ip = Column(String(25))
 
 
 class Teams(SQLBase):

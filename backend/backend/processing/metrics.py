@@ -7,25 +7,17 @@ from datetime import date
 from ..actions.actions import Action
 
 
-def calculate_metrics(db: Session, semester: str, sprintId: int):
+def calculate_metrics(semester: str, sprintId: int):
     f = {"semester": semester}
-    users = Action(db=db, model=Users).get_all(
-        filter_by={"role": "Student", **f}, schema=User
-    )
+    users = Action(model=Users).get_all(filter_by={"role": "Student", **f}, schema=User)
     metrics = []
     f["sprintId"] = sprintId
     for user in users:
-        commits = Action(db=db, model=Commits).get_all(
-            filter_by={"authorId": user.id, **f}
-        )
+        commits = Action(model=Commits).get_all(filter_by={"authorId": user.id, **f})
         commit_count = len(commits)
-        pulls = Action(db=db, model=Pulls).get_all(
-            filter_by={"opened_by": user.id, **f}
-        )
+        pulls = Action(model=Pulls).get_all(filter_by={"opened_by": user.id, **f})
         pulls_count = len(pulls)
-        issues = Action(db=db, model=Issues).get_all(
-            filter_by={"createdBy": user.id, **f}
-        )
+        issues = Action(model=Issues).get_all(filter_by={"createdBy": user.id, **f})
         issues_count = len(issues)
         active_days = determine_active_days(commits, pulls, issues)
         metrics.append(
@@ -39,7 +31,7 @@ def calculate_metrics(db: Session, semester: str, sprintId: int):
                 semester=semester,
             )
         )
-    Action(db=db, model=Metrics).create_or_update_all(metrics)
+    Action(model=Metrics).create_or_update_all(metrics)
 
 
 def determine_active_days(
