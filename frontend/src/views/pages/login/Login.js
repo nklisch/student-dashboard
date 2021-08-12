@@ -9,7 +9,7 @@ const Login = (props) => {
     GITHUB_AUTH_URL +
     addQueryParameters({
       client_id: GITHUB_APP_CLIENTID,
-      scope: 'read:user user:email',
+      scope: 'user',
     })
   const { state } = useLocation()
 
