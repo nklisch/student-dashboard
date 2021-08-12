@@ -23,6 +23,11 @@ def determine_semester(d):
         semester += "spring"
     elif 9 <= d.month <= 12:
         semester += "fall"
+    elif d.month == 8:
+        if d.day >= 15:
+            semester += "fall"
+        else:
+            semester += "summer"
     else:
         semester += "summer"
     return semester + d.strftime("%Y")
