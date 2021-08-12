@@ -1,9 +1,12 @@
 import React, { Suspense } from 'react'
-import { Redirect, Route, Switch } from 'react-router-dom'
+import { Redirect, Switch, Route } from 'react-router-dom'
 import { CContainer, CSpinner } from '@coreui/react'
 
 // routes config
 import routes from '../routes'
+import PrivateRoute from './PrivateRoute'
+import Login from 'src/views/pages/login/Login'
+import { LOGIN_PATH } from 'src/assets/globals'
 
 const AppContent = (props) => {
   return (
@@ -13,7 +16,8 @@ const AppContent = (props) => {
           {routes.map((route, idx) => {
             return (
               route.component && (
-                <Route
+                <PrivateRoute
+                  {...props}
                   key={idx}
                   path={route.path}
                   exact={route.exact}
@@ -23,6 +27,13 @@ const AppContent = (props) => {
               )
             )
           })}
+          <Route
+            {...props}
+            path={LOGIN_PATH}
+            exact
+            name={'Login'}
+            render={() => <Login {...props} />}
+          />
           <Redirect from="/" to="/dashboard" />
         </Switch>
       </Suspense>
