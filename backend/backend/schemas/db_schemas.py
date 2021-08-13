@@ -7,6 +7,28 @@ from typing import List, Optional
 from ..globals import Roles
 
 
+class AuditCreate(BaseModel):
+    ip: str
+    userId: Optional[int]
+    request: Optional[str]
+    success: Optional[bool]
+    message: Optional[str]
+
+    class Config:
+        orm_mode = True
+
+
+class Authentication(BaseModel):
+    userId: int
+    token: str
+    created: Optional[datetime]
+    updated: Optional[datetime]
+    valid: bool
+
+    class Config:
+        orm_mode = True
+
+
 class User(BaseModel):
     id: int
     githubLogin: str

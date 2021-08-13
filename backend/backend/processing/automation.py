@@ -29,15 +29,13 @@ SchemaType = TypeVar("SchemaType", bound=BaseModel)
 class Automate(Generic[ModelType, SchemaType]):
     def __init__(
         self,
-        db: Session,
         semester: str,
         get_data: Callable,
         request_config: RequestConfig,
     ):
-        self.db = db
         self.semester = semester
         self.semester_setup = self.__check_semester_setup()
-        self.sprints = Action(db, Sprints).get_all(filter_by={"semester": semester})
+        self.sprints = Action(Sprints).get_all(filter_by={"semester": semester})
         self.get_data = get_data
         self.request_config = request_config
 
@@ -64,7 +62,6 @@ class Automate(Generic[ModelType, SchemaType]):
         return [
             (
                 Action(
-                    self.db,
                     model=model,
                     request_config=self.request_config,
                 ).create_or_update_all(data),
@@ -86,9 +83,7 @@ class Automate(Generic[ModelType, SchemaType]):
                     yield repo, teamNumber
 
     def __check_semester_setup(self) -> Classes:
-        result = Action(self.db, model=Classes).get(
-            filter_by={"semester": self.semester}
-        )
+        result = Action(model=Classes).get(filter_by={"semester": self.semester})
         if not result:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -101,8 +96,8 @@ class Automate(Generic[ModelType, SchemaType]):
 
 
 class AutomateRepos(Automate[Repos, Repo]):
-    def __init__(self, db: Session, semester: str, request_config: RequestConfig):
-        super().__init__(db, semester, self.get_data, request_config)
+    def __init__(self, semester: str, request_config: RequestConfig):
+        super().__init__(semester, self.get_data, request_config)
 
     def get_data(self) -> List[Tuple[List[Repo], Type[Repo], Type[Repos]]]:
         repos = [
@@ -118,8 +113,8 @@ class AutomateRepos(Automate[Repos, Repo]):
 
 
 class AutomateUserTeams(Automate[ModelType, SchemaType]):
-    def __init__(self, db: Session, semester: str, request_config: RequestConfig):
-        super().__init__(db, semester, self.get_data, request_config)
+    def __init__(self, semester: str, request_config: RequestConfig):
+        super().__init__(semester, self.get_data, request_config)
 
     def get_data(
         self,
@@ -161,13 +156,12 @@ class AutomateUserTeams(Automate[ModelType, SchemaType]):
 class AutomateCommits(Automate[Commits, Commit]):
     def __init__(
         self,
-        db: Session,
         semester: str,
         start_date: datetime,
         end_date: datetime,
         request_config: RequestConfig,
     ):
-        super().__init__(db, semester, self.get_data, request_config)
+        super().__init__(semester, self.get_data, request_config)
         self.start_date = start_date
         self.end_date = end_date
 
@@ -194,12 +188,11 @@ class AutomateCommits(Automate[Commits, Commit]):
 class AutomateIssues(Automate[Issues, Issue]):
     def __init__(
         self,
-        db: Session,
         semester: str,
         since: datetime,
         request_config: RequestConfig,
     ):
-        super().__init__(db, semester, self.get_data, request_config)
+        super().__init__(semester, self.get_data, request_config)
         self.since = since
 
     def get_data(self) -> List[Tuple[List[Issues], Type[Issue], Type[Issues]]]:
@@ -237,12 +230,11 @@ class AutomateIssues(Automate[Issues, Issue]):
 class AutomatePulls(Automate[Pulls, Pull]):
     def __init__(
         self,
-        db: Session,
         semester: str,
         since: datetime,
         request_config: RequestConfig,
     ):
-        super().__init__(db, semester, self.get_data, request_config)
+        super().__init__(semester, self.get_data, request_config)
         self.since = since
 
     def get_data(self) -> List[Tuple[List[Pulls], Type[Pull], Type[Pulls]]]:

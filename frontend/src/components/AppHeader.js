@@ -17,7 +17,7 @@ import { AppBreadcrumb } from './index'
 
 import { AppHeaderDropdown } from './header/index'
 
-const AppHeader = () => {
+const AppHeader = (props) => {
   const dispatch = useDispatch()
   const sidebarShow = useSelector((state) => state.sidebarShow)
 
@@ -64,7 +64,7 @@ const AppHeader = () => {
           </CNavItem>
         </CHeaderNav> */}
         <CHeaderNav className="ms-3">
-          <AppHeaderDropdown />
+          <AppHeaderDropdown {...props} />
         </CHeaderNav>
       </CContainer>
       <CHeaderDivider />
