@@ -16,7 +16,11 @@ export function useAuthentication() {
     login()
   }, [])
 
-  const logout = () => {}
+  const logout = () => {
+    document.cookie = 'token= ; expires = Thu, 01 Jan 1970 00:00:00 GMT'
+    document.cookie = 'userId= ; expires = Thu, 01 Jan 1970 00:00:00 GMT'
+    setAuthenticated()
+  }
 
   return [isAuthenticated, user, login, logout]
 }

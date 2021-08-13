@@ -25,26 +25,33 @@ def verify_user_on_github(code):
                 status_code=401, detail="Could not validate user with github"
             )
         github_token = response.json()["access_token"]
-        user = Github(login_or_token=github_token).get_user()
-        if user.total_private_repos == None:
-            raise HTTPException(
-                status_code=401, detail="Could not validate user with github"
-            )
+        gh = Github(login_or_token=github_token)
+        user = gh.get_user()
+        user_email = None
+        for email in user.get_emails():
+            if email.primary:
+                user_email = email
+                break
     except Exception as e:
         raise HTTPException(
             status_code=401, detail="Could not validate user with github"
         )
-    user_token = secrets.token_urlsafe(64)
-    Action(model=Users).create_or_update(
-        {
-            "id": user.id,
-            "githubLogin": user.login,
-            "email": user.email,
-            "name": user.name,
-            "active": True,
-        }
+    auth = Action(model=Authentications).get(
+        filter_by={"userId": user.id}, schema=Authentication
     )
-    Action(model=Authentications).create_or_update(
-        Authentication(userId=user.id, token=user_token, valid=True)
-    )
+    user_token = auth.token
+    if not auth.token or not auth.valid:
+        user_token = secrets.token_urlsafe(64)
+        Action(model=Users).create_or_update(
+            {
+                "id": user.id,
+                "githubLogin": user.login,
+                "email": user_email,
+                "name": user.name,
+                "active": True,
+            }
+        )
+        Action(model=Authentications).create_or_update(
+            Authentication(userId=user.id, token=user_token, valid=True)
+        )
     return user.id, user_token
