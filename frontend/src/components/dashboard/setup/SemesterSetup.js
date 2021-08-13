@@ -1,25 +1,19 @@
 import React, { useEffect, useState } from 'react'
-import {
-  CButton,
-  CCard,
-  CCardBody,
-  CCardHeader,
-  CCardTitle,
-  CCol,
-  CContainer,
-  CRow,
-} from '@coreui/react'
+import { CButton, CContainer, CFormControl } from '@coreui/react'
 import SprintsTable from './SprintsTable'
 import SprintModal from './SprintModal'
+import { dateDifference } from 'src/util/dates'
 
 const SemesterSetup = () => {
-  const [semesterCode, setSemesterCode] = useState('not set')
-  const [organization, setOrganization] = useState('not set')
+  const [semesterCode, setSemesterCode] = useState('')
+  const [organization, setOrganization] = useState('')
   const [sprints, setSprints] = useState([])
   const [modalOpen, setModalOpen] = useState(false)
   const [modalData, setModalData] = useState(null)
+  const [editOrganization, setEditOrganization] = useState(false)
 
   useEffect(() => {
+    // TODO: fetch sprint/ organization data from server
     const fetchResult = [
       { id: 1, semester: 'spring2021', startDate: '2021-01-25', endDate: '2021-02-14' },
       { id: 2, semester: 'spring2021', startDate: '2021-02-15', endDate: '2021-03-08' },
@@ -39,20 +33,21 @@ const SemesterSetup = () => {
     setModalOpen(true)
   }
 
-  const addSprint = (semester, start, end, replaceIndex) => {
-    if (sprints.some((sprint) => sprint.startDate === start)) {
+  const addSprint = (start, end, replaceIndex) => {
+    const editing = replaceIndex !== -1
+    /* if (!editing && sprints.some((sprint) => sprint.startDate === start)) {
       alert('Attempting to add duplicate start date.')
       return false
-    }
+    } */
 
-    const newSprint = { id: -1, semester: semester, startDate: start, endDate: end }
+    const newSprint = { id: -1, semester: semesterCode, startDate: start, endDate: end }
     const newSprints = [...sprints]
-    if (replaceIndex === -1) {
+    if (!editing) {
       newSprints.push(newSprint)
     } else {
       newSprints[replaceIndex] = newSprint
     }
-    newSprints.sort((s1, s2) => s1.startDate.localeCompare(s2.startDate))
+    newSprints.sort((s1, s2) => dateDifference(s1, s2))
     newSprints.forEach((sprint, index) => (sprint.id = index + 1))
     setSprints(newSprints)
     return true
@@ -73,55 +68,48 @@ const SemesterSetup = () => {
 
   return (
     <CContainer className="mb-4">
-      <h2>Class Setup</h2>
+      <h2 className="text-center">Class Configuration</h2>
 
-      <CRow className="mt-4 mb-4">
-        <CCol className="mb-4" sm={12} md={6}>
-          <CCard className="border-top-info border-top-3">
-            <CCardHeader>Semester Code</CCardHeader>
-            <CCardBody>
-              <CCardTitle>{semesterCode}</CCardTitle>
-              <CButton
-                className="mt-2"
-                color="info"
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  const result = window.prompt('Enter semester code (ex. spring2021)')
-                  if (result != null) setSemesterCode(result)
-                }}
-              >
-                Edit
-              </CButton>
-            </CCardBody>
-          </CCard>
-        </CCol>
-        <CCol sm={12} md={6}>
-          <CCard className="border-top-info border-top-3">
-            <CCardHeader>GitHub Organization</CCardHeader>
-            <CCardBody>
-              <CCardTitle>{organization}</CCardTitle>
-              <CButton
-                className="mt-2"
-                color="info"
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  const result = window.prompt('Enter GitHub organization (ex. csucs314s21)')
-                  if (result != null) setOrganization(result)
-                }}
-              >
-                Edit
-              </CButton>
-            </CCardBody>
-          </CCard>
-        </CCol>
-      </CRow>
+      <hr />
+      <h4 className="fw-bold mb-4">Base Requirements</h4>
+      <h5 className="mb-4">Semester Code: {semesterCode}</h5>
 
-      <h4>Sprints</h4>
+      <h5>GitHub Organization: {organization}</h5>
+      {editOrganization && (
+        <CFormControl
+          type="text"
+          placeholder="ex: csucs314s21"
+          value={organization}
+          onChange={(e) => setOrganization(e.target.value)}
+        />
+      )}
+      <CButton
+        className="mt-2 mb-2"
+        color="info"
+        variant="outline"
+        size="sm"
+        onClick={() => {
+          if (editOrganization && organization.length > 0) {
+            // TODO: save change to database?
+          }
+          setEditOrganization(!editOrganization)
+        }}
+      >
+        {!editOrganization ? 'Edit' : !organization ? 'Cancel' : 'Save'}
+      </CButton>
+
+      <hr />
+      <h4 className="fw-bold mb-3">Sprints</h4>
       <SprintsTable sprintData={sprints} openSprintModal={openSprintModal} />
       <div className="d-grid gap-2">
-        <CButton color="dark" size="sm" onClick={() => openSprintModal()}>
+        <CButton
+          color="dark"
+          size="sm"
+          onClick={() => {
+            if (semesterCode && organization) openSprintModal()
+            else alert('Provide a valid semester and organization before configuring sprints.')
+          }}
+        >
           Add Sprint
         </CButton>
       </div>
@@ -133,6 +121,7 @@ const SemesterSetup = () => {
         addSprint={addSprint}
         removeSprint={removeSprint}
         semesterCode={semesterCode}
+        sprints={sprints}
       />
     </CContainer>
   )
