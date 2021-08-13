@@ -23,8 +23,10 @@ const AppContent = (props) => {
                   exact={route.exact}
                   name={route.name}
                   required_role={route.required_role}
-                  render={() => <route.component {...props} />}
-                />
+                >
+                  {' '}
+                  <route.component {...props} />
+                </ProtectedRoute>
               )
             )
           })}

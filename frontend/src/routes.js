@@ -16,7 +16,7 @@ const routes = [
     required_role: 'Student',
   },
   { path: '/login', name: 'Login' },
-  { path: '/access_denied', name: 'Access Denied', component: AccessDenied },
+  { path: '/access_denied', name: 'Access Denied', component: AccessDenied, exact: true },
 ]
 
 export default routes

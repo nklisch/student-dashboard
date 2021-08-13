@@ -19,7 +19,7 @@ export default function ProtectedRoute({
           return <Redirect to={LOGIN_PATH} />
         }
         if (verify_role(required_role, user.role)) {
-          return [render(), children]
+          return children
         }
 
         return <Redirect to={ACCESS_DENIED} />
