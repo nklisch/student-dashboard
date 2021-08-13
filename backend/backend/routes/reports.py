@@ -5,7 +5,7 @@ from typing import List, Optional
 from ..dependencies import get_semester, get_sprint, verify_user, VerifyRole
 from sqlalchemy.orm import Session
 from ..schemas.reports import StudentActivityReport
-from ..actions.buildReports import get_student_activity_report
+from ..processing.reports import get_student_activity_report
 from ..schemas.db_schemas import Sprint, User
 
 router = APIRouter(
