@@ -30,7 +30,7 @@ def verify_user_on_github(code):
         user_email = None
         for email in user.get_emails():
             if email.primary:
-                user_email = email
+                user_email = email.email
                 break
     except Exception as e:
         raise HTTPException(
@@ -39,19 +39,23 @@ def verify_user_on_github(code):
     auth = Action(model=Authentications).get(
         filter_by={"userId": user.id}, schema=Authentication
     )
-    user_token = auth.token
-    if not auth.token or not auth.valid:
+    user_token = auth.token if auth else None
+    if not user_token or not auth.valid:
         user_token = secrets.token_urlsafe(64)
-        Action(model=Users).create_or_update(
-            {
-                "id": user.id,
-                "githubLogin": user.login,
-                "email": user_email,
-                "name": user.name,
-                "active": True,
-            }
-        )
-        Action(model=Authentications).create_or_update(
-            Authentication(userId=user.id, token=user_token, valid=True)
-        )
+        try:
+            Action(model=Users).create_or_update(
+                {
+                    "id": user.id,
+                    "email": user_email,
+                    "active": True,
+                    "avatarUrl": user.avatar_url,
+                }
+            )
+            Action(model=Authentications).create_or_update(
+                Authentication(userId=user.id, token=user_token, valid=True)
+            )
+        except Exception as e:
+            raise HTTPException(
+                status_code=400, detail=f"Could not add user to database: {e}"
+            )
     return user.id, user_token

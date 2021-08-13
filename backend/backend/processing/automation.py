@@ -143,6 +143,7 @@ class AutomateUserTeams(Automate[ModelType, SchemaType]):
                         semester=self.semester,
                         email=member.email,
                         active=False,
+                        avatarUrl=member.avatar_url,
                         role="Student"
                         if self.isStudent(member)
                         else "TeachingAssistant",

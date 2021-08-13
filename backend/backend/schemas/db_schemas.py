@@ -38,6 +38,7 @@ class User(BaseModel):
     name: Optional[str]
     role: Optional[Roles]
     active: Optional[bool]
+    avatarUrl: Optional[HttpUrl]
 
     class Config:
         orm_mode = True

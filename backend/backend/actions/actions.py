@@ -52,8 +52,7 @@ class Action:
         data_db = self.convert_data_to_model(data)
         db.add(data_db)
         db.commit()
-        db.refresh(data_db)
-        return self, data_db
+        return self
 
     def create_all(self, data: Union[dict, SchemaType]):
         db = Action.db
@@ -88,5 +87,4 @@ class Action:
         }
         return self.model(**d)
 
-
-# UPDATES
+    # UPDATE
