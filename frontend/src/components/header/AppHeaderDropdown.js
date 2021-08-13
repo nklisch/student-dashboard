@@ -2,7 +2,6 @@ import React from 'react'
 import {
   CAvatar,
   CDropdown,
-  CDropdownDivider,
   CDropdownHeader,
   CDropdownItem,
   CDropdownMenu,
