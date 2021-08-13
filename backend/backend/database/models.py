@@ -92,6 +92,7 @@ class Users(SQLBase):
     role = Column(Enum(Roles))
     active = Column(Boolean)
     team = relationship("Teams", back_populates="members")
+    avatarUrl = Column(String(150))
     __table_args__ = (
         ForeignKeyConstraint(["teamId", "semester"], ["Teams.id", "Teams.semester"]),
     )

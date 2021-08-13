@@ -147,8 +147,11 @@ class AutomateUserTeams(Automate[ModelType, SchemaType]):
                         teamId=teamNumber,
                         semester=self.semester,
                         email=member.email,
-                        active=True,
-                        role="Student" if self.isStudent(member) else None,
+                        active=False,
+                        avatarUrl=member.avatar_url,
+                        role="Student"
+                        if self.isStudent(member)
+                        else "TeachingAssistant",
                     )
 
     def isStudent(self, member):
