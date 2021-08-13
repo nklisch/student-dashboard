@@ -5,7 +5,7 @@ import { CCallout } from '@coreui/react'
 const MetricCallout = ({ label, value }) => {
   return (
     <CCallout color="dark" className="bg-white">
-      <small className="text-muted">{label}</small>
+      <small>{label}</small>
       <br />
       <strong className="h5">{value || '-'}</strong>
     </CCallout>
