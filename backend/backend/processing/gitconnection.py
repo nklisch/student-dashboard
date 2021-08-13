@@ -7,6 +7,8 @@ from zenhub import Zenhub
 class Settings(BaseSettings):
     GITHUB_KEY: str
     ZENHUB_KEY: str
+    GITHUB_CLIENT_ID: str
+    GITHUB_CLIENT_SECRET: str
 
     class Config:
         case_sensitive = True
