@@ -1,6 +1,6 @@
 from fastapi import APIRouter, status, Depends
 from typing import List, Optional
-from ..processing.setup import setup_semester
+from ..processing.config import setup_semester
 from ..schemas.db_schemas import Sprint, Repo, Team
 from ..schemas.requests import ClassCreate, RequestConfig
 from sqlalchemy.orm import Session
@@ -9,7 +9,7 @@ from ..dependencies import verify_user, VerifyRole, get_semester
 
 requires_TeachingAssistant = VerifyRole("TeachingAssistant")
 router = APIRouter(
-    prefix="/setup", tags=["setup"], dependencies=[Depends(requires_TeachingAssistant)]
+    prefix="/config", tags=["setup"], dependencies=[Depends(requires_TeachingAssistant)]
 )
 
 

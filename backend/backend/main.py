@@ -1,6 +1,6 @@
 from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from .routes import automation, setup, reports, authentication
+from .routes import automation, config, reports, authentication
 from .database import SQLBase, engine
 from .actions.actions import Action
 from .database.models import Audits
@@ -13,7 +13,7 @@ app = FastAPI()
 
 SQLBase.metadata.create_all(bind=engine)
 app.include_router(automation.router)
-app.include_router(setup.router)
+app.include_router(config.router)
 app.include_router(reports.router)
 app.include_router(authentication.router)
 

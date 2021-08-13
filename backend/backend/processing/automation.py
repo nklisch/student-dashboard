@@ -143,7 +143,9 @@ class AutomateUserTeams(Automate[ModelType, SchemaType]):
                         semester=self.semester,
                         email=member.email,
                         active=False,
-                        role="Student" if self.isStudent(member) else None,
+                        role="Student"
+                        if self.isStudent(member)
+                        else "TeachingAssistant",
                     )
 
     def isStudent(self, member):
