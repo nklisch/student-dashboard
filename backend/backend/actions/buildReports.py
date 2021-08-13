@@ -25,7 +25,8 @@ def get_student_activity_report(sprintId: int, semester: str, userId: int):
             "userId": userId,
         }
     )
-
+    if not score:
+        return None
     issues = StudentMetric(
         activity="Issues",
         score=score.issues,

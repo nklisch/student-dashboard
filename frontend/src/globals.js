@@ -6,6 +6,7 @@ export const LOG = ulog('Student Dashboard')
 export const API_PATHS = {
   AUTH: 'authenticate/user',
   UPDATE_AUTH: 'authenticate/update',
+  StudentActivity: 'reports/student_activity',
 }
 
 export const ACCESS_DENIED = '/access_denied'
