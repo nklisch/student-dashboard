@@ -1,16 +1,22 @@
 import React from 'react'
 
-const Login = React.lazy(() => import('./views/pages/login/Login'))
-const Register = React.lazy(() => import('./views/pages/register/Register'))
-const Page404 = React.lazy(() => import('./views/pages/page404/Page404'))
-const Page500 = React.lazy(() => import('./views/pages/page500/Page500'))
+const AccessDenied = React.lazy(() => {
+  './views/pages/AccessDenied'
+})
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
-  { path: '/dashboard', name: 'Dashboard', component: Dashboard, exact: true },
+  {
+    path: '/dashboard',
+    name: 'Dashboard',
+    component: Dashboard,
+    exact: true,
+    required_role: 'Student',
+  },
   { path: '/login', name: 'Login' },
+  { path: '/access_denied', name: 'Access Denied', component: AccessDenied },
 ]
 
 export default routes

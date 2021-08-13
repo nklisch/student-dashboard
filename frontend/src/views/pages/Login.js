@@ -2,8 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Redirect, useLocation } from 'react-router-dom'
 import { CButton, CCol, CContainer, CRow } from '@coreui/react'
-import { addQueryParameters } from 'src/assets/util/requests'
-import { GITHUB_AUTH_URL, GITHUB_APP_CLIENTID, LOGIN_PATH } from 'src/assets/globals'
+import { addQueryParameters } from 'src/util/requests'
+import { GITHUB_AUTH_URL, GITHUB_APP_CLIENTID, LOGIN_PATH } from 'src/globals'
 const Login = (props) => {
   const github_authentication_url =
     GITHUB_AUTH_URL +

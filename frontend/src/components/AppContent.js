@@ -4,9 +4,9 @@ import { CContainer, CSpinner } from '@coreui/react'
 
 // routes config
 import routes from '../routes'
-import PrivateRoute from './PrivateRoute'
-import Login from 'src/views/pages/login/Login'
-import { LOGIN_PATH } from 'src/assets/globals'
+import ProtectedRoute from './routing/ProtectedRoute'
+import Login from 'src/views/pages/Login'
+import { LOGIN_PATH } from '../globals'
 
 const AppContent = (props) => {
   return (
@@ -16,12 +16,13 @@ const AppContent = (props) => {
           {routes.map((route, idx) => {
             return (
               route.component && (
-                <PrivateRoute
+                <ProtectedRoute
                   {...props}
                   key={idx}
                   path={route.path}
                   exact={route.exact}
                   name={route.name}
+                  required_role={route.required_role}
                   render={() => <route.component {...props} />}
                 />
               )
