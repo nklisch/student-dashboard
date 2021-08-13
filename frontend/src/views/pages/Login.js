@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Redirect, useLocation } from 'react-router-dom'
-import { CButton, CCol, CContainer, CRow } from '@coreui/react'
+import { CButton, CCol, CContainer, CImage, CRow } from '@coreui/react'
 import { addQueryParameters } from 'src/util/requests'
 import { GITHUB_AUTH_URL, GITHUB_APP_CLIENTID, LOGIN_PATH } from 'src/globals'
 const Login = (props) => {
@@ -19,16 +19,21 @@ const Login = (props) => {
   }
 
   return (
-    <div className="bg-light min-vh-100 d-flex flex-row align-items-center">
-      <CContainer>
-        <CRow className="justify-content-center">
-          <CCol md="8">
-            <h1>Authenticate with GitHub</h1>
-            <CButton href={github_authentication_url}>Go to Github to authorize</CButton>
-          </CCol>
-        </CRow>
-      </CContainer>
-    </div>
+    <CContainer>
+      <CRow>
+        <CCol lg={{ offset: 2, span: 8 }}>
+          <CImage fluid src="/wordcloud.png" />
+        </CCol>
+      </CRow>
+
+      <CRow className="justify-content-center">
+        <CCol className="text-center">
+          <h1 className="mt-4">Student Activity Dashboard</h1>
+          <h5 className="mb-4 text-muted">CS314 Software Engineering</h5>
+          <CButton href={github_authentication_url}>Sign-in with GitHub</CButton>
+        </CCol>
+      </CRow>
+    </CContainer>
   )
 }
 

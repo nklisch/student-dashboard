@@ -1,44 +1,30 @@
 import React from 'react'
 import {
   CAvatar,
-  CBadge,
   CDropdown,
-  CDropdownDivider,
   CDropdownHeader,
   CDropdownItem,
   CDropdownMenu,
   CDropdownToggle,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { LOGIN_PATH } from 'src/globals'
 import PropTypes from 'prop-types'
-const AppHeaderDropdown = ({ isAuthenticated, user, logout }) => {
-  let path = LOGIN_PATH
-  let clickFunction = () => {}
-  let action = 'Login'
-  let icon = ''
-  if (isAuthenticated) {
-    path = '/'
-    clickFunction = logout
-    action = 'Logout'
-    icon = 'cli-account-logout'
-  }
 
+const AppHeaderDropdown = (props) => {
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
-        <CAvatar src={user.avatarUrl} size="md" />
+        <ProfileIcon {...props} />
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
-        <CDropdownHeader className="bg-light fw-semibold py-2">Settings</CDropdownHeader>
-        <CDropdownItem href="#">
-          <CIcon name="cli-user" className="me-2" />
+        <CDropdownHeader className="bg-light fw-semibold py-2 mb-1">Account</CDropdownHeader>
+        <CDropdownItem href={'/'} onClick={props.logout}>
+          <CIcon name="cil-user" className="me-2" />
           Profile
         </CDropdownItem>
-        <CDropdownDivider />
-        <CDropdownItem href={path} onClick={clickFunction}>
-          <CIcon name={icon} className="me-2" />
-          {action}
+        <CDropdownItem href={'/'} onClick={props.logout}>
+          <CIcon name="cil-account-logout" className="me-2" />
+          Logout
         </CDropdownItem>
       </CDropdownMenu>
     </CDropdown>
@@ -46,9 +32,24 @@ const AppHeaderDropdown = ({ isAuthenticated, user, logout }) => {
 }
 
 AppHeaderDropdown.propTypes = {
-  isAuthenticated: PropTypes.bool.isRequired,
-  user: PropTypes.object,
   logout: PropTypes.func.isRequired,
+}
+
+const ProfileIcon = (props) => {
+  if (!props.user?.avatarUrl) {
+    return (
+      <CAvatar color="primary" size="md" textColor="white">
+        <CIcon name="cil-user" />
+      </CAvatar>
+    )
+  }
+
+  return <CAvatar size="md" src={props.user.avatarUrl} />
+}
+
+ProfileIcon.propTypes = {
+  user: PropTypes.object,
+  avatarUrl: PropTypes.string,
 }
 
 export default AppHeaderDropdown

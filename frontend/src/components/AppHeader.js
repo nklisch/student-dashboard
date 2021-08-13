@@ -14,8 +14,8 @@ import {
 import CIcon from '@coreui/icons-react'
 
 import { AppBreadcrumb } from './index'
-
 import { AppHeaderDropdown } from './header/index'
+import PropTypes from 'prop-types'
 
 const AppHeader = (props) => {
   const dispatch = useDispatch()
@@ -25,7 +25,7 @@ const AppHeader = (props) => {
     <CHeader position="sticky" className="mb-4">
       <CContainer fluid>
         <CHeaderToggler
-          className="ms-md-3 d-lg-none"
+          className="ms-md-1 d-lg-none"
           onClick={() => dispatch({ type: 'set', sidebarShow: !sidebarShow })}
         >
           <CIcon name="cil-menu" size="lg" />
@@ -39,32 +39,9 @@ const AppHeader = (props) => {
               Dashboard
             </CNavLink>
           </CNavItem>
-          {/* <CNavItem>
-            <CNavLink href="#">Users</CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink href="#">Settings</CNavLink>
-          </CNavItem> */}
         </CHeaderNav>
-        {/* <CHeaderNav>
-          <CNavItem>
-            <CNavLink href="#">
-              <CIcon name="cil-bell" size="lg" />
-            </CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink href="#">
-              <CIcon name="cil-list" size="lg" />
-            </CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink href="#">
-              <CIcon name="cil-envelope-open" size="lg" />
-            </CNavLink>
-          </CNavItem>
-        </CHeaderNav> */}
         <CHeaderNav className="ms-3">
-          <AppHeaderDropdown {...props} />
+          {props.isAuthenticated && <AppHeaderDropdown {...props} />}
         </CHeaderNav>
       </CContainer>
       <CHeaderDivider />
@@ -73,6 +50,10 @@ const AppHeader = (props) => {
       </CContainer>
     </CHeader>
   )
+}
+
+AppHeader.propTypes = {
+  isAuthenticated: PropTypes.bool,
 }
 
 export default AppHeader
