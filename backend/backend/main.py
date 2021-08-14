@@ -1,4 +1,4 @@
-from fastapi import Depends, FastAPI, Request
+from fastapi import Depends, FastAPI, Request, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from .routes import automation, config, reports, authentication
 from .database import SQLBase, engine
@@ -8,6 +8,8 @@ from .schemas.db_schemas import AuditCreate
 from sqlalchemy.orm import Session
 from .dependencies import get_db
 from starlette.responses import Response
+from fastapi.staticfiles import StaticFiles
+from .routes import settings
 
 app = FastAPI()
 
@@ -17,10 +19,18 @@ app.include_router(config.router)
 app.include_router(reports.router)
 app.include_router(authentication.router)
 
+deploy_dir = "./backend/html"
+if settings.PRODUCTION == "TRUE":
+    deploy_dir = "./app/html"
 
-@app.get("/")
-def root():
-    return {"hello": "world"}
+app.mount(
+    "/",
+    StaticFiles(
+        directory=deploy_dir,
+        html=True,
+    ),
+    name="html",
+)
 
 
 app.add_middleware(
