@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { CCol, CRow } from '@coreui/react'
 import ComparisonChart from 'src/components/dashboard/ComparisonChart'
 import MetricCallout from 'src/components/dashboard/MetricCallout'
@@ -8,7 +8,15 @@ import PropTypes from 'prop-types'
 
 const StudentActivity = ({ user }) => {
   const [studentData, setStudentData] = useState([])
-  const labels = { Commits: 'Commits', Pulls: 'Pulls', Issues: 'Issues', ActiveDays: 'Active Days' }
+  const labels = useMemo(
+    () => ({
+      Commits: 'Commits',
+      Pulls: 'Pulls',
+      Issues: 'Issues',
+      ActiveDays: 'Active Days',
+    }),
+    [],
+  )
   const norm = Object.keys(labels).map(() => 100)
 
   useEffect(() => {
@@ -17,7 +25,7 @@ const StudentActivity = ({ user }) => {
         return
       }
       const classValues = []
-      const studentValues = []
+      let studentValues = []
       for (const key of Object.keys(labels)) {
         classValues.push(result[key].target)
         studentValues.push(result[key].score)
@@ -25,10 +33,11 @@ const StudentActivity = ({ user }) => {
       studentValues = toRelativeScale(studentValues, classValues)
       setStudentData(studentValues)
     })
-  }, [])
+  }, [labels, user.id])
 
   return (
     <React.Fragment>
+      <h4 className="mt-4">Class Perspective</h4>
       <CRow className="mb-4">
         <CCol md={{ span: 10, offset: 1 }} lg={{ span: 8, offset: 2 }} xl={{ span: 6, offset: 3 }}>
           <ComparisonChart

@@ -9,6 +9,7 @@ import {
   CTableHeaderCell,
   CTableRow,
 } from '@coreui/react'
+import { daysBetween, formatDate } from 'src/util/dates'
 
 const SprintsTable = (props) => {
   return (
@@ -46,13 +47,11 @@ const TableBody = (props) => {
         <CTableRow key={index + item.startDate}>
           <CTableHeaderCell scope="row">{item.id}</CTableHeaderCell>
           <CTableDataCell>
-            <strong>Start:</strong> {item.startDate}
+            <strong>Start:</strong> {formatDate(item.startDate)}
             <br />
-            <strong>End:</strong> {item.endDate}
+            <strong>End:</strong> {formatDate(item.endDate)}
             <br />
-            <strong>Days:</strong> {15}
-            <br />
-            <strong>Semester:</strong> {item.semester}
+            <strong>Days:</strong> {daysBetween(item.startDate, item.endDate)}
           </CTableDataCell>
           <CTableDataCell>
             <CButton

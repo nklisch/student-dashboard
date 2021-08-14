@@ -7,7 +7,6 @@ import StudentActivity from './StudentActivity'
 const Dashboard = (props) => {
   return (
     <CContainer>
-      <h4 className="mt-4">Class Perspective</h4>
       <StudentActivity user={props.user} />
 
       <br />
