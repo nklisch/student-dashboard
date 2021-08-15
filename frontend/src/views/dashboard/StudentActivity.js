@@ -17,7 +17,7 @@ const StudentActivity = ({ user }) => {
     }),
     [],
   )
-  const norm = Object.keys(labels).map(() => 100)
+  const norm = Array(Object.keys(labels).length).fill(100)
 
   useEffect(() => {
     get('StudentActivity', `${user.id}`, { sprintId: 1 }).then((result) => {
