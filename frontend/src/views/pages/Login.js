@@ -3,12 +3,13 @@ import PropTypes from 'prop-types'
 import { Redirect, useLocation } from 'react-router-dom'
 import { CButton, CCol, CContainer, CImage, CRow } from '@coreui/react'
 import { addQueryParameters } from 'src/util/requests'
-import { GITHUB_AUTH_URL, GITHUB_APP_CLIENTID, LOGIN_PATH } from 'src/globals'
+import { GITHUB_AUTH_URL, GITHUB_APP_CLIENTID, LOGIN_PATH, API_URL, API_PATHS } from 'src/globals'
 const Login = (props) => {
   const github_authentication_url =
     GITHUB_AUTH_URL +
     addQueryParameters({
       client_id: GITHUB_APP_CLIENTID,
+      redirect_uri: API_URL + API_PATHS.UPDATE_AUTH,
       scope: 'user',
     })
   const { state } = useLocation()

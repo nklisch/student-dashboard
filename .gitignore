@@ -1,7 +1,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+**/html/
 # C extensions
 *.so
 
@@ -153,3 +153,5 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+backend/backend/html/index.html
+backend/backend/html/asset-manifest.json

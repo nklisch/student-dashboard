@@ -19,4 +19,4 @@ services:
       POSTGRES_USER: nklisch
       POSTGRES_DB: cs314_dashboard
     volumes:
-      - /home/nathan/pgdata:/var/lib/postgresql/data
+      - /var/lib/cs314/pgdata:/var/lib/postgresql/data
