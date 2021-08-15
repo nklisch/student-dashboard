@@ -9,7 +9,7 @@ const SemesterSetup = () => {
   const [organization, setOrganization] = useState('')
   const [sprints, setSprints, sprintActions] = useSprints(semesterCode)
   const [modalOpen, setModalOpen] = useState(false)
-  const [modalData, setModalData] = useState(null)
+  const [modalEditIndex, setModalEditIndex] = useState(-1)
   const [editOrganization, setEditOrganization] = useState(false)
 
   useEffect(() => {
@@ -26,10 +26,9 @@ const SemesterSetup = () => {
     // setOrganization("csucs314s21")
   }, [setSprints])
 
-  const openSprintModal = (sprintData = null) => {
-    const sprintIndex = sprintData ? sprintData.id - 1 : -1
-    const data = { editIndex: sprintIndex, sprintData: sprintData }
-    setModalData(data)
+  const openSprintModal = (sprint = null) => {
+    const sprintIndex = sprint ? sprint.id - 1 : -1
+    setModalEditIndex(sprintIndex)
     setModalOpen(true)
   }
 
@@ -83,7 +82,7 @@ const SemesterSetup = () => {
         sprintActions={sprintActions}
         modalOpen={modalOpen}
         setModalOpen={setModalOpen}
-        modalData={modalData}
+        editIndex={modalEditIndex}
         semesterCode={semesterCode}
       />
     </CContainer>

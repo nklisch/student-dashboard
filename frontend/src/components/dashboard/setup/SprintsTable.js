@@ -54,15 +54,15 @@ TableHeader.propTypes = {
 const TableBody = (props) => {
   return (
     <CTableBody>
-      {props.sprints.map((item, index) => (
-        <CTableRow key={index + item.startDate}>
-          <CTableHeaderCell scope="row">{item.id}</CTableHeaderCell>
+      {props.sprints.map((sprint, index) => (
+        <CTableRow key={index + sprint.startDate}>
+          <CTableHeaderCell scope="row">{sprint.id}</CTableHeaderCell>
           <CTableDataCell>
-            <strong>Start:</strong> {formatDate(item.startDate)}
+            <strong>Start:</strong> {formatDate(sprint.startDate)}
             <br />
-            <strong>End:</strong> {formatDate(item.endDate)}
+            <strong>End:</strong> {formatDate(sprint.endDate)}
             <br />
-            <strong>Days:</strong> {daysDifference(item.endDate, item.startDate)}
+            <strong>Days:</strong> {daysDifference(sprint.endDate, sprint.startDate)}
           </CTableDataCell>
           <CTableDataCell>
             <CButton
@@ -70,7 +70,7 @@ const TableBody = (props) => {
               variant="outline"
               size="sm"
               onClick={() => {
-                props.openSprintModal(item)
+                props.openSprintModal(sprint)
               }}
             >
               Edit
