@@ -9,41 +9,47 @@ import {
   CTableHeaderCell,
   CTableRow,
 } from '@coreui/react'
-import { daysBetween, formatDate } from 'src/util/dates'
+import { daysDifference, formatDate } from 'src/util/dates'
 
 const SprintsTable = (props) => {
   return (
     <CTable hover striped>
-      <TableHeader />
-      <TableBody sprintData={props.sprintData} openSprintModal={props.openSprintModal} />
+      <TableHeader deleteSprints={props.deleteSprints} />
+      <TableBody sprints={props.sprints} openSprintModal={props.openSprintModal} />
     </CTable>
   )
 }
 
 SprintsTable.propTypes = {
-  sprintData: PropTypes.arrayOf(PropTypes.object).isRequired,
+  sprints: PropTypes.arrayOf(PropTypes.object).isRequired,
+  deleteSprints: PropTypes.func.isRequired,
   openSprintModal: PropTypes.func.isRequired,
 }
 
-const TableHeader = () => {
-  const headers = ['#', 'Details', '']
+const TableHeader = (props) => {
   return (
     <CTableHead>
       <CTableRow>
-        {headers.map((header, index) => (
-          <CTableHeaderCell key={index + header} scope="col">
-            {header}
-          </CTableHeaderCell>
-        ))}
+        <CTableHeaderCell scope="col">#</CTableHeaderCell>
+        <CTableHeaderCell scope="col">Details</CTableHeaderCell>
+        <CTableHeaderCell scope="col">
+          <CButton color="danger" variant="outline" size="sm" onClick={props.deleteSprints}>
+            Clear
+          </CButton>
+        </CTableHeaderCell>
       </CTableRow>
     </CTableHead>
   )
 }
 
+TableHeader.propTypes = {
+  deleteSprints: PropTypes.func.isRequired,
+}
+
 const TableBody = (props) => {
   return (
     <CTableBody>
-      {props.sprintData.map((item, index) => (
+      {props.sprints.map((item, index) => (
         <CTableRow key={index + item.startDate}>
           <CTableHeaderCell scope="row">{item.id}</CTableHeaderCell>
           <CTableDataCell>
@@ -51,7 +57,7 @@ const TableBody = (props) => {
             <br />
             <strong>End:</strong> {formatDate(item.endDate)}
             <br />
-            <strong>Days:</strong> {daysBetween(item.startDate, item.endDate)}
+            <strong>Days:</strong> {daysDifference(item.endDate, item.startDate)}
           </CTableDataCell>
           <CTableDataCell>
             <CButton
@@ -72,7 +78,7 @@ const TableBody = (props) => {
 }
 
 TableBody.propTypes = {
-  sprintData: PropTypes.arrayOf(PropTypes.object).isRequired,
+  sprints: PropTypes.arrayOf(PropTypes.object).isRequired,
   openSprintModal: PropTypes.func.isRequired,
 }
 

@@ -3,27 +3,17 @@ import { extendMoment } from 'moment-range'
 
 const moment = extendMoment(Moment)
 
-export const daysBetween = (dateStr, dateStr2) => {
+export const daysDifference = (dateStr, dateStr2) => {
   const fmt = 'YYYY-MM-DD'
   const start = moment(dateStr, fmt)
   const end = moment(dateStr2, fmt)
 
-  return end.diff(start, 'days')
+  return start.diff(end, 'days')
 }
 
 export const formatDate = (dateStr) => {
   const date = moment(dateStr)
-  return date.format('ddd, MMM Do, YYYY')
-}
-
-export const dateDifference = (date, date2) => {
-  const m1 = moment(date)
-  const m2 = moment(date2)
-  return m1.diff(m2)
-}
-
-export const dateLessThan = (date, date2) => {
-  return dateDifference(date, date2) < 0
+  return date.format('ddd, MMM D, YYYY')
 }
 
 export const dateInInterval = (date, intervalDate1, intervalDate2) => {
@@ -36,4 +26,12 @@ export const overlappingIntervals = (start, end, start1, end1) => {
   const inter1 = moment.range(start, end)
   const inter2 = moment.range(start1, end1)
   return inter1.overlaps(inter2, { adjacent: true })
+}
+
+export const validDate = (dateStr) => {
+  return moment(dateStr).isValid()
+}
+
+export const dateStringToday = () => {
+  return moment().format('YYYY-MM-DD')
 }

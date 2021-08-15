@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { CButton, CContainer, CFormControl } from '@coreui/react'
 import SprintsTable from './SprintsTable'
 import SprintModal from './SprintModal'
-import { dateDifference } from 'src/util/dates'
+import { daysDifference } from 'src/util/dates'
 
 const SemesterSetup = () => {
   const [semesterCode, setSemesterCode] = useState('')
@@ -35,11 +35,6 @@ const SemesterSetup = () => {
 
   const addSprint = (start, end, replaceIndex) => {
     const editing = replaceIndex !== -1
-    /* if (!editing && sprints.some((sprint) => sprint.startDate === start)) {
-      alert('Attempting to add duplicate start date.')
-      return false
-    } */
-
     const newSprint = { id: -1, semester: semesterCode, startDate: start, endDate: end }
     const newSprints = [...sprints]
     if (!editing) {
@@ -47,23 +42,27 @@ const SemesterSetup = () => {
     } else {
       newSprints[replaceIndex] = newSprint
     }
-    newSprints.sort((s1, s2) => dateDifference(s1, s2))
+    newSprints.sort((s1, s2) => daysDifference(s1.startDate, s2.startDate))
     newSprints.forEach((sprint, index) => (sprint.id = index + 1))
     setSprints(newSprints)
-    return true
   }
 
   const removeSprint = (index) => {
     if (index < 0 || index >= sprints.length) {
       alert('Failed to remove sprint: invalid index')
-      return false
+      return
     }
 
     const newSprints = [...sprints]
     newSprints.splice(index, 1)
     newSprints.forEach((sprint, index) => (sprint.id = index + 1))
     setSprints(newSprints)
-    return true
+  }
+
+  const deleteSprints = () => {
+    if (window.confirm('Remove all sprints? This action cannot be undone.')) {
+      setSprints([])
+    }
   }
 
   return (
@@ -100,14 +99,19 @@ const SemesterSetup = () => {
 
       <hr />
       <h4 className="fw-bold mb-3">Sprints</h4>
-      <SprintsTable sprintData={sprints} openSprintModal={openSprintModal} />
+      <SprintsTable
+        sprints={sprints}
+        deleteSprints={deleteSprints}
+        openSprintModal={openSprintModal}
+      />
       <div className="d-grid gap-2">
         <CButton
           color="dark"
           size="sm"
           onClick={() => {
-            if (semesterCode && organization) openSprintModal()
-            else alert('Provide a valid semester and organization before configuring sprints.')
+            openSprintModal()
+            /* if (semesterCode && organization) openSprintModal()
+            else alert('Provide a valid semester and organization before configuring sprints.') */
           }}
         >
           Add Sprint
