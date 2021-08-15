@@ -25,20 +25,16 @@ const SprintModal = (props) => {
   const [sprint, setSprint, startError, endError] = useSprintValidation(editIndex, props.sprints)
 
   useEffect(() => {
-    const initialData = props.modalData
-    if (!initialData) return
-
-    const editing = initialData.editIndex !== -1
+    const newEditIndex = props.editIndex
+    const editing = newEditIndex !== -1
     if (editing) {
-      setEditIndex(initialData.editIndex)
-
-      const sprintData = initialData.sprintData
-      setSprint({ start: sprintData.startDate, end: sprintData.endDate })
+      setEditIndex(newEditIndex)
+      setSprint(props.sprints[newEditIndex])
     } else {
       setEditIndex(-1)
-      setSprint({ start: dateStringToday(), end: dateStringToday() })
+      setSprint({ startDate: dateStringToday(), endDate: dateStringToday() })
     }
-  }, [props.modalData, setSprint])
+  }, [props.editIndex, props.sprints, setSprint])
 
   const editMode = () => editIndex !== -1
 
@@ -58,10 +54,10 @@ const SprintModal = (props) => {
             <CFormLabel htmlFor="startInput">Start Date</CFormLabel>
             <CFormControl
               id="startInput"
-              value={sprint.start}
+              value={sprint.startDate}
               type="date"
               onChange={(e) => {
-                setSprint({ ...sprint, start: e.target.value })
+                setSprint({ ...sprint, startDate: e.target.value })
               }}
               invalid={startError.length !== 0}
               required
@@ -72,10 +68,10 @@ const SprintModal = (props) => {
             <CFormLabel htmlFor="endInput">End Date</CFormLabel>
             <CFormControl
               id="endInput"
-              value={sprint.end}
+              value={sprint.endDate}
               type="date"
               onChange={(e) => {
-                setSprint({ ...sprint, end: e.target.value })
+                setSprint({ ...sprint, endDate: e.target.value })
               }}
               invalid={endError.length !== 0}
               required
@@ -83,7 +79,7 @@ const SprintModal = (props) => {
             <CFormFeedback invalid>{endError}</CFormFeedback>
           </div>
           <h6 className="mt-4 mb-2">
-            Days: {getDaysLabel(daysDifference(sprint.end, sprint.start))}
+            Days: {getDaysLabel(daysDifference(sprint.endDate, sprint.startDate))}
           </h6>
           <h6 className="mb-4">Semester: {props.semesterCode}</h6>
           {editMode() && (
@@ -92,7 +88,7 @@ const SprintModal = (props) => {
               variant="outline"
               onClick={() => {
                 if (window.confirm('Delete Sprint ' + (editIndex + 1) + '?')) {
-                  props.removeSprint(editIndex)
+                  props.sprintActions.remove(editIndex)
                   props.setModalOpen(false)
                 }
               }}
@@ -112,11 +108,14 @@ const SprintModal = (props) => {
           disabled={
             startError.length !== 0 ||
             endError.length !== 0 ||
-            !validDate(sprint.start) ||
-            !validDate(sprint.end)
+            !validDate(sprint.startDate) ||
+            !validDate(sprint.endDate)
           }
           onClick={() => {
-            props.addSprint(sprint.start, sprint.end, editIndex)
+            const { startDate, endDate } = sprint
+            editMode()
+              ? props.sprintActions.edit(editIndex, startDate, endDate)
+              : props.sprintActions.add(startDate, endDate)
             props.setModalOpen(false)
           }}
         >
@@ -130,15 +129,14 @@ const SprintModal = (props) => {
 SprintModal.propTypes = {
   modalOpen: PropTypes.bool.isRequired,
   setModalOpen: PropTypes.func.isRequired,
-  modalData: PropTypes.object,
-  addSprint: PropTypes.func.isRequired,
-  removeSprint: PropTypes.func.isRequired,
+  editIndex: PropTypes.number.isRequired,
   semesterCode: PropTypes.string.isRequired,
   sprints: PropTypes.arrayOf(PropTypes.object).isRequired,
+  sprintActions: PropTypes.object.isRequired,
 }
 
 const useSprintValidation = (editIndex, allSprints) => {
-  const [sprint, setSprint] = useState({ start: '', end: '' })
+  const [sprint, setSprint] = useState({})
   const [startError, setStartError] = useState('')
   const [endError, setEndError] = useState('')
 
@@ -158,22 +156,22 @@ const useSprintValidation = (editIndex, allSprints) => {
     }
 
     let startErrorMsg = ''
-    if (dateOverlapsSprint(sprint.start)) {
+    if (dateOverlapsSprint(sprint.startDate)) {
       startErrorMsg = 'Start date overlaps an existing sprint.'
-    } else if (intervalOverlapsSprint(sprint.start, sprint.end)) {
+    } else if (intervalOverlapsSprint(sprint.startDate, sprint.endDate)) {
       startErrorMsg = 'This sprint overlaps an existing sprint.'
     }
 
     let endErrorMsg = ''
-    if (dateOverlapsSprint(sprint.end)) {
+    if (dateOverlapsSprint(sprint.endDate)) {
       endErrorMsg = 'End date overlaps an existing sprint.'
-    } else if (daysDifference(sprint.end, sprint.start) < 0) {
+    } else if (daysDifference(sprint.endDate, sprint.startDate) < 0) {
       endErrorMsg = 'End date is before start date.'
     }
 
     setStartError(startErrorMsg)
     setEndError(endErrorMsg)
-  }, [sprint.start, sprint.end, editIndex, allSprints])
+  }, [sprint.startDate, sprint.endDate, editIndex, allSprints])
 
   return [sprint, setSprint, startError, endError]
 }
