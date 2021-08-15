@@ -36,6 +36,7 @@
     "@wojtekmaj/enzyme-adapter-react-17": "^0.6.2",
     "chart.js": "^3.4.1",
     "classnames": "^2.3.1",
+    "concurrently": "^6.2.1",
     "core-js": "^3.15.2",
     "enzyme": "^3.11.0",
     "moment": "^2.29.1",
@@ -67,7 +68,10 @@
     "test:cov": "npm test -- --coverage --watchAll=false",
     "test:debug": "react-scripts --inspect-brk test --runInBand",
     "eject": "react-scripts eject",
-    "changelog": "auto-changelog --starting-version 3.0.0 --commit-limit false --hide-credit"
+    "changelog": "auto-changelog --starting-version 3.0.0 --commit-limit false --hide-credit",
+    "api": "(cd ../backend; poetry run uvicorn backend.main:app --reload)",
+    "client": "npm start",
+    "devRun": "concurrently \"npm run api\" \"npm run client\""
   },
   "bugs": {
     "url": "https://github.com/coreui/coreui-free-react-admin-template/issues"
