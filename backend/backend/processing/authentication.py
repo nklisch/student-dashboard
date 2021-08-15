@@ -5,8 +5,9 @@ import requests
 from ..actions.actions import Action
 from ..schemas.db_schemas import User, Authentication
 from ..database.models import Users, Authentications
-from ..dependencies import get_semester
+from ..dependencies import determine_semester, get_sprint
 import secrets
+from datetime import date
 
 
 def verify_user_on_github(code):
@@ -39,6 +40,7 @@ def verify_user_on_github(code):
     auth = Action(model=Authentications).get(
         filter_by={"userId": user.id}, schema=Authentication
     )
+    semester = determine_semester(date.today())
     user_token = auth.token if auth else None
     if not user_token or not auth.valid:
         user_token = secrets.token_urlsafe(64)
@@ -46,6 +48,9 @@ def verify_user_on_github(code):
             Action(model=Users).create_or_update(
                 {
                     "id": user.id,
+                    "githubLogin": user.login,
+                    "semester": semester,
+                    "name": user.name,
                     "email": user_email,
                     "active": True,
                     "avatarUrl": user.avatar_url,

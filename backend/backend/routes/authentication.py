@@ -2,6 +2,7 @@ from fastapi import APIRouter, status, Depends, Response, status
 from ..schemas.db_schemas import User
 from ..dependencies import verify_user
 from ..processing.authentication import verify_user_on_github
+from ..routes import settings
 
 router = APIRouter(
     prefix="/authenticate",
@@ -28,5 +29,7 @@ def github_authentication(code: str, response: Response):
     response.set_cookie(key="userId", value=str(userId), expires=2592000)
     response.set_cookie(key="token", value=token, expires=2592000)
     response.headers["Location"] = "http://localhost:3000"
+    if settings.PRODUCTION == "TRUE":
+        response.headers["Location"] = "http://localhost"
     response.status_code = status.HTTP_307_TEMPORARY_REDIRECT
     return {"authenticated": True}

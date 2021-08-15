@@ -9,6 +9,7 @@ from .database.models import Authentications, Sprints, Users
 from sqlalchemy.orm import Session
 from fastapi import Depends, Cookie, HTTPException
 from .globals import Roles
+from .routes import settings
 
 
 def get_semester(
