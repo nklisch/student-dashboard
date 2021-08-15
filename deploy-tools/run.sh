@@ -10,31 +10,35 @@ function usage {
 
 
 function check_client_dependencies {
-  if [ ! -d "${REPO_ROOT}/frontend/node_modules" ]; then
+  if [ ! -d "${REPO_ROOT}frontend/node_modules" ]; then
     # install all dependencies into node_modules
-    npm install --prefix ${REPO_ROOT}/client
+    npm install --prefix ${REPO_ROOT}client
   fi
 }
 
 function run_dev {
 	echo "Building and Starting the Server in DEVELOPMENT Mode."
 	echo
+    DOCKER_UP=docker ps | grep postgres;
+    if [[ -z $DOCKER_UP ]]; then
+      docker-compose -f ${REPO_ROOT}deploy-tools/docker-compose.yml up -d db 
+    fi
     check_client_dependencies;
-    npm --prefix ${REPO_ROOT}/frontend run devRun
+    npm --prefix ${REPO_ROOT}frontend run devRun
 }
 
 function run_prod {
 	echo "Building and Starting the Server in PRODUCTION Mode."
-    npm --prefix ${REPO_ROOT}/frontend run build
-    cp ${REPO_ROOT}/frontend/build/* ${REPO_ROOT}/backend/html/
-    docker-compose up -d --force-recreate --build
+    npm --prefix ${REPO_ROOT}frontend run build
+    cp -r ${REPO_ROOT}frontend/build/* ${REPO_ROOT}backend/backend/html/
+    docker-compose -f ${REPO_ROOT}deploy-tools/docker-compose.yml up --force-recreate --build
 }
 
 function deploy {
   echo "Building new docker image and pushing it to dockerhub"
-  cd ../backend
-  IMAGE = "$DOCKERHUB_USERNAME/csu-cs314-student-dashboard"
-  docker build -t $IMAGE
+  cd ${REPO_ROOT}backend
+  IMAGE="$DOCKERHUB_USERNAME/csu-cs314-student-dashboard"
+  docker build -t $IMAGE .
   docker push $IMAGE
 }
 
@@ -51,7 +55,6 @@ function get_repo_root_dir {
   done;
 
   export REPO_ROOT=$dir;
-
 }
 
 get_repo_root_dir
@@ -69,6 +72,7 @@ while (( "$#" )); do
         DOCKERHUB_USERNAME=$2
         shift 2
         deploy
+        exit 0
       else
         echo "argument missing for -- $1" >&2
         exit 1
