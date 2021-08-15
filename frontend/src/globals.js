@@ -1,7 +1,8 @@
 import ulog from 'ulog'
 
 ulog.level = ulog.ERROR
-export const ROOT_URL = 'http://localhost:8000/'
+export const ROOT_URL =
+  window.location.port === '3000' ? 'http://localhost:8000/' : 'http://localhost'
 export const LOG = ulog('Student Dashboard')
 export const API_PATHS = {
   AUTH: 'authenticate/user',

@@ -1,7 +1,9 @@
 import { API_PATHS, ROOT_URL, LOG } from '../globals'
 
 export async function get(api, pathParameter = '', queryParameters = {}) {
-  const url = `${ROOT_URL}${API_PATHS[api]}/${pathParameter}${addQueryParameters(queryParameters)}`
+  const url = `${ROOT_URL}${API_PATHS[api]}${
+    pathParameter ? '/' : ''
+  }${pathParameter}${addQueryParameters(queryParameters)}`
 
   const response = await fetch(url, {
     method: 'GET',

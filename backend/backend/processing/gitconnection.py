@@ -1,10 +1,10 @@
 from pydantic import BaseSettings, PostgresDsn, validator
-from pydantic import BaseSettings
 from github import Github
 from zenhub import Zenhub
 
 
 class Settings(BaseSettings):
+    PRODUCTION: str
     GITHUB_KEY: str
     ZENHUB_KEY: str
     GITHUB_CLIENT_ID: str

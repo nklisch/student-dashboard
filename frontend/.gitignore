@@ -8,8 +8,8 @@ package-lock.json
 /coverage
 
 # production
-/build
-
+**/build
+**/html/**
 # misc
 .eslintcache
 .DS_Store
