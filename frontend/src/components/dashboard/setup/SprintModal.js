@@ -92,7 +92,7 @@ const SprintModal = (props) => {
               variant="outline"
               onClick={() => {
                 if (window.confirm('Delete Sprint ' + (editIndex + 1) + '?')) {
-                  props.removeSprint(editIndex)
+                  props.sprintActions.remove(editIndex)
                   props.setModalOpen(false)
                 }
               }}
@@ -116,7 +116,9 @@ const SprintModal = (props) => {
             !validDate(sprint.end)
           }
           onClick={() => {
-            props.addSprint(sprint.start, sprint.end, editIndex)
+            editMode()
+              ? props.sprintActions.edit(editIndex, sprint.start, sprint.end)
+              : props.sprintActions.add(sprint.start, sprint.end)
             props.setModalOpen(false)
           }}
         >
@@ -131,10 +133,9 @@ SprintModal.propTypes = {
   modalOpen: PropTypes.bool.isRequired,
   setModalOpen: PropTypes.func.isRequired,
   modalData: PropTypes.object,
-  addSprint: PropTypes.func.isRequired,
-  removeSprint: PropTypes.func.isRequired,
   semesterCode: PropTypes.string.isRequired,
   sprints: PropTypes.arrayOf(PropTypes.object).isRequired,
+  sprintActions: PropTypes.object.isRequired,
 }
 
 const useSprintValidation = (editIndex, allSprints) => {

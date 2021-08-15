@@ -7,7 +7,7 @@ import { daysDifference } from 'src/util/dates'
 const SemesterSetup = () => {
   const [semesterCode, setSemesterCode] = useState('')
   const [organization, setOrganization] = useState('')
-  const [sprints, setSprints] = useState([])
+  const [sprints, setSprints, sprintActions] = useSprints(semesterCode)
   const [modalOpen, setModalOpen] = useState(false)
   const [modalData, setModalData] = useState(null)
   const [editOrganization, setEditOrganization] = useState(false)
@@ -24,45 +24,13 @@ const SemesterSetup = () => {
     setSprints(fetchResult)
     // setSemesterCode("sp2021")
     // setOrganization("csucs314s21")
-  }, [])
+  }, [setSprints])
 
   const openSprintModal = (sprintData = null) => {
     const sprintIndex = sprintData ? sprintData.id - 1 : -1
     const data = { editIndex: sprintIndex, sprintData: sprintData }
     setModalData(data)
     setModalOpen(true)
-  }
-
-  const addSprint = (start, end, replaceIndex) => {
-    const editing = replaceIndex !== -1
-    const newSprint = { id: -1, semester: semesterCode, startDate: start, endDate: end }
-    const newSprints = [...sprints]
-    if (!editing) {
-      newSprints.push(newSprint)
-    } else {
-      newSprints[replaceIndex] = newSprint
-    }
-    newSprints.sort((s1, s2) => daysDifference(s1.startDate, s2.startDate))
-    newSprints.forEach((sprint, index) => (sprint.id = index + 1))
-    setSprints(newSprints)
-  }
-
-  const removeSprint = (index) => {
-    if (index < 0 || index >= sprints.length) {
-      alert('Failed to remove sprint: invalid index')
-      return
-    }
-
-    const newSprints = [...sprints]
-    newSprints.splice(index, 1)
-    newSprints.forEach((sprint, index) => (sprint.id = index + 1))
-    setSprints(newSprints)
-  }
-
-  const deleteSprints = () => {
-    if (window.confirm('Remove all sprints? This action cannot be undone.')) {
-      setSprints([])
-    }
   }
 
   return (
@@ -101,36 +69,70 @@ const SemesterSetup = () => {
       <h4 className="fw-bold mb-3">Sprints</h4>
       <SprintsTable
         sprints={sprints}
-        deleteSprints={deleteSprints}
+        sprintActions={sprintActions}
         openSprintModal={openSprintModal}
       />
       <div className="d-grid gap-2">
-        <CButton
-          color="dark"
-          size="sm"
-          onClick={() => {
-            openSprintModal()
-            /* if (semesterCode && organization) openSprintModal()
-            else alert('Provide a valid semester and organization before configuring sprints.') */
-          }}
-        >
+        <CButton color="dark" size="sm" onClick={() => openSprintModal()}>
           Add Sprint
         </CButton>
       </div>
 
       <SprintModal
+        sprints={sprints}
+        sprintActions={sprintActions}
         modalOpen={modalOpen}
         setModalOpen={setModalOpen}
         modalData={modalData}
-        addSprint={addSprint}
-        removeSprint={removeSprint}
         semesterCode={semesterCode}
-        sprints={sprints}
       />
     </CContainer>
   )
 }
 
-SemesterSetup.propTypes = {}
+const useSprints = (semesterCode) => {
+  const [sprints, setSprints] = useState([])
+
+  const normalizeSprints = (sprints) => {
+    sprints.sort((s1, s2) => daysDifference(s1.startDate, s2.startDate))
+    sprints.forEach((sprint, index) => (sprint.id = index + 1))
+  }
+
+  const add = (startDate, endDate) => {
+    const newSprint = { id: -1, semester: semesterCode, startDate: startDate, endDate: endDate }
+    const newSprints = [...sprints, newSprint]
+    normalizeSprints(newSprints)
+    setSprints(newSprints)
+  }
+
+  const edit = (index, startDate, endDate) => {
+    const newSprint = { id: -1, semester: semesterCode, startDate: startDate, endDate: endDate }
+    const newSprints = [...sprints]
+    newSprints[index] = newSprint
+    normalizeSprints(newSprints)
+    setSprints(newSprints)
+  }
+
+  const remove = (index) => {
+    if (index < 0 || index >= sprints.length) {
+      console.log('Failed to remove sprint: invalid index')
+      return
+    }
+
+    const newSprints = [...sprints]
+    newSprints.splice(index, 1)
+    normalizeSprints(newSprints)
+    setSprints(newSprints)
+  }
+
+  const deleteAll = () => {
+    if (window.confirm('Remove all sprints? This action cannot be undone.')) {
+      setSprints([])
+    }
+  }
+
+  const sprintActions = { add, edit, remove, deleteAll }
+  return [sprints, setSprints, sprintActions]
+}
 
 export default SemesterSetup
