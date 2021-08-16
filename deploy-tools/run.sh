@@ -10,9 +10,9 @@ function usage {
 
 
 function check_client_dependencies {
-  if [ ! -d "${REPO_ROOT}frontend/node_modules" ]; then
+  if [ ! -d "${REPO_ROOT}/frontend/node_modules" ]; then
     # install all dependencies into node_modules
-    npm install --prefix ${REPO_ROOT}client
+    npm install --prefix ${REPO_ROOT}/client
   fi
 }
 
@@ -21,22 +21,22 @@ function run_dev {
 	echo
     DOCKER_UP=docker ps | grep postgres;
     if [[ -z $DOCKER_UP ]]; then
-      docker-compose -f ${REPO_ROOT}deploy-tools/docker-compose.yml up -d db 
+      docker-compose -f ${REPO_ROOT}/deploy-tools/docker-compose.yml up -d db 
     fi
     check_client_dependencies;
-    npm --prefix ${REPO_ROOT}frontend run devRun
+    npm --prefix ${REPO_ROOT}/frontend run devRun
 }
 
 function run_prod {
 	echo "Building and Starting the Server in PRODUCTION Mode."
-    npm --prefix ${REPO_ROOT}frontend run build
-    cp -r ${REPO_ROOT}frontend/build/* ${REPO_ROOT}backend/backend/html/
-    docker-compose -f ${REPO_ROOT}deploy-tools/docker-compose.yml up --force-recreate --build
+    npm --prefix ${REPO_ROOT}/frontend run build
+    cp -r ${REPO_ROOT}/frontend/build/* ${REPO_ROOT}/backend/backend/html/
+    docker-compose -f ${REPO_ROOT}/deploy-tools/docker-compose.yml up --force-recreate --build
 }
 
 function deploy {
   echo "Building new docker image and pushing it to dockerhub"
-  cd ${REPO_ROOT}backend
+  cd ${REPO_ROOT}/backend
   IMAGE="$DOCKERHUB_USERNAME/csu-cs314-student-dashboard"
   docker build -t $IMAGE .
   docker push $IMAGE
@@ -52,6 +52,7 @@ function get_repo_root_dir {
   while [[ ! -d "$dir/.git" ]];
   do
     dir=`echo $dir | sed 's~\(.*\)/.*~\1~'`;
+    dir=${dir%/}
   done;
 
   export REPO_ROOT=$dir;
