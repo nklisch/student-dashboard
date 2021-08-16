@@ -9,7 +9,7 @@ RUN pip install poetry
 RUN poetry config virtualenvs.create false
 
 COPY ./mypy.ini ./poetry.lock ./pyproject.toml* /app/
-COPY ./.env_docker /app/.env
+COPY ./docker.env /app/.env
 RUN poetry install --no-root --no-dev
 
 COPY ./backend /app/app
