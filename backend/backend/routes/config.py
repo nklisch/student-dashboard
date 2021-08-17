@@ -54,7 +54,7 @@ def get_semester_setup(semester: str = Depends(get_semester)):
         filter_by={"semester": semester}, schema=Sprint
     )
     cl = Action(model=Classes).get(filter_by={"semester": semester}, schema=Class)
-    gitOrganization = cl.gitOrganization
+    gitOrganization = cl.gitOrganization if cl else None
 
     return SemesterOut(
         sprints=sprints if sprints else None,

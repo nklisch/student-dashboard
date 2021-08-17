@@ -10,4 +10,4 @@ from . import Semester
 class SemesterOut(BaseModel):
     sprints: Optional[Sprint]
     semester: str = Semester
-    gitOrganization: str
+    gitOrganization: Optional[str]
