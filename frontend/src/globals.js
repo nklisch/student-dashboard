@@ -5,9 +5,10 @@ export const API_URL =
   window.location.port === '3000' ? 'http://localhost:8000/' : 'http://localhost/'
 export const LOG = ulog('Student Dashboard')
 export const API_PATHS = {
-  AUTH: 'authenticate/user',
-  UPDATE_AUTH: 'authenticate/update',
+  Auth: 'authenticate/user',
+  UpdateAuth: 'authenticate/update',
   StudentActivity: 'reports/student_activity',
+  SetupSemester: 'config/semester',
 }
 
 export const ACCESS_DENIED = '/access_denied'

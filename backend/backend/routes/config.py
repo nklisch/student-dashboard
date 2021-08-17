@@ -2,7 +2,7 @@ from fastapi import APIRouter, status, Depends
 from typing import List, Optional
 from ..processing.config import setup_semester
 from ..schemas.db_schemas import Sprint, Repo, Team, User
-from ..database.models import Users
+from ..database.models import Users, Sprints
 from ..schemas.requests import ClassCreate, RequestConfig
 from sqlalchemy.orm import Session
 from ..database import SQLBase
@@ -45,6 +45,13 @@ def automatic_populate_teams(
 @router.post("/semester", status_code=status.HTTP_201_CREATED)
 def handle_setup_semester(newClass: ClassCreate, sprints: List[Sprint]):
     return setup_semester(newClass=newClass, sprints=sprints)
+
+
+@router.get("/semester", response_model=List[Sprint])
+def get_semester_setup(semester: str = Depends(get_semester)):
+    return Action(model=Sprints).get_all(
+        filter_by={"semester": semester}, schema=Sprint
+    )
 
 
 requires_Instructor = VerifyRole("Instructor")

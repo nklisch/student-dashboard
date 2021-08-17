@@ -1,9 +1,20 @@
 import React, { useEffect, useState } from 'react'
-import { CButton, CContainer, CFormControl } from '@coreui/react'
+import {
+  CButton,
+  CContainer,
+  CDropdown,
+  CFormControl,
+  CDropdownToggle,
+  CDropdownMenu,
+  CDropdownItem,
+} from '@coreui/react'
 import SprintsTable from './SprintsTable'
 import SprintModal from './SprintModal'
 import { daysDifference } from 'src/util/dates'
-
+import { get } from 'src/util/requests'
+import _ from 'lodash'
+import PropTypes from 'prop-types'
+import CIcon from '@coreui/icons-react'
 const SemesterSetup = () => {
   const [semesterCode, setSemesterCode] = useState('')
   const [organization, setOrganization] = useState('')
@@ -11,20 +22,12 @@ const SemesterSetup = () => {
   const [modalOpen, setModalOpen] = useState(false)
   const [modalEditIndex, setModalEditIndex] = useState(-1)
   const [editOrganization, setEditOrganization] = useState(false)
-
+  const [editSemesterCode, setEditSemesterCode] = useState(false)
   useEffect(() => {
-    // TODO: fetch sprint/ organization data from server
-    const fetchResult = [
-      { id: 1, semester: 'spring2021', startDate: '2021-01-25', endDate: '2021-02-14' },
-      { id: 2, semester: 'spring2021', startDate: '2021-02-15', endDate: '2021-03-08' },
-      { id: 3, semester: 'spring2021', startDate: '2021-03-09', endDate: '2021-03-28' },
-      //{ id: 4, semester: 'spring2021', startDate: '2021-03-29', endDate: '2021-04-25' },
-      //{ id: 5, semester: 'spring2021', startDate: '2021-04-26', endDate: '2021-05-14' },
-    ]
-    setSprints(fetchResult)
-    // setSemesterCode("sp2021")
-    // setOrganization("csucs314s21")
-  }, [setSprints])
+    get('SetupSemester').then((result) => {
+      setSprints(result)
+    })
+  }, [])
 
   const openSprintModal = (sprint = null) => {
     const sprintIndex = sprint ? sprint.id - 1 : -1
@@ -38,7 +41,19 @@ const SemesterSetup = () => {
 
       <hr />
       <h4 className="fw-bold mb-4">Base Requirements</h4>
-      <h5 className="mb-4">Semester Code: {semesterCode}</h5>
+      <h5 className="mb-4">
+        Semester Code:{' '}
+        {editSemesterCode ? <SemesterSelect setSemester={setSemesterCode} /> : semesterCode}
+        <CButton
+          onClick={() => {
+            setEditSemesterCode(!editSemesterCode)
+          }}
+          color="secondary"
+          size="sm"
+        >
+          {editSemesterCode ? <CIcon name="cil-save" /> : <CIcon name="cil-pencil" />}
+        </CButton>
+      </h5>
 
       <h5>GitHub Organization: {organization}</h5>
       {editOrganization && (
@@ -135,3 +150,60 @@ const useSprints = (semesterCode) => {
 }
 
 export default SemesterSetup
+
+const SemesterSelect = ({ setSemester }) => {
+  const seasons = ['fall', 'summer', 'spring']
+  const [seasonIndex, setSeasonIndex] = useState(0)
+  const currentYear = new Date().getFullYear()
+  const years = _.range(currentYear - 1, currentYear + 3)
+  const [yearIndex, setYearIndex] = useState(0)
+  useEffect(() => {
+    setSemester(`${seasons[seasonIndex]}${years[yearIndex]}`)
+  }, [])
+  return (
+    <>
+      <CDropdown variant="btn-group">
+        <CDropdownToggle size="sm">{seasons[seasonIndex]}</CDropdownToggle>
+        <CDropdownMenu>
+          {seasons.map((season, idx) => {
+            return (
+              <CDropdownItem
+                key={idx}
+                onClick={() => {
+                  setSeasonIndex(idx)
+                  setSemester(`${season[idx]}${years[yearIndex]}`)
+                }}
+                active={idx === seasonIndex}
+              >
+                {season}
+              </CDropdownItem>
+            )
+          })}
+        </CDropdownMenu>
+      </CDropdown>
+      <CDropdown variant="btn-group" color="primary">
+        <CDropdownToggle color="primary" size="sm">{`${years[yearIndex]}`}</CDropdownToggle>
+        <CDropdownMenu>
+          {years.map((year, idx) => {
+            return (
+              <CDropdownItem
+                key={idx}
+                onClick={() => {
+                  setYearIndex(idx)
+                  setSemester(`${seasons[seasonIndex]}${years[idx]}`)
+                }}
+                active={idx === yearIndex}
+              >
+                {year}
+              </CDropdownItem>
+            )
+          })}
+        </CDropdownMenu>
+      </CDropdown>
+    </>
+  )
+}
+
+SemesterSelect.propTypes = {
+  setSemester: PropTypes.func,
+}

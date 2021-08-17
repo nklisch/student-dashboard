@@ -44,7 +44,7 @@ export function addQueryParameters(parameters) {
 
 export async function authenticate() {
   try {
-    const response = await get('AUTH')
+    const response = await get('Auth')
     if (response) {
       return response
     }

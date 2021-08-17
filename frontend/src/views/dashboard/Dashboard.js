@@ -1,18 +1,18 @@
 import React from 'react'
 import { CContainer } from '@coreui/react'
 import PropTypes from 'prop-types'
-import SemesterSetup from 'src/components/dashboard/setup/SemesterSetup'
-import StudentActivity from './StudentActivity'
+import StudentDashboard from './StudentDashboard'
+import InstructorDashboard from './InstructorDashboard'
+import { verify_role } from 'src/globals'
+const Dashboard = ({ user }) => {
+  let dashboard = { component: StudentDashboard }
+  if (verify_role('TeachingAssistant', user.role)) {
+    dashboard.component = InstructorDashboard
+  }
 
-const Dashboard = (props) => {
   return (
     <CContainer>
-      <StudentActivity user={props.user} />
-
-      <br />
-      <br />
-      <br />
-      <SemesterSetup />
+      <dashboard.component user={user} />
     </CContainer>
   )
 }
