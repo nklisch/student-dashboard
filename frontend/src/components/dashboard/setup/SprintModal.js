@@ -136,7 +136,7 @@ SprintModal.propTypes = {
 }
 
 const useSprintValidation = (editIndex, allSprints) => {
-  const [sprint, setSprint] = useState({})
+  const [sprint, setSprint] = useState({ startDate: '', endDate: '' })
   const [startError, setStartError] = useState('')
   const [endError, setEndError] = useState('')
 
