@@ -20,7 +20,11 @@ const StudentActivity = ({ user }) => {
   const norm = Array(Object.keys(labels).length).fill(100)
 
   useEffect(() => {
-    get('StudentActivity', `${user.id}`, { sprintId: 1 }).then((result) => {
+    get({
+      api: 'StudentActivity',
+      pathParameter: `${user.id}`,
+      queryParameters: { sprintId: 1 },
+    }).then((result) => {
       if (!result) {
         return
       }

@@ -1,6 +1,6 @@
 import { API_PATHS, API_URL, LOG } from '../globals'
 
-export async function get(api, pathParameter = '', queryParameters = {}) {
+export async function get({ api, pathParameter = '', queryParameters = {} }) {
   const url = `${API_URL}${API_PATHS[api]}${
     pathParameter ? '/' : ''
   }${pathParameter}${addQueryParameters(queryParameters)}`
@@ -18,7 +18,7 @@ export async function get(api, pathParameter = '', queryParameters = {}) {
   return response.json() || response.ok
 }
 
-export async function post(api, queryParameters = {}, body = {}) {
+export async function post({ api, queryParameters = {}, body = {} }) {
   const url = API_URL + API_PATHS[api] + addQueryParameters(queryParameters)
   const response = await fetch(url, {
     method: 'POST',
@@ -44,7 +44,7 @@ export function addQueryParameters(parameters) {
 
 export async function authenticate() {
   try {
-    const response = await get('Auth')
+    const response = await get({ api: 'Auth' })
     if (response) {
       return response
     }

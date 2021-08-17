@@ -16,7 +16,7 @@ import _ from 'lodash'
 import PropTypes from 'prop-types'
 import CIcon from '@coreui/icons-react'
 const SemesterSetup = () => {
-  const [semesterCode, setSemesterCode] = useState('')
+  const [semesterCode, setSemesterCode] = useState('spring2021')
   const [organization, setOrganization] = useState('')
   const [sprints, setSprints, sprintActions] = useSprints(semesterCode)
   const [modalOpen, setModalOpen] = useState(false)
@@ -25,10 +25,10 @@ const SemesterSetup = () => {
   const [editSemesterCode, setEditSemesterCode] = useState(false)
   const [showEditButton, setShowEditButton] = useState(false)
   useEffect(() => {
-    get('SetupSemester').then((result) => {
+    get({ api: 'SetupSemester', queryParameters: { semester: semesterCode } }).then((result) => {
       setSprints(result)
     })
-  }, [])
+  }, [semesterCode])
 
   const openSprintModal = (sprint = null) => {
     const sprintIndex = sprint ? sprint.id - 1 : -1
