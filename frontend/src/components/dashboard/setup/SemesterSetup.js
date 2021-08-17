@@ -23,6 +23,7 @@ const SemesterSetup = () => {
   const [modalEditIndex, setModalEditIndex] = useState(-1)
   const [editOrganization, setEditOrganization] = useState(false)
   const [editSemesterCode, setEditSemesterCode] = useState(false)
+  const [showEditButton, setShowEditButton] = useState(false)
   useEffect(() => {
     get('SetupSemester').then((result) => {
       setSprints(result)
@@ -41,18 +42,28 @@ const SemesterSetup = () => {
 
       <hr />
       <h4 className="fw-bold mb-4">Base Requirements</h4>
-      <h5 className="mb-4">
+      <h5
+        onMouseOver={() => {
+          setShowEditButton(true)
+        }}
+        onMouseLeave={() => {
+          setShowEditButton(false)
+        }}
+        className="mb-4"
+      >
         Semester Code:{' '}
         {editSemesterCode ? <SemesterSelect setSemester={setSemesterCode} /> : semesterCode}
-        <CButton
-          onClick={() => {
-            setEditSemesterCode(!editSemesterCode)
-          }}
-          color="secondary"
-          size="sm"
-        >
-          {editSemesterCode ? <CIcon name="cil-save" /> : <CIcon name="cil-pencil" />}
-        </CButton>
+        {(showEditButton || editSemesterCode) && (
+          <CButton
+            onClick={() => {
+              setEditSemesterCode(!editSemesterCode)
+            }}
+            color="secondary"
+            size="sm"
+          >
+            {editSemesterCode ? <CIcon name="cil-save" /> : <CIcon name="cil-pencil" />}
+          </CButton>
+        )}
       </h5>
 
       <h5>GitHub Organization: {organization}</h5>
