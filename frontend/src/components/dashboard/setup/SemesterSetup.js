@@ -182,7 +182,7 @@ const SemesterSelect = ({ setSemester }) => {
                 key={idx}
                 onClick={() => {
                   setSeasonIndex(idx)
-                  setSemester(`${season[idx]}${years[yearIndex]}`)
+                  setSemester(`${seasons[idx]}${years[yearIndex]}`)
                 }}
                 active={idx === seasonIndex}
               >
