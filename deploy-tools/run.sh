@@ -10,19 +10,14 @@ function usage {
 
 
 function check_client_dependencies {
-  if [ ! -d "./frontend/node_modules" ]; then
-    # install all dependencies into node_modules
-    npm install --prefix ./client
-  fi
+  npm install --prefix ./frontend
+  (cd ./backend; poetry install)
 }
 
 function run_dev {
 	echo "Building and Starting the Server in DEVELOPMENT Mode."
 	echo
-    DOCKER_UP=docker ps | grep postgres;
-    if [[ -z $DOCKER_UP ]]; then
-      docker-compose -f ./deploy-tools/docker-compose.yml up -d db 
-    fi
+    docker-compose -f ./deploy-tools/docker-compose.yml up -d db 
     check_client_dependencies;
     npm --prefix ./frontend run devRun
 }
