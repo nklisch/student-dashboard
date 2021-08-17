@@ -1,13 +1,14 @@
 from fastapi import APIRouter, status, Depends
-from typing import List, Optional
+from typing import List, Optional, Union, Tuple, Dict
 from ..processing.config import setup_semester
-from ..schemas.db_schemas import Sprint, Repo, Team, User
-from ..database.models import Users, Sprints
+from ..schemas.db_schemas import Sprint, Repo, Team, User, Class
+from ..database.models import Users, Sprints, Classes
 from ..schemas.requests import ClassCreate, RequestConfig
 from sqlalchemy.orm import Session
 from ..database import SQLBase
 from ..dependencies import verify_user, VerifyRole, get_semester
 from ..actions.actions import Action
+from ..schemas.responses import SemesterOut
 
 requires_TeachingAssistant = VerifyRole("TeachingAssistant")
 router = APIRouter(
@@ -47,10 +48,18 @@ def handle_setup_semester(newClass: ClassCreate, sprints: List[Sprint]):
     return setup_semester(newClass=newClass, sprints=sprints)
 
 
-@router.get("/semester", response_model=List[Sprint])
+@router.get("/semester", response_model=SemesterOut)
 def get_semester_setup(semester: str = Depends(get_semester)):
-    return Action(model=Sprints).get_all(
+    sprints = Action(model=Sprints).get_all(
         filter_by={"semester": semester}, schema=Sprint
+    )
+    cl = Action(model=Classes).get(filter_by={"semester": semester}, schema=Class)
+    gitOrganization = cl.gitOrganization
+
+    return SemesterOut(
+        sprints=sprints if sprints else None,
+        gitOrganization=gitOrganization,
+        semester=semester,
     )
 
 

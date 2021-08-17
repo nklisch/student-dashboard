@@ -26,7 +26,9 @@ const SemesterSetup = () => {
   const [showEditButton, setShowEditButton] = useState(false)
   useEffect(() => {
     get({ api: 'SetupSemester', queryParameters: { semester: semesterCode } }).then((result) => {
-      setSprints(result)
+      setSprints(result.sprints ? result.sprints : [])
+      setSemesterCode(result.semester)
+      setOrganization(result.gitOrganization)
     })
   }, [semesterCode])
 
