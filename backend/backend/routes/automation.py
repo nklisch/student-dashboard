@@ -1,7 +1,6 @@
 from fastapi import APIRouter, status, Depends
 from ..schemas.db_schemas import Repo, Commit, Issue, Team, Pull, Metric, Sprint
-from ..schemas.requests import RequestConfig
-from ..schemas.requests import ClassCreate
+from ..schemas.requests import RequestConfig, Semester
 from typing import List, Optional
 from ..dependencies import get_semester, get_sprint, verify_user, VerifyRole
 from sqlalchemy.orm import Session
@@ -78,4 +77,4 @@ def automatic_populate_issues(
 
 @router.post("/metrics", status_code=status.HTTP_201_CREATED)
 def automatic_calculate_metrics(sprint: Sprint = Depends(get_sprint)):
-    calculate_metrics(semester=sprint.semester, sprintId=sprint.id)
+    calculate_metrics(semester=sprint.semester, sprint_id=sprint.id)

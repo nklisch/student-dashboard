@@ -9,7 +9,6 @@ from .database.models import Authentications, Sprints, Users
 from sqlalchemy.orm import Session
 from fastapi import Depends, Cookie, HTTPException
 from .globals import Roles
-from .routes import settings
 
 
 def get_semester(
@@ -40,9 +39,9 @@ def get_sprint(sprint: Optional[Sprint]) -> Sprint:
             return sprint
 
 
-def verify_user(userId: str = Cookie(None), token: str = Cookie(None)):
+def verify_user(user_id: str = Cookie(None), token: str = Cookie(None)):
     auth = Action(model=Authentications).get(
-        filter_by={"userId": userId}, schema=Authentication
+        filter_by={"user_id": user_id}, schema=Authentication
     )
 
     if not auth or auth.token != token or not auth.valid:
@@ -54,7 +53,7 @@ def verify_user(userId: str = Cookie(None), token: str = Cookie(None)):
             detail="Your token has expired, please reauthenticate",
             headers={"Clear-Site-Data": "cookies"},
         )
-    return Action(model=Users).get(filter_by={"id": userId}, schema=User)
+    return Action(model=Users).get(filter_by={"id": user_id}, schema=User)
 
 
 class VerifyRole:

@@ -70,7 +70,7 @@
     "test:debug": "react-scripts --inspect-brk test --runInBand",
     "eject": "react-scripts eject",
     "changelog": "auto-changelog --starting-version 3.0.0 --commit-limit false --hide-credit",
-    "api": "(cd ../backend; poetry run uvicorn backend.main:app --reload)",
+    "api": "(cd ../backend; ./start-server.sh)",
     "client": "npm start",
     "devRun": "concurrently \"npm run api\" \"npm run client\""
   },

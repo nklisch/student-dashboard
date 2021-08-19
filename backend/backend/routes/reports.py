@@ -1,6 +1,5 @@
 from fastapi import APIRouter, status, Depends
 from ..schemas.requests import RequestConfig
-from ..schemas.requests import ClassCreate
 from typing import List, Optional
 from ..dependencies import get_semester, get_sprint, verify_user, VerifyRole
 from sqlalchemy.orm import Session
@@ -14,13 +13,13 @@ router = APIRouter(
 
 
 @router.get(
-    "/student_activity/{userId}",
+    "/student_activity/{user_id}",
     response_model=StudentActivityReport,
     status_code=status.HTTP_200_OK,
 )
 def automatic_populate_repos(
-    userId: int, sprintId: int, semester: str = Depends(get_semester)
+    user_id: int, sprint_id: int, semester: str = Depends(get_semester)
 ):
     return get_student_activity_report(
-        sprintId=sprintId, semester=semester, userId=userId
+        sprint_id=sprint_id, semester=semester, user_id=user_id
     )

@@ -16,7 +16,7 @@ from sqlalchemy_utils.types.encrypted.encrypted_type import (
 )
 from .db import toString, SQLBase
 from ..globals import Roles
-from .config import settings
+from ..configuration import database_settings
 from sqlalchemy.orm import relationship
 import datetime
 from sqlalchemy.sql import func
@@ -25,16 +25,16 @@ from sqlalchemy.sql import func
 class Commits(SQLBase):
     __tablename__ = "Commits"
     id = Column(String(150), autoincrement=False, primary_key=True)
-    repoId = Column(Integer, ForeignKey("Repos.id"), primary_key=True)
+    repo_id = Column(Integer, ForeignKey("Repos.id"), primary_key=True)
     date = Column(DateTime, nullable=False)
-    authorId = Column(Integer)
-    authorName = Column(String(150))
-    authorEmail = Column(String(200))
-    sprintId = Column(Integer)
+    author_id = Column(Integer)
+    author_name = Column(String(150))
+    author_email = Column(String(200))
+    sprint_id = Column(Integer)
     semester = Column(String(10))
     __table_args__ = (
         ForeignKeyConstraint(
-            ["sprintId", "semester"], ["Sprints.id", "Sprints.semester"]
+            ["sprint_id", "semester"], ["Sprints.id", "Sprints.semester"]
         ),
     )
     repo = relationship("Repos", back_populates="commits")
@@ -46,7 +46,7 @@ class Commits(SQLBase):
 class Pulls(SQLBase):
     __tablename__ = "Pulls"
     id = Column(Integer, autoincrement=False, primary_key=True)
-    repoId = Column(Integer, ForeignKey("Repos.id"), primary_key=True)
+    repo_id = Column(Integer, ForeignKey("Repos.id"), primary_key=True)
     additions = Column(Integer)
     deletions = Column(Integer)
     commits = Column(Integer)
@@ -55,12 +55,12 @@ class Pulls(SQLBase):
     merged_by = Column(Integer)
     opened_by = Column(Integer, nullable=False)
     assigned_to = Column(Integer)
-    sprintId = Column(Integer)
+    sprint_id = Column(Integer)
     semester = Column(String(10))
     created_at = Column(DateTime)
     __table_args__ = (
         ForeignKeyConstraint(
-            ["sprintId", "semester"], ["Sprints.id", "Sprints.semester"]
+            ["sprint_id", "semester"], ["Sprints.id", "Sprints.semester"]
         ),
     )
     repo = relationship("Repos", back_populates="pulls")
@@ -70,9 +70,8 @@ class Repos(SQLBase):
     __tablename__ = "Repos"
     id = Column(Integer, autoincrement=False, primary_key=True)
     semester = Column(String(10), ForeignKey("Classes.semester"))
-    fullName = Column(String(50), nullable=False)
+    fullname = Column(String(50), nullable=False)
     url = Column(String(100), nullable=False)
-    accessKey = Column(String(250))
     team = relationship("Teams", back_populates="repo", uselist=False)
     pulls = relationship("Pulls", back_populates="repo")
     commits = relationship("Commits", back_populates="repo")
@@ -83,17 +82,17 @@ class Repos(SQLBase):
 class Users(SQLBase):
     __tablename__ = "Users"
     id = Column(Integer, autoincrement=False, primary_key=True)
-    teamId = Column(Integer)
+    team_id = Column(Integer)
     semester = Column(String(10))
-    githubLogin = Column(String(250), nullable=False)
+    github_login = Column(String(250), nullable=False)
     email = Column(String(100))
     name = Column(String(250))
     role = Column(Enum(Roles))
     active = Column(Boolean)
     team = relationship("Teams", back_populates="members")
-    avatarUrl = Column(String(150))
+    avatar_url = Column(String(150))
     __table_args__ = (
-        ForeignKeyConstraint(["teamId", "semester"], ["Teams.id", "Teams.semester"]),
+        ForeignKeyConstraint(["team_id", "semester"], ["Teams.id", "Teams.semester"]),
     )
 
     def __repr__(self):
@@ -102,11 +101,13 @@ class Users(SQLBase):
 
 class Authentications(SQLBase):
     __tablename__ = "Authentication"
-    userId = Column(
+    user_id = Column(
         Integer, ForeignKey("Users.id"), autoincrement=False, primary_key=True
     )
     token = Column(
-        StringEncryptedType(String, settings.DB_ENCRYPT_KEY, AesGcmEngine, "pkcs7")
+        StringEncryptedType(
+            String, database_settings.DB_ENCRYPT_KEY, AesGcmEngine, "pkcs7"
+        )
     )
     created = Column(DateTime, server_default=func.now())
     updated = Column(DateTime, server_default=func.now())
@@ -116,7 +117,7 @@ class Authentications(SQLBase):
 class Audits(SQLBase):
     __tablename__ = "Audit"
     id = Column(Integer, autoincrement=True, primary_key=True)
-    userId = Column(Integer)
+    user_id = Column(Integer)
     request = Column(String(50))
     date = Column(DateTime, server_default=func.now())
     success = Column(Boolean)
@@ -129,7 +130,7 @@ class Teams(SQLBase):
     id = Column(Integer, autoincrement=False, primary_key=True)
     semester = Column(String(10), ForeignKey("Classes.semester"), primary_key=True)
     name = Column(String(250))
-    repoId = Column(Integer, ForeignKey("Repos.id"), nullable=False)
+    repo_id = Column(Integer, ForeignKey("Repos.id"), nullable=False)
     repo = relationship("Repos", back_populates="team", uselist=False)
     members = relationship("Users", back_populates="team")
     Class = relationship("Classes", back_populates="teams")
@@ -141,7 +142,7 @@ class Teams(SQLBase):
 class Classes(SQLBase):
     __tablename__ = "Classes"
     semester = Column(String(10), autoincrement=False, primary_key=True)
-    gitOrganization = Column(String(25), nullable=False)
+    git_organization = Column(String(25), nullable=False)
     teams = relationship("Teams", back_populates="Class")
 
     def __repr__(self):
@@ -153,8 +154,8 @@ class Sprints(SQLBase):
     __tablename__ = "Sprints"
     id = Column(Integer, autoincrement=False, primary_key=True)
     semester = Column(String(10), ForeignKey("Classes.semester"), primary_key=True)
-    startDate = Column(Date, nullable=False)
-    endDate = Column(Date, nullable=False)
+    start_date = Column(Date, nullable=False)
+    end_date = Column(Date, nullable=False)
 
     def __repr__(self):
         return toString(self)
@@ -164,21 +165,21 @@ class Issues(SQLBase):
     __tablename__ = "Issues"
     id = Column(Integer, autoincrement=False, primary_key=True)
     number = Column(Integer)
-    createdBy = Column(Integer)
-    closedBy = Column(Integer)
-    repoId = Column(Integer, ForeignKey("Repos.id"), primary_key=True)
-    epicId = Column(Integer)
+    created_by = Column(Integer)
+    closed_by = Column(Integer)
+    repo_id = Column(Integer, ForeignKey("Repos.id"), primary_key=True)
+    epic_id = Column(Integer)
     state = Column(String(10), nullable=False)
-    sprintId = Column(Integer)
+    sprint_id = Column(Integer)
     semester = Column(String(10))
     pipeline = Column(String(25))
-    storyPoints = Column(Integer)
+    story_points = Column(Integer)
     opened = Column(DateTime)
     closed = Column(DateTime)
-    isEpic = Column(Boolean)
+    is_epic = Column(Boolean)
     __table_args__ = (
         ForeignKeyConstraint(
-            ["sprintId", "semester"], ["Sprints.id", "Sprints.semester"]
+            ["sprint_id", "semester"], ["Sprints.id", "Sprints.semester"]
         ),
     )
     repo = relationship("Repos", back_populates="issues")
@@ -189,17 +190,17 @@ class Issues(SQLBase):
 
 class Metrics(SQLBase):
     __tablename__ = "Metrics"
-    userId = Column(Integer, autoincrement=False, primary_key=True)
-    sprintId = Column(Integer, autoincrement=False, primary_key=True)
+    user_id = Column(Integer, autoincrement=False, primary_key=True)
+    sprint_id = Column(Integer, autoincrement=False, primary_key=True)
     semester = Column(String(10), primary_key=True)
     commits = Column(Integer)
     pulls = Column(Integer)
     issues = Column(Integer)
-    activeDays = Column(Integer)
+    active_says = Column(Integer)
 
     __table_args__ = (
         ForeignKeyConstraint(
-            ["sprintId", "semester"], ["Sprints.id", "Sprints.semester"]
+            ["sprint_id", "semester"], ["Sprints.id", "Sprints.semester"]
         ),
     )
 

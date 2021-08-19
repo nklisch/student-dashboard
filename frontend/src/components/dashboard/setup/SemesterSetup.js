@@ -28,7 +28,7 @@ const SemesterSetup = () => {
     get({ api: 'SetupSemester', queryParameters: { semester: semesterCode } }).then((result) => {
       setSprints(result.sprints ? result.sprints : [])
       setSemesterCode(result.semester)
-      setOrganization(result.gitOrganization)
+      setOrganization(result.git_organization)
     })
   }, [semesterCode])
 

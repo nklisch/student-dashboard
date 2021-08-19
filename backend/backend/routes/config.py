@@ -3,12 +3,12 @@ from typing import List, Optional, Union, Tuple, Dict
 from ..processing.config import setup_semester
 from ..schemas.db_schemas import Sprint, Repo, Team, User, Class
 from ..database.models import Users, Sprints, Classes
-from ..schemas.requests import ClassCreate, RequestConfig
+from ..schemas.requests import RequestConfig
 from sqlalchemy.orm import Session
 from ..database import SQLBase
 from ..dependencies import verify_user, VerifyRole, get_semester
 from ..actions.actions import Action
-from ..schemas.responses import SemesterOut
+from ..schemas.requests import Semester
 
 requires_TeachingAssistant = VerifyRole("TeachingAssistant")
 router = APIRouter(
@@ -23,7 +23,9 @@ def automatic_populate_repos(
     semester: str = Depends(get_semester),
     request_config: Optional[RequestConfig] = RequestConfig(),
 ):
-    response = AutomateRepos(emester=semester, request_config=request_config).populate()
+    response = AutomateRepos(
+        semester=semester, request_config=request_config
+    ).populate()
 
     if request_config.get_response_body:
         return response
@@ -44,21 +46,25 @@ def automatic_populate_teams(
 
 
 @router.post("/semester", status_code=status.HTTP_201_CREATED)
-def handle_setup_semester(newClass: ClassCreate, sprints: List[Sprint]):
-    return setup_semester(newClass=newClass, sprints=sprints)
+def handle_setup_semester(new_semester: Semester):
+    return setup_semester(
+        semester=new_semester.semester,
+        git_orginization=new_semester.git_organization,
+        sprints=semester.sprints,
+    )
 
 
-@router.get("/semester", response_model=SemesterOut)
+@router.get("/semester", response_model=Semester)
 def get_semester_setup(semester: str = Depends(get_semester)):
     sprints = Action(model=Sprints).get_all(
         filter_by={"semester": semester}, schema=Sprint
     )
     cl = Action(model=Classes).get(filter_by={"semester": semester}, schema=Class)
-    gitOrganization = cl.gitOrganization if cl else None
+    git_organization = cl.git_organization if cl else None
 
-    return SemesterOut(
-        sprints=sprints if sprints else None,
-        gitOrganization=gitOrganization,
+    return Semester(
+        sprints=sprints,
+        git_organization=git_organization,
         semester=semester,
     )
 

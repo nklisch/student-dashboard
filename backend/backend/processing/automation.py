@@ -122,18 +122,20 @@ class AutomateUserTeams(Automate[ModelType, SchemaType]):
         users = []
         teams = []
         current_users = set()
-        for repo, teamNumber in super().get_valid_team_repos():
+        for repo, team_number in super().get_valid_team_repos():
             teams.append(
-                Team(id=teamNumber, semester=self.semester, repoId=repo.id, schema=Team)
+                Team(
+                    id=team_number, semester=self.semester, repoId=repo.id, schema=Team
+                )
             )
-            users.extend(self.get_users(repo, teamNumber, current_users))
+            users.extend(self.get_users(repo, team_number, current_users))
         return [(teams, Team, Teams), (users, User, Users)]
 
-    def get_users(self, repo: Repo, teamNumber: int, current_users: set):
+    def get_users(self, repo: Repo, team_number: int, current_users: set):
         for member in repo.get_collaborators():
             if member.id not in current_users:
                 current_users.add(member.id)
-                if self.isStudent(member) or teamNumber == 99:
+                if self.is_student(member) or team_number == 99:
                     current_users.add(member.id)
                     yield User(
                         id=member.id,
@@ -145,11 +147,11 @@ class AutomateUserTeams(Automate[ModelType, SchemaType]):
                         active=False,
                         avatarUrl=member.avatar_url,
                         role="Student"
-                        if self.isStudent(member)
+                        if self.is_student(member)
                         else "TeachingAssistant",
                     )
 
-    def isStudent(self, member):
+    def is_student(self, member):
         return member.permissions.admin != True
 
 
@@ -199,29 +201,31 @@ class AutomateIssues(Automate[Issues, Issue]):
         issues = []
         for repo, _ in super().get_valid_team_repos():
             for issue in repo.get_issues(state="all", since=self.since):
-                zenIssue = zh.get_issue_data(repo_id=repo.id, issue_number=issue.number)
+                zen_issue = zh.get_issue_data(
+                    repo_id=repo.id, issue_number=issue.number
+                )
                 sleep(0.65)
                 issues.append(
                     Issue(
                         id=issue.id,
                         number=issue.number,
-                        repoId=repo.id,
-                        storyPoints=zenIssue["estimate"]["value"]
-                        if "estimate" in zenIssue
+                        repo_id=repo.id,
+                        story_points=zen_issue["estimate"]["value"]
+                        if "estimate" in zen_issue
                         else None,
                         opened=issue.created_at,
                         closed=issue.closed_at,
                         state=issue.state,
-                        sprintId=determine_sprint(
+                        sprint_id=determine_sprint(
                             self.sprints, issue.created_at.date()
                         ),
-                        pipeline=zenIssue["pipelines"][-1]["name"]
-                        if "pipelines" in zenIssue
+                        pipeline=zen_issue["pipelines"][-1]["name"]
+                        if "pipelines" in zen_issue
                         else None,
-                        createdBy=issue.user.id,
-                        closedBy=issue.closed_by,
+                        created_by=issue.user.id,
+                        closed_by=issue.closed_by,
                         semester=self.semester,
-                        isEpic=zenIssue["is_epic"],
+                        is_epic=zen_issue["is_epic"],
                     )
                 )
         return [(issues, Issue, Issues)]
@@ -245,12 +249,12 @@ class AutomatePulls(Automate[Pulls, Pull]):
                     pulls.append(
                         Pull(
                             id=pull.id,
-                            repoId=repo.id,
+                            repo_id=repo.id,
                             additions=pull.additions,
                             deletions=pull.deletions,
                             commits=pull.commits,
                             changed_files=pull.changed_files,
-                            sprintId=determine_sprint(
+                            sprint_id=determine_sprint(
                                 self.sprints,
                                 pull.merged_at.date()
                                 if pull.merged_at

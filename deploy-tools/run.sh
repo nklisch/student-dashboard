@@ -11,7 +11,9 @@ function usage {
 
 function check_client_dependencies {
   npm install --prefix ./frontend
-  (cd ./backend; poetry install)
+  pushd ./backend
+  poetry install
+  popd
 }
 
 function run_dev {
@@ -24,9 +26,21 @@ function run_dev {
 
 function run_prod {
 	echo "Building and Starting the Server in PRODUCTION Mode."
+    # npm --prefix ./frontend run build
+    # cp -r ./frontend/build/* ./backend/backend/html/
+    # docker-compose -f ./deploy-tools/docker-compose.yml up --force-recreate --build
     npm --prefix ./frontend run build
     cp -r ./frontend/build/* ./backend/backend/html/
-    docker-compose -f ./deploy-tools/docker-compose.yml up --force-recreate --build
+    if [[ ! -d "./build" ]]; then
+      mkdir build
+    fi
+    tar -czvf ./build/student-dashboard.tar.gz ./backend
+    if [[ ! -d "./test" ]]; then
+      mkdir test
+    fi
+    cp ./build/student-dashboard.tar.gz ./test
+    cd ./test
+    tar -xzf student-dashboard.tar.gz .
 }
 
 function deploy {

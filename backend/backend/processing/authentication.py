@@ -1,4 +1,4 @@
-from .gitconnection import settings
+from ..configuration import github_settings
 from github import Github
 from fastapi import HTTPException
 import requests
@@ -16,8 +16,8 @@ def verify_user_on_github(code):
             "https://github.com/login/oauth/access_token",
             params={
                 "code": code,
-                "client_id": settings.GITHUB_CLIENT_ID,
-                "client_secret": settings.GITHUB_CLIENT_SECRET,
+                "client_id": github_settings.github_client_id,
+                "client_secret": github_settings.github_client_secret,
             },
             headers={"Accept": "application/json"},
         )
@@ -35,29 +35,36 @@ def verify_user_on_github(code):
                 break
     except Exception as e:
         raise HTTPException(
-            status_code=401, detail="Could not validate user with github"
+            status_code=401, detail=f"Could not validate user with github: {e}"
         )
     auth = Action(model=Authentications).get(
-        filter_by={"userId": user.id}, schema=Authentication
+        filter_by={"user_id": user.id}, schema=Authentication
     )
     semester = determine_semester(date.today())
     user_token = auth.token if auth else None
+    if auth and auth.updated < (date.today - 30):
+        auth.valid = False
+        Action(model=Authentications).update(data=auth)
+        raise HTTPException(
+            status_code=401,
+            detail="Token has been invalidated. Please reaquire a token.",
+        )
     if not user_token or not auth.valid:
         user_token = secrets.token_urlsafe(64)
         try:
             Action(model=Users).create_or_update(
                 {
                     "id": user.id,
-                    "githubLogin": user.login,
+                    "github_login": user.login,
                     "semester": semester,
                     "name": user.name,
                     "email": user_email,
                     "active": True,
-                    "avatarUrl": user.avatar_url,
+                    "avatar_url": user.avatar_url,
                 }
             )
             Action(model=Authentications).create_or_update(
-                Authentication(userId=user.id, token=user_token, valid=True)
+                Authentication(user_id=user.id, token=user_token, valid=True)
             )
         except Exception as e:
             raise HTTPException(

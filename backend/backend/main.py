@@ -9,7 +9,6 @@ from sqlalchemy.orm import Session
 from .dependencies import get_db
 from starlette.responses import Response
 from fastapi.staticfiles import StaticFiles
-from .routes import settings
 
 app = FastAPI()
 
@@ -20,8 +19,6 @@ app.include_router(reports.router)
 app.include_router(authentication.router)
 
 deploy_dir = "./backend/html"
-if settings.PRODUCTION == "TRUE":
-    deploy_dir = "./app/html"
 
 app.mount(
     "/",
@@ -46,11 +43,11 @@ app.add_middleware(
 async def audit(request: Request, call_next):
     Action.db = get_db()
     request_url = request.base_url
-    userId = request.cookies["userId"] if "userId" in request.cookies else None
+    user_id = request.cookies["user_id"] if "user_id" in request.cookies else None
     response = await call_next(request)
     Action(model=Audits).create(
         AuditCreate(
-            userId=userId,
+            user_id=user_id,
             request=request.base_url.path,
             ip=request.client.host,
             success=response.status_code < 300,

@@ -9,7 +9,7 @@ from ..globals import Roles
 
 class AuditCreate(BaseModel):
     ip: str
-    userId: Optional[int]
+    user_id: Optional[int]
     request: Optional[str]
     success: Optional[bool]
     message: Optional[str]
@@ -19,7 +19,7 @@ class AuditCreate(BaseModel):
 
 
 class Authentication(BaseModel):
-    userId: int
+    user_id: int
     token: str
     created: Optional[datetime]
     updated: Optional[datetime]
@@ -31,14 +31,14 @@ class Authentication(BaseModel):
 
 class User(BaseModel):
     id: int
-    githubLogin: str
+    github_login: str
     semester: str = Semester
-    teamId: Optional[int]
+    team_id: Optional[int]
     email: Optional[EmailStr]
     name: Optional[str]
     role: Optional[Roles]
     active: Optional[bool]
-    avatarUrl: Optional[HttpUrl]
+    avatar_url: Optional[HttpUrl]
 
     class Config:
         orm_mode = True
@@ -46,7 +46,7 @@ class User(BaseModel):
 
 class Team(BaseModel):
     id: int
-    repoId: int
+    repo_id: int
     semester: str = Semester
     name: Optional[str]
     members: Optional[List[User]]
@@ -57,7 +57,7 @@ class Team(BaseModel):
 
 class Class(BaseModel):
     semester: str = Semester
-    gitOrganization: str
+    git_organization: str
     teams: Optional[List[Team]]
     instructor: Optional[User]
     teachingAssistants: Optional[List[User]]
@@ -69,8 +69,8 @@ class Class(BaseModel):
 class Sprint(BaseModel):
     id: int
     semester: str = Semester
-    startDate: Optional[date]
-    endDate: Optional[date]
+    start_date: Optional[date]
+    end_date: Optional[date]
 
     class Config:
         orm_mode = True
@@ -79,17 +79,17 @@ class Sprint(BaseModel):
 class Issue(BaseModel):
     id: int
     number: int
-    createdBy: int
-    repoId: int
-    isEpic: bool
+    created_by: int
+    repo_id: int
+    is_epic: bool
     state: str
-    sprintId: int
+    sprint_id: int
     semester: str = Semester
     sprint: Optional[Sprint]
     pipeline: Optional[str]
     opened: datetime
-    epicId: Optional[int]
-    storyPoints: Optional[int]
+    epic_id: Optional[int]
+    story_points: Optional[int]
     closed: Optional[datetime]
 
     class Config:
@@ -98,11 +98,11 @@ class Issue(BaseModel):
 
 class Commit(BaseModel):
     id: str = Field(None, title="The unique SHA string attach to the commit.")
-    repoId: int
+    repo_id: int
     date: datetime
     semester: str
-    sprintId: int
-    authorId: Optional[int] = None
+    sprint_id: int
+    author_id: Optional[int] = None
     sprint: Optional[Sprint]
     authorName: Optional[str]
     authorEmail: Optional[EmailStr]
@@ -113,12 +113,12 @@ class Commit(BaseModel):
 
 class Pull(BaseModel):
     id: int
-    repoId: int
+    repo_id: int
     additions: Optional[int]
     deletions: Optional[int]
     commits: Optional[int]
     changed_files: Optional[int]
-    sprintId: int
+    sprint_id: int
     semester: str = Semester
     merged_at: Optional[datetime]
     opened_by: int
@@ -133,10 +133,9 @@ class Pull(BaseModel):
 class Repo(BaseModel):
     id: int
     semester: str = Semester
-    fullName: str
+    fullname: str
     url: HttpUrl
     team: Optional[Team]
-    accessKey: Optional[str]
     issues: Optional[List[Issue]]
     commits: Optional[List[Commit]]
     pulls: Optional[List[Pull]]
@@ -147,13 +146,13 @@ class Repo(BaseModel):
 
 class Metric(BaseModel):
 
-    userId: int
-    sprintId: int
+    user_id: int
+    sprint_id: int
     semester: str = Semester
     commits: int
     pulls: int
     issues: int
-    activeDays: int
+    active_days: int
 
     class Config:
         orm_mode = True

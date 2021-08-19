@@ -23,7 +23,7 @@ const StudentActivity = ({ user }) => {
     get({
       api: 'StudentActivity',
       pathParameter: `${user.id}`,
-      queryParameters: { sprintId: 1 },
+      queryParameters: { sprint_id: 1 },
     }).then((result) => {
       if (!result) {
         return

@@ -9,20 +9,20 @@ import pandas as pd
 from scipy import stats
 
 
-def get_student_activity_report(sprintId: int, semester: str, userId: int):
+def get_student_activity_report(sprint_id: int, semester: str, user_id: int):
     metrics = pd.DataFrame(
         [
             Metric.from_orm(row).dict()
             for row in Action(model=Metrics).get_all(
-                filter_by={"semester": semester, "sprintId": sprintId}
+                filter_by={"semester": semester, "sprint_id": sprint_id}
             )
         ]
     )
     score = Action(model=Metrics).get(
         filter_by={
             "semester": semester,
-            "sprintId": sprintId,
-            "userId": userId,
+            "sprint_id": sprint_id,
+            "user_id": user_id,
         }
     )
     if not score:
@@ -47,9 +47,9 @@ def get_student_activity_report(sprintId: int, semester: str, userId: int):
         score=score.activeDays,
         target=round(stats.trim_mean(metrics["activeDays"], proportiontocut=0.25)),
     )
-    user = Action(model=Users).get(filter_by={"id": userId}, schema=User)
+    user = Action(model=Users).get(filter_by={"id": user_id}, schema=User)
     sprint = Action(model=Sprints).get(
-        filter_by={"id": sprintId, "semester": semester}, schema=Sprint
+        filter_by={"id": sprint_id, "semester": semester}, schema=Sprint
     )
     return StudentActivityReport(
         user=user,

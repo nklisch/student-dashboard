@@ -15,6 +15,17 @@ class Action:
         self.model = model
         self.request_config = request_config
 
+    def convert_schema_to_dict(self, data: Union[dict, SchemaType]) -> dict:
+        if type(data) is not dict:
+            return data.dict(exclude_unset=True)
+        return data
+
+    def convert_data_to_model(self, data: Union[dict, SchemaType]) -> ModelType:
+        d = {
+            k: v for k, v in self.convert_schema_to_dict(data).items() if v is not None
+        }
+        return self.model(**d)
+
     def get_all(
         self,
         filter_by: dict = {},
@@ -47,7 +58,7 @@ class Action:
         return Action.db.query(self.model).filter_by(**filter_by).count()
 
     # CREATES
-    def create(self, data: Union[dict, SchemaType]) -> ModelType:
+    def create(self, data: Union[dict, SchemaType]):
         db = Action.db
         data_db = self.convert_data_to_model(data)
         db.add(data_db)
@@ -61,7 +72,7 @@ class Action:
         db.commit()
         return self
 
-    def create_or_update(self, data: Union[dict, SchemaType]) -> ModelType:
+    def create_or_update(self, data: Union[dict, SchemaType]):
         db = Action.db
         data_db = self.convert_data_to_model(data)
         db.merge(data_db)
@@ -76,15 +87,14 @@ class Action:
         db.commit()
         return self
 
-    def convert_schema_to_dict(self, data) -> dict:
-        if type(data) is not dict:
-            return data.dict()
-        return data
-
-    def convert_data_to_model(self, data: Union[dict, SchemaType]) -> ModelType:
-        d = {
-            k: v for k, v in self.convert_schema_to_dict(data).items() if v is not None
-        }
-        return self.model(**d)
-
     # UPDATE
+
+    def update(self, data: Union[dict, SchemaType]):
+        db = Action.db
+        data = self.convert_schema_to_dict(data)
+        obj = self.model()
+        for key in data:
+            setattr(obj, key, data[key])
+        db.add(obj)
+        db.commit()
+        return self

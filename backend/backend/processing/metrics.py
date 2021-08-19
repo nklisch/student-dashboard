@@ -11,7 +11,7 @@ def calculate_metrics(semester: str, sprintId: int):
     f = {"semester": semester}
     users = Action(model=Users).get_all(filter_by={"role": "Student", **f}, schema=User)
     metrics = []
-    f["sprintId"] = sprintId
+    f["sprint_id"] = sprint_id
     for user in users:
         commits = Action(model=Commits).get_all(filter_by={"authorId": user.id, **f})
         commit_count = len(commits)
@@ -22,12 +22,12 @@ def calculate_metrics(semester: str, sprintId: int):
         active_days = determine_active_days(commits, pulls, issues)
         metrics.append(
             Metric(
-                userId=user.id,
-                sprintId=sprintId,
+                user_id=user.id,
+                sprint_id=sprint_id,
                 commits=commit_count,
                 pulls=pulls_count,
                 issues=issues_count,
-                activeDays=active_days,
+                active_days=active_days,
                 semester=semester,
             )
         )
