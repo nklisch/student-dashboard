@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     production: Optional[bool]
     client_port: Optional[int]
     server_port: Optional[int]
-    url_root: Optional[HttpUrl]
+    url_root: Optional[str]
 
     class Config:
         env_file = ".env"
@@ -56,17 +56,22 @@ class GitHubSettings(BaseSettings):
 
 
 def get_settings() -> Settings:
+
     settings = {
         "production": False,
         "server_port": 8000,
         "client_port": 3000,
         "url_root": "http://localhost",
     }
-    settings.update(Settings().dict())
-    settings.update(EnvironementSettings().dict())
+    print(settings)
+    settings.update(Settings().dict(exclude_unset=True))
+    print(settings)
+    settings.update(EnvironementSettings().dict(exclude_unset=True))
+    print(settings)
     return Settings(**settings)
 
 
 global_settings = get_settings()
+print(global_settings)
 database_settings = DatabaseSettings()
 github_settings = GitHubSettings()

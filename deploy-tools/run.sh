@@ -1,4 +1,6 @@
  #!/bin/bash
+
+
 function usage {
   echo "usage: $0 [dev/prod]";
   echo "Default is $0 dev";
@@ -9,46 +11,55 @@ function usage {
 }
 
 
-function check_client_dependencies {
-  npm install --prefix ./frontend
+function check_server_dependencies {
+  docker-compose -f ./deploy-tools/docker-compose.yml up -d db
   pushd ./backend
   poetry install
   popd
 }
 
+function check_client_dependencies {
+  npm install --prefix ./frontend
+}
+
 function run_dev {
 	echo "Building and Starting the Server in DEVELOPMENT Mode."
 	echo
-    docker-compose -f ./deploy-tools/docker-compose.yml up -d db 
-    check_client_dependencies;
-    npm --prefix ./frontend run devRun
+  export CLIENT_PORT="3000"
+  export SERVER_PORT="8000"
+  check_server_dependencies
+  check_client_dependencies
+  npm --prefix ./frontend run devRun
 }
 
 function run_prod {
 	echo "Building and Starting the Server in PRODUCTION Mode."
-    # npm --prefix ./frontend run build
-    # cp -r ./frontend/build/* ./backend/backend/html/
-    # docker-compose -f ./deploy-tools/docker-compose.yml up --force-recreate --build
-    npm --prefix ./frontend run build
-    cp -r ./frontend/build/* ./backend/backend/html/
-    if [[ ! -d "./build" ]]; then
-      mkdir build
-    fi
-    tar -czvf ./build/student-dashboard.tar.gz ./backend
-    if [[ ! -d "./test" ]]; then
-      mkdir test
-    fi
-    cp ./build/student-dashboard.tar.gz ./test
-    cd ./test
-    tar -xzf student-dashboard.tar.gz .
+  # npm --prefix ./frontend run build
+  # cp -r ./frontend/build/* ./backend/backend/html/
+  # docker-compose -f ./deploy-tools/docker-compose.yml up --force-recreate --build
+  export CLIENT_PORT="8000"
+  export SERVER_PORT="8000"
+  npm --prefix ./frontend run build
+  cp -r ./frontend/build/* ./backend/backend/html/
+  pushd ./backend
+  ./start-server.sh
 }
 
 function deploy {
-  echo "Building new docker image and pushing it to dockerhub"
-  cd ./backend
-  IMAGE="$DOCKERHUB_USERNAME/csu-cs314-student-dashboard"
-  docker build -t $IMAGE .
-  docker push $IMAGE
+  echo "Building and creating a tar for deployment"
+  check_server_dependencies
+  check_client_dependencies
+  npm --prefix ./frontend run build
+  cp -r ./frontend/build/* ./backend/backend/html/
+  if [[ ! -d "./build" ]]; then
+      mkdir build
+    fi
+    tar -czvf ./build/student-dashboard.tar.gz ./backend
+
+  # cd ./backend
+  # IMAGE="$DOCKERHUB_USERNAME/csu-cs314-student-dashboard"
+  # docker build -t $IMAGE .
+  # docker push $IMAGE
 }
 
 realpath() {

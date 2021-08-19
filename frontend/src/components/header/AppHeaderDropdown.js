@@ -36,7 +36,7 @@ AppHeaderDropdown.propTypes = {
 }
 
 const ProfileIcon = (props) => {
-  if (!props.user?.avatarUrl) {
+  if (!props.user?.avatar_url) {
     return (
       <CAvatar color="primary" size="md" textColor="white">
         <CIcon name="cil-user" />
@@ -44,12 +44,12 @@ const ProfileIcon = (props) => {
     )
   }
 
-  return <CAvatar size="md" src={props.user.avatarUrl} />
+  return <CAvatar size="md" src={props.user.avatar_url} />
 }
 
 ProfileIcon.propTypes = {
   user: PropTypes.object,
-  avatarUrl: PropTypes.string,
+  avatar_url: PropTypes.string,
 }
 
 export default AppHeaderDropdown

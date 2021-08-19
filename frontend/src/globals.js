@@ -1,8 +1,6 @@
 import ulog from 'ulog'
-
 ulog.level = ulog.ERROR
-export const API_URL =
-  window.location.port === '3000' ? 'http://localhost:8000/' : 'http://localhost/'
+export const API_URL = `http://localhost:${process.env.REACT_APP_SERVER_PORT}/`
 export const LOG = ulog('Student Dashboard')
 export const API_PATHS = {
   Auth: 'authenticate/user',

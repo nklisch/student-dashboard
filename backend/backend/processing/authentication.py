@@ -7,7 +7,7 @@ from ..schemas.db_schemas import User, Authentication
 from ..database.models import Users, Authentications
 from ..dependencies import determine_semester, get_sprint
 import secrets
-from datetime import date
+from datetime import date, timedelta
 
 
 def verify_user_on_github(code):
@@ -42,7 +42,7 @@ def verify_user_on_github(code):
     )
     semester = determine_semester(date.today())
     user_token = auth.token if auth else None
-    if auth and auth.updated < (date.today - 30):
+    if auth and (date.today() - auth.updated.date()) > timedelta(days=30):
         auth.valid = False
         Action(model=Authentications).update(data=auth)
         raise HTTPException(

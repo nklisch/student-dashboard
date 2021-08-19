@@ -26,7 +26,6 @@ const Login = (props) => {
           <CImage fluid src="/wordcloud.png" />
         </CCol>
       </CRow>
-
       <CRow className="justify-content-center">
         <CCol className="text-center">
           <h1 className="mt-4">Student Activity Dashboard</h1>
