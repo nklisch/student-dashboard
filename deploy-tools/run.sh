@@ -14,8 +14,9 @@ function usage {
 function check_server_dependencies {
   DB_CONNECTION=$(ps l | grep faure.cs.colostate.edu | grep -v grep)
   DB_CONNECTION=${DB_CONNECTION// /}
+  echo $DB_CONNECTION
   DOMAINNAME=$(domainname)
-  if [ -z $DB_CONNECTION[0] ] && [ $DOMAINNAME != 'cs.colostate.edu' ]; then
+  if [ -z $DB_CONNECTION ] && [ $DOMAINNAME != 'cs.colostate.edu' ]; then
     echo "You do not have a tunnel setup to the cs department machines."
     echo "Please run connectdb command."
     exit 1
