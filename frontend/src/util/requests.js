@@ -13,7 +13,7 @@ export async function get({ api, pathParameter = '', queryParameters = {} }) {
     LOG.error(
       `get: ${api}, status: ${response.status}:${response.statusText}, queryParameters: ${queryParameters}`,
     )
-    return null
+    return undefined
   }
   return response.json() || response.ok
 }
@@ -29,7 +29,7 @@ export async function post({ api, queryParameters = {}, body = {} }) {
     LOG.error(
       `post: ${api}, status: ${response.status}:${response.statusText}, queryParameters: ${queryParameters}, body: ${body}`,
     )
-    return null
+    return undefined
   }
   return response.json() || response.ok
 }

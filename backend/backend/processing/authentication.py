@@ -40,7 +40,6 @@ def verify_user_on_github(code):
     auth = Action(model=Authentications).get(
         filter_by={"user_id": user.id}, schema=Authentication
     )
-    semester = determine_semester(date.today())
     user_token = auth.token if auth else None
     if auth and (date.today() - auth.updated.date()) > timedelta(days=30):
         auth.valid = False
@@ -56,7 +55,6 @@ def verify_user_on_github(code):
                 {
                     "id": user.id,
                     "github_login": user.login,
-                    "semester": semester,
                     "name": user.name,
                     "email": user_email,
                     "active": True,

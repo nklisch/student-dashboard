@@ -1,4 +1,3 @@
-# <---Users--->
 from sqlalchemy import (
     Column,
     Integer,
@@ -65,6 +64,9 @@ class Pulls(SQLBase):
     )
     repo = relationship("Repos", back_populates="pulls")
 
+    def __repr__(self):
+        return toString(self)
+
 
 class Repos(SQLBase):
     __tablename__ = "Repos"
@@ -77,23 +79,30 @@ class Repos(SQLBase):
     commits = relationship("Commits", back_populates="repo")
     issues = relationship("Issues", back_populates="repo")
 
+    def __repr__(self):
+        return toString(self)
 
-# <---Users--->
+
 class Users(SQLBase):
     __tablename__ = "Users"
     id = Column(Integer, autoincrement=False, primary_key=True)
-    team_id = Column(Integer)
-    semester = Column(String(10))
+    team_id = Column(Integer, ForeignKey("Teams.id"))
     github_login = Column(String(250), nullable=False)
     email = Column(String(100))
     name = Column(String(250))
     role = Column(Enum(Roles))
     active = Column(Boolean)
-    team = relationship("Teams", back_populates="members")
     avatar_url = Column(String(150))
-    __table_args__ = (
-        ForeignKeyConstraint(["team_id", "semester"], ["Teams.id", "Teams.semester"]),
-    )
+    team = relationship("Teams", back_populates="members")
+
+    def __repr__(self):
+        return toString(self)
+
+
+class Students(SQLBase):
+    __tablename__ = "Students"
+    user_id = Column(Integer, autoincrement=False, primary_key=True)
+    semester = Column(String(10), ForeignKey("Classes.semester"))
 
     def __repr__(self):
         return toString(self)
@@ -106,12 +115,15 @@ class Authentications(SQLBase):
     )
     token = Column(
         StringEncryptedType(
-            String, database_settings.DB_ENCRYPT_KEY, AesGcmEngine, "pkcs7"
+            String, database_settings.DB_ENCRYPT_KEY, AesGcmEngine, "pkcs7", length=350
         )
     )
     created = Column(DateTime, server_default=func.now())
     updated = Column(DateTime, server_default=func.now())
     valid = Column(Boolean)
+
+    def __repr__(self):
+        return toString(self)
 
 
 class Audits(SQLBase):
@@ -121,8 +133,11 @@ class Audits(SQLBase):
     request = Column(String(50))
     date = Column(DateTime, server_default=func.now())
     success = Column(Boolean)
-    message = Column(String)
+    message = Column(String(250))
     ip = Column(String(25))
+
+    def __repr__(self):
+        return toString(self)
 
 
 class Teams(SQLBase):
@@ -144,6 +159,7 @@ class Classes(SQLBase):
     semester = Column(String(10), autoincrement=False, primary_key=True)
     git_organization = Column(String(25), nullable=False)
     teams = relationship("Teams", back_populates="Class")
+    sprints = relationship("Sprints", back_populates="Class")
 
     def __repr__(self):
         return toString(self)
@@ -156,6 +172,7 @@ class Sprints(SQLBase):
     semester = Column(String(10), ForeignKey("Classes.semester"), primary_key=True)
     start_date = Column(Date, nullable=False)
     end_date = Column(Date, nullable=False)
+    Class = relationship("Classes", back_populates="sprints")
 
     def __repr__(self):
         return toString(self)

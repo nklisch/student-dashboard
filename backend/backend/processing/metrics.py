@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from ..schemas.db_schemas import Sprint
-from ..database.models import Commits, Users, Pulls, Issues, Metrics
+from ..database.models import Commits, Users, Pulls, Issues, Metrics, Students
 from ..schemas.db_schemas import User, Team, Commit, Metric
 from typing import List
 from datetime import date
@@ -9,15 +9,17 @@ from ..actions.actions import Action
 
 def calculate_metrics(semester: str, sprintId: int):
     f = {"semester": semester}
-    users = Action(model=Users).get_all(filter_by={"role": "Student", **f}, schema=User)
+    users = Action(model=Users).get_all(
+        filter_by={"role": "Student", **f}, schema=User, joins=[Students]
+    )
     metrics = []
     f["sprint_id"] = sprint_id
     for user in users:
-        commits = Action(model=Commits).get_all(filter_by={"authorId": user.id, **f})
+        commits = Action(model=Commits).get_all(filter_by={"author_id": user.id, **f})
         commit_count = len(commits)
         pulls = Action(model=Pulls).get_all(filter_by={"opened_by": user.id, **f})
         pulls_count = len(pulls)
-        issues = Action(model=Issues).get_all(filter_by={"createdBy": user.id, **f})
+        issues = Action(model=Issues).get_all(filter_by={"created_by": user.id, **f})
         issues_count = len(issues)
         active_days = determine_active_days(commits, pulls, issues)
         metrics.append(

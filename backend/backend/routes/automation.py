@@ -26,14 +26,9 @@ router = APIRouter(
 
 @router.post(
     "/commits",
-    response_model=Optional[List[Commit]],
     status_code=status.HTTP_201_CREATED,
 )
-def automatic_populate_commits(
-    start_date: datetime,
-    end_date: datetime,
-    request_config: Optional[RequestConfig] = RequestConfig(),
-):
+def automatic_populate_commits(start_date: datetime, end_date: datetime):
     semester = determine_semester(start_date)
     response = AutomateCommits(
         semester=semester,
@@ -45,34 +40,24 @@ def automatic_populate_commits(
         return response
 
 
-@router.post(
-    "/issues", response_model=Optional[List[Issue]], status_code=status.HTTP_201_CREATED
-)
+@router.post("/issues", status_code=status.HTTP_201_CREATED)
 def automatic_populate_issues(
-    semester: str = Depends(get_semester),
-    since: datetime = datetime.now(),
-    request_config: Optional[RequestConfig] = RequestConfig(),
+    semester: str = Depends(get_semester), since: datetime = datetime.now()
 ):
-    response = AutomateIssues(
+    AutomateIssues(
         semester=semester, since=since, request_config=request_config
     ).populate()
     if request_config.get_response_body:
         return response
 
 
-@router.post(
-    "/pulls", response_model=Optional[List[Pull]], status_code=status.HTTP_201_CREATED
-)
+@router.post("/pulls", status_code=status.HTTP_201_CREATED)
 def automatic_populate_issues(
-    semester: str = Depends(get_semester),
-    since: datetime = datetime.now(),
-    request_config: Optional[RequestConfig] = RequestConfig(),
+    semester: str = Depends(get_semester), since: datetime = datetime.now()
 ):
-    response = AutomatePulls(
+    AutomatePulls(
         semester=semester, since=since, request_config=request_config
     ).populate()
-    if request_config.get_response_body:
-        return response
 
 
 @router.post("/metrics", status_code=status.HTTP_201_CREATED)

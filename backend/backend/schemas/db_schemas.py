@@ -44,6 +44,14 @@ class User(BaseModel):
         orm_mode = True
 
 
+class Student(BaseModel):
+    user_id: int
+    semester: str = Semester
+
+    class Config:
+        orm_mode = True
+
+
 class Team(BaseModel):
     id: int
     repo_id: int
@@ -55,22 +63,21 @@ class Team(BaseModel):
         orm_mode = True
 
 
-class Class(BaseModel):
-    semester: str = Semester
-    git_organization: str
-    teams: Optional[List[Team]]
-    instructor: Optional[User]
-    teachingAssistants: Optional[List[User]]
-
-    class Config:
-        orm_mode = True
-
-
 class Sprint(BaseModel):
     id: int
     semester: str = Semester
     start_date: Optional[date]
     end_date: Optional[date]
+
+    class Config:
+        orm_mode = True
+
+
+class Class(BaseModel):
+    semester: str = Semester
+    git_organization: str
+    teams: Optional[List[Team]]
+    sprints: Optional[List[Sprint]]
 
     class Config:
         orm_mode = True

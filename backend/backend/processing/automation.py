@@ -8,8 +8,9 @@ from ..database.models import (
     Sprints,
     Issues,
     Pulls,
+    Students,
 )
-from ..schemas.db_schemas import Repo, Team, User, Commit, Issue, Pull
+from ..schemas.db_schemas import Repo, Team, User, Commit, Issue, Pull, Student
 from sqlalchemy.orm import Session
 from ..globals import determine_semester, determine_sprint
 from fastapi import HTTPException, status
@@ -40,35 +41,16 @@ class Automate(Generic[ModelType, SchemaType]):
         self.request_config = request_config
 
     def populate(self) -> Union[List[List[SchemaType]], List[SchemaType]]:
-        action_schemas = self.__create_or_update_data(self.get_data())
-        if len(action_schemas) == 1:
-            action, schema = action_schemas[0]
-            return action.get_all(filter_by={"semester": self.semester}, schema=schema)
-
-        return [
-            action.get_all(
-                filter_by={"semester": self.semester},
-                schema=schema,
-            )
-            for action, schema in action_schemas
-        ]
+        self.__create_or_update_data(self.get_data())
 
     def __create_or_update_data(
         self,
-        data_schema_model: List[
-            Tuple[List[SchemaType], Type[SchemaType], Type[ModelType]]
-        ],
+        data_schema_model: List[Tuple[List[SchemaType], Type[ModelType]]],
     ) -> List[Tuple[Action, Type[SchemaType]]]:
-        return [
-            (
-                Action(
-                    model=model,
-                    request_config=self.request_config,
-                ).create_or_update_all(data),
-                schema,
-            )
-            for data, schema, model in data_schema_model
-        ]
+        for data, model in data_schema_model:
+            Action(
+                model=model, request_config=self.request_config
+            ).create_or_update_all(data)
 
     def get_valid_team_repos(self):
         for repo in github.get_organization(
@@ -92,9 +74,6 @@ class Automate(Generic[ModelType, SchemaType]):
         return result
 
 
-# TODO: Replace next structers with a pydantic model for better typing and hints for other devs
-
-
 class AutomateRepos(Automate[Repos, Repo]):
     def __init__(self, semester: str, request_config: RequestConfig):
         super().__init__(semester, self.get_data, request_config)
@@ -109,7 +88,7 @@ class AutomateRepos(Automate[Repos, Repo]):
             )
             for repo, _ in super().get_valid_team_repos()
         ]
-        return [(repos, Repo, Repos)]
+        return [(repos, Repos)]
 
 
 class AutomateUserTeams(Automate[ModelType, SchemaType]):
@@ -120,6 +99,7 @@ class AutomateUserTeams(Automate[ModelType, SchemaType]):
         self,
     ) -> List[Tuple[List[SchemaType], Type[SchemaType], Type[ModelType]]]:
         users = []
+        students = []
         teams = []
         current_users = set()
         for repo, team_number in super().get_valid_team_repos():
@@ -128,10 +108,19 @@ class AutomateUserTeams(Automate[ModelType, SchemaType]):
                     id=team_number, semester=self.semester, repoId=repo.id, schema=Team
                 )
             )
-            users.extend(self.get_users(repo, team_number, current_users))
-        return [(teams, Team, Teams), (users, User, Users)]
+            for user, student in self.get_users_students(
+                repo, team_number, current_users
+            ):
+                users.append(user)
+                if student:
+                    students.append(student)
+        return [
+            (teams, Teams),
+            (users, Users),
+            (students, Students),
+        ]
 
-    def get_users(self, repo: Repo, team_number: int, current_users: set):
+    def get_users_students(self, repo: Repo, team_number: int, current_users: set):
         for member in repo.get_collaborators():
             if member.id not in current_users:
                 current_users.add(member.id)
@@ -142,14 +131,17 @@ class AutomateUserTeams(Automate[ModelType, SchemaType]):
                         name=member.name,
                         githubLogin=member.login,
                         teamId=teamNumber,
-                        semester=self.semester,
                         email=member.email,
                         active=False,
                         avatarUrl=member.avatar_url,
                         role="Student"
                         if self.is_student(member)
                         else "TeachingAssistant",
-                    )
+                    ), Student(
+                        user_id=member.id, semester=self.semester
+                    ) if self.is_student(
+                        member
+                    ) else None
 
     def is_student(self, member):
         return member.permissions.admin != True
@@ -184,7 +176,7 @@ class AutomateCommits(Automate[Commits, Commit]):
                         semester=self.semester,
                     )
                 )
-        return [(commits, Commit, Commits)]
+        return [(commits, Commits)]
 
 
 class AutomateIssues(Automate[Issues, Issue]):
@@ -228,7 +220,7 @@ class AutomateIssues(Automate[Issues, Issue]):
                         is_epic=zen_issue["is_epic"],
                     )
                 )
-        return [(issues, Issue, Issues)]
+        return [(issues, Issues)]
 
 
 class AutomatePulls(Automate[Pulls, Pull]):
@@ -270,4 +262,4 @@ class AutomatePulls(Automate[Pulls, Pull]):
                     )
                 else:
                     break
-        return [(pulls, Pull, Pulls)]
+        return [(pulls, Pulls)]

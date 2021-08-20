@@ -26,9 +26,8 @@ const SemesterSetup = () => {
   const [showEditButton, setShowEditButton] = useState(false)
   useEffect(() => {
     get({ api: 'SetupSemester', queryParameters: { semester: semesterCode } }).then((result) => {
-      setSprints(result.sprints ? result.sprints : [])
-      setSemesterCode(result.semester)
-      setOrganization(result.git_organization)
+      setSprints(result?.sprints ? result.sprints : [])
+      setOrganization(result?.git_organization)
     })
   }, [semesterCode])
 
@@ -83,8 +82,7 @@ const SemesterSetup = () => {
         variant="outline"
         size="sm"
         onClick={() => {
-          if (editOrganization && organization.length > 0) {
-            // TODO: save change to database?
+          if (editOrganization && organization?.length > 0) {
           }
           setEditOrganization(!editOrganization)
         }}

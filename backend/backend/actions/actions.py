@@ -11,7 +11,11 @@ SchemaType = TypeVar("SchemaType", bound=BaseModel)
 
 
 class Action:
-    def __init__(self, model: ModelType, request_config: RequestConfig = None):
+    def __init__(
+        self,
+        model: ModelType,
+        request_config: RequestConfig = None,
+    ):
         self.model = model
         self.request_config = request_config
 
@@ -29,9 +33,13 @@ class Action:
     def get_all(
         self,
         filter_by: dict = {},
+        joins: List[ModelType] = [],
         schema: SchemaType = None,
     ) -> Union[List[ModelType], List[SchemaType]]:
-        query = Action.db.query(self.model).filter_by(**filter_by)
+        query = Action.db.query(self.model)
+        for model in joins:
+            query = query.join(model)
+        query = query.filter_by(**filter_by)
         if self.request_config:
             query = query.offset(self.request_config.skip).limit(
                 self.request_config.limit
@@ -44,9 +52,13 @@ class Action:
     def get(
         self,
         filter_by: dict = {},
+        joins: List[ModelType] = [],
         schema: SchemaType = None,
     ) -> Union[ModelType, SchemaType]:
-        result = Action.db.query(self.model).filter_by(**filter_by).one_or_none()
+        query = Action.db.query(self.model)
+        for model in joins:
+            query = query.join(model)
+        result = query.filter_by(**filter_by).one_or_none()
         if schema and result:
             return schema.from_orm(result)
         return result
@@ -54,8 +66,12 @@ class Action:
     def count(
         self,
         filter_by: dict = {},
+        joins: List[ModelType] = [],
     ) -> Union[ModelType, SchemaType]:
-        return Action.db.query(self.model).filter_by(**filter_by).count()
+        query = Action.db.query(self.model)
+        for model in joins:
+            query = query.join(model)
+        return query(self.model).filter_by(**filter_by).count()
 
     # CREATES
     def create(self, data: Union[dict, SchemaType]):

@@ -54,12 +54,7 @@ function deploy {
   if [[ ! -d "./build" ]]; then
       mkdir build
     fi
-    tar -czvf ./build/student-dashboard.tar.gz ./backend
-
-  # cd ./backend
-  # IMAGE="$DOCKERHUB_USERNAME/csu-cs314-student-dashboard"
-  # docker build -t $IMAGE .
-  # docker push $IMAGE
+  tar -czvf ./build/student-dashboard.tar.gz ./backend
 }
 
 realpath() {
