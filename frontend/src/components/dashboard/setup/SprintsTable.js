@@ -55,14 +55,14 @@ const TableBody = (props) => {
   return (
     <CTableBody>
       {props.sprints.map((sprint, index) => (
-        <CTableRow key={index + sprint.startDate}>
+        <CTableRow key={index + sprint.start_date}>
           <CTableHeaderCell scope="row">{sprint.id}</CTableHeaderCell>
           <CTableDataCell>
-            <strong>Start:</strong> {formatDate(sprint.startDate)}
+            <strong>Start:</strong> {formatDate(sprint.start_date)}
             <br />
-            <strong>End:</strong> {formatDate(sprint.endDate)}
+            <strong>End:</strong> {formatDate(sprint.end_date)}
             <br />
-            <strong>Days:</strong> {daysDifference(sprint.endDate, sprint.startDate)}
+            <strong>Days:</strong> {daysDifference(sprint.end_date, sprint.start_date)}
           </CTableDataCell>
           <CTableDataCell>
             <CButton

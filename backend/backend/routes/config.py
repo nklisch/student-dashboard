@@ -31,11 +31,11 @@ def handle_setup_semester(new_semester: Semester):
     return setup_semester(
         semester=new_semester.semester,
         git_orginization=new_semester.git_organization,
-        sprints=semester.sprints,
+        sprints=new_semester.sprints,
     )
 
 
-@router.get("/semester", response_model=Class)
+@router.get("/semester")
 def get_semester_setup(semester: str = Depends(get_semester)):
     return Action(model=Classes).get(filter_by={"semester": semester}, schema=Class)
 

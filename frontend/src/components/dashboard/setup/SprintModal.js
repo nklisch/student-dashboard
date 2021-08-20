@@ -32,7 +32,7 @@ const SprintModal = (props) => {
       setSprint(props.sprints[newEditIndex])
     } else {
       setEditIndex(-1)
-      setSprint({ startDate: dateStringToday(), endDate: dateStringToday() })
+      setSprint({ start_date: dateStringToday(), end_date: dateStringToday() })
     }
   }, [props.editIndex, props.sprints, setSprint])
 
@@ -54,10 +54,10 @@ const SprintModal = (props) => {
             <CFormLabel htmlFor="startInput">Start Date</CFormLabel>
             <CFormControl
               id="startInput"
-              value={sprint.startDate}
+              value={sprint.start_date}
               type="date"
               onChange={(e) => {
-                setSprint({ ...sprint, startDate: e.target.value })
+                setSprint({ ...sprint, start_date: e.target.value })
               }}
               invalid={startError.length !== 0}
               required
@@ -68,10 +68,10 @@ const SprintModal = (props) => {
             <CFormLabel htmlFor="endInput">End Date</CFormLabel>
             <CFormControl
               id="endInput"
-              value={sprint.endDate}
+              value={sprint.end_date}
               type="date"
               onChange={(e) => {
-                setSprint({ ...sprint, endDate: e.target.value })
+                setSprint({ ...sprint, end_date: e.target.value })
               }}
               invalid={endError.length !== 0}
               required
@@ -79,7 +79,7 @@ const SprintModal = (props) => {
             <CFormFeedback invalid>{endError}</CFormFeedback>
           </div>
           <h6 className="mt-4 mb-2">
-            Days: {getDaysLabel(daysDifference(sprint.endDate, sprint.startDate))}
+            Days: {getDaysLabel(daysDifference(sprint.end_date, sprint.start_date))}
           </h6>
           <h6 className="mb-4">Semester: {props.semesterCode}</h6>
           {editMode() && (
@@ -108,14 +108,14 @@ const SprintModal = (props) => {
           disabled={
             startError.length !== 0 ||
             endError.length !== 0 ||
-            !validDate(sprint.startDate) ||
-            !validDate(sprint.endDate)
+            !validDate(sprint.start_date) ||
+            !validDate(sprint.end_date)
           }
           onClick={() => {
-            const { startDate, endDate } = sprint
+            const { start_date, end_date } = sprint
             editMode()
-              ? props.sprintActions.edit(editIndex, startDate, endDate)
-              : props.sprintActions.add(startDate, endDate)
+              ? props.sprintActions.edit(editIndex, start_date, end_date)
+              : props.sprintActions.add(start_date, end_date)
             props.setModalOpen(false)
           }}
         >
@@ -136,7 +136,7 @@ SprintModal.propTypes = {
 }
 
 const useSprintValidation = (editIndex, allSprints) => {
-  const [sprint, setSprint] = useState({ startDate: '', endDate: '' })
+  const [sprint, setSprint] = useState({ start_date: '', end_date: '' })
   const [startError, setStartError] = useState('')
   const [endError, setEndError] = useState('')
 
@@ -146,32 +146,32 @@ const useSprintValidation = (editIndex, allSprints) => {
     }
 
     const dateOverlapsSprint = (date) => {
-      return anyOtherSprint((other) => dateInInterval(date, other.startDate, other.endDate))
+      return anyOtherSprint((other) => dateInInterval(date, other.start_date, other.end_date))
     }
 
     const intervalOverlapsSprint = (date1, date2) => {
       return anyOtherSprint((other) =>
-        overlappingIntervals(date1, date2, other.startDate, other.endDate),
+        overlappingIntervals(date1, date2, other.start_date, other.end_date),
       )
     }
 
     let startErrorMsg = ''
-    if (dateOverlapsSprint(sprint.startDate)) {
+    if (dateOverlapsSprint(sprint.start_date)) {
       startErrorMsg = 'Start date overlaps an existing sprint.'
-    } else if (intervalOverlapsSprint(sprint.startDate, sprint.endDate)) {
+    } else if (intervalOverlapsSprint(sprint.start_date, sprint.end_date)) {
       startErrorMsg = 'This sprint overlaps an existing sprint.'
     }
 
     let endErrorMsg = ''
-    if (dateOverlapsSprint(sprint.endDate)) {
+    if (dateOverlapsSprint(sprint.end_date)) {
       endErrorMsg = 'End date overlaps an existing sprint.'
-    } else if (daysDifference(sprint.endDate, sprint.startDate) < 0) {
+    } else if (daysDifference(sprint.end_date, sprint.start_date) < 0) {
       endErrorMsg = 'End date is before start date.'
     }
 
     setStartError(startErrorMsg)
     setEndError(endErrorMsg)
-  }, [sprint.startDate, sprint.endDate, editIndex, allSprints])
+  }, [sprint.start_date, sprint.end_date, editIndex, allSprints])
 
   return [sprint, setSprint, startError, endError]
 }
