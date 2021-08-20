@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     client_port: Optional[int]
     server_port: Optional[int]
     url_root: Optional[str]
+    audits: Optional[bool]
 
     class Config:
         env_file = ".env"
@@ -18,6 +19,7 @@ class EnvironementSettings(BaseSettings):
     client_port: Optional[int]
     server_port: Optional[int]
     url_root: Optional[HttpUrl]
+    audits: Optional[bool]
 
 
 def get_settings() -> Settings:
@@ -27,6 +29,7 @@ def get_settings() -> Settings:
         "server_port": 8000,
         "client_port": 3000,
         "url_root": "http://localhost",
+        "audits": False,
     }
     settings.update(Settings().dict(exclude_unset=True))
     settings.update(EnvironementSettings().dict(exclude_unset=True))
