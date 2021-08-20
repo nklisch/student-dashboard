@@ -12,7 +12,14 @@ function usage {
 
 
 function check_server_dependencies {
-  docker-compose -f ./deploy-tools/docker-compose.yml up -d db
+  DB_CONNECTION=$(ps -aux | grep faure.cs.colostate.edu | grep -v grep)
+  DB_CONNECTION=${DB_CONNECTION// /}
+  DOMAINNAME=$(domainname)
+  if [ -z $DB_CONNECTION[0] ] && [ $DOMAINNAME != 'cs.colostate.edu' ]; then
+    echo "You do not have a tunnel setup to the cs department machines."
+    echo "Please run connectdb command."
+    exit 1
+  fi
   pushd ./backend
   poetry install
   popd
@@ -39,6 +46,7 @@ function run_prod {
   # docker-compose -f ./deploy-tools/docker-compose.yml up --force-recreate --build
   export CLIENT_PORT="8000"
   export SERVER_PORT="8000"
+  check_server_dependencies
   npm --prefix ./frontend run build
   cp -r ./frontend/build/* ./backend/backend/html/
   pushd ./backend
