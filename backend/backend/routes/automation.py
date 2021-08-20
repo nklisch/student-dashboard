@@ -24,10 +24,7 @@ router = APIRouter(
 )
 
 
-@router.post(
-    "/commits",
-    status_code=status.HTTP_201_CREATED,
-)
+@router.post("/commits", status_code=status.HTTP_201_CREATED)
 def automatic_populate_commits(start_date: datetime, end_date: datetime):
     semester = determine_semester(start_date)
     response = AutomateCommits(

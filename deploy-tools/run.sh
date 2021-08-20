@@ -12,7 +12,7 @@ function usage {
 
 
 function check_server_dependencies {
-  DB_CONNECTION=$(ps -aux | grep faure.cs.colostate.edu | grep -v grep)
+  DB_CONNECTION=$(ps l | grep faure.cs.colostate.edu | grep -v grep)
   DB_CONNECTION=${DB_CONNECTION// /}
   DOMAINNAME=$(domainname)
   if [ -z $DB_CONNECTION[0] ] && [ $DOMAINNAME != 'cs.colostate.edu' ]; then
