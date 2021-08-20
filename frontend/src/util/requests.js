@@ -18,16 +18,23 @@ export async function get({ api, pathParameter = '', queryParameters = {} }) {
   return response.json() || response.ok
 }
 
-export async function post({ api, queryParameters = {}, body = {} }) {
-  const url = API_URL + API_PATHS[api] + addQueryParameters(queryParameters)
+export async function post({ api, pathParameter = '', queryParameters = {}, body = {} }) {
+  const url = `${API_URL}${API_PATHS[api]}${
+    pathParameter ? '/' : ''
+  }${pathParameter}${addQueryParameters(queryParameters)}`
   const response = await fetch(url, {
     method: 'POST',
     credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(body),
   })
   if (!response.ok) {
     LOG.error(
-      `post: ${api}, status: ${response.status}:${response.statusText}, queryParameters: ${queryParameters}, body: ${body}`,
+      `post: ${api}, status: ${response.status}:${
+        response.statusText
+      }, queryParameters: ${JSON.stringify(queryParameters)}, body: ${JSON.stringify(body)}`,
     )
     return undefined
   }
@@ -35,6 +42,9 @@ export async function post({ api, queryParameters = {}, body = {} }) {
 }
 
 export function addQueryParameters(parameters) {
+  if (!parameters) {
+    return ''
+  }
   let url = '?'
   for (const [parameter, value] of Object.entries(parameters)) {
     url += `${parameter}=${value}&`

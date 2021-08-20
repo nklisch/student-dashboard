@@ -14,12 +14,12 @@ import {
 import SprintsTable from './SprintsTable'
 import SprintModal from './SprintModal'
 import { daysDifference } from 'src/util/dates'
-import { get } from 'src/util/requests'
+import { get, post } from 'src/util/requests'
 import _ from 'lodash'
 import PropTypes from 'prop-types'
 import CIcon from '@coreui/icons-react'
 const SemesterSetup = () => {
-  const [semesterCode, setSemesterCode] = useState('spring2021')
+  const [semesterCode, setSemesterCode] = useState('fall2021')
   const [organization, setOrganization] = useState('')
   const [sprints, setSprints, sprintActions] = useSprints(semesterCode)
   const [modalOpen, setModalOpen] = useState(false)
@@ -30,6 +30,13 @@ const SemesterSetup = () => {
       setOrganization(result?.git_organization)
     })
   }, [semesterCode])
+
+  const save = () => {
+    post({
+      api: 'SetupSemester',
+      body: { semester: semesterCode, git_organization: organization, sprints: sprints },
+    }).then((results) => {})
+  }
 
   const openSprintModal = (sprint = null) => {
     const sprintIndex = sprint ? sprint.id - 1 : -1
@@ -45,7 +52,7 @@ const SemesterSetup = () => {
         <hr />
         <CRow>
           <CCol>
-            <CFormLabel className="mb-4">Semester Code: </CFormLabel>
+            <CFormLabel className="mb-4">Semester Code: {semesterCode} </CFormLabel>
           </CCol>
           <CCol xxl={5} xl={6} lg={7} md={8} sm={9} xs={10}>
             <SemesterSelect setSemester={setSemesterCode} />
@@ -60,7 +67,6 @@ const SemesterSetup = () => {
               size="sm"
               type="text"
               placeholder="ex: csucs314s21"
-              value={organization}
               onChange={(e) => setOrganization(e.target.value)}
             />
           </CCol>
@@ -79,7 +85,7 @@ const SemesterSetup = () => {
           <CButton color="dark" size="sm" variant="outline" onClick={() => openSprintModal()}>
             Add Sprint
           </CButton>
-          <CButton color="dark" size="sm" variant="outline">
+          <CButton onClick={save} color="dark" size="sm" variant="outline">
             <CIcon name="cil-save" />
           </CButton>
         </CButtonGroup>
@@ -97,23 +103,33 @@ const SemesterSetup = () => {
   )
 }
 
-const useSprints = (semesterCode) => {
+const useSprints = (semester_code) => {
   const [sprints, setSprints] = useState([])
 
   const normalizeSprints = (sprints) => {
-    sprints.sort((s1, s2) => daysDifference(s1.startDate, s2.startDate))
+    sprints.sort((s1, s2) => daysDifference(s1.start_date, s2.start_date))
     sprints.forEach((sprint, index) => (sprint.id = index + 1))
   }
 
-  const add = (startDate, endDate) => {
-    const newSprint = { id: -1, semester: semesterCode, startDate: startDate, endDate: endDate }
+  const add = (start_date, end_date) => {
+    const newSprint = {
+      id: -1,
+      semester: semester_code,
+      start_date: start_date,
+      end_date: end_date,
+    }
     const newSprints = [...sprints, newSprint]
     normalizeSprints(newSprints)
     setSprints(newSprints)
   }
 
-  const edit = (index, startDate, endDate) => {
-    const newSprint = { id: -1, semester: semesterCode, startDate: startDate, endDate: endDate }
+  const edit = (index, start_date, end_date) => {
+    const newSprint = {
+      id: -1,
+      semester: semester_code,
+      start_date: start_date,
+      end_date: end_date,
+    }
     const newSprints = [...sprints]
     newSprints[index] = newSprint
     normalizeSprints(newSprints)
@@ -146,45 +162,39 @@ export default SemesterSetup
 
 const SemesterSelect = ({ setSemester }) => {
   const seasons = ['fall', 'summer', 'spring']
-  const [seasonIndex, setSeasonIndex] = useState(0)
+  const [seasonValue, setSeason] = useState(seasons[0])
   const currentYear = new Date().getFullYear()
-  const years = _.range(currentYear - 1, currentYear + 3)
-  const [yearIndex, setYearIndex] = useState(0)
+  const years = _.range(currentYear, currentYear + 3)
+  const [yearValue, setYear] = useState(years[0])
   useEffect(() => {
-    setSemester(`${seasons[seasonIndex]}${years[yearIndex]}`)
+    setSemester(`${seasonValue}${yearValue}`)
   }, [])
   return (
     <CInputGroup>
-      <CFormSelect className="mb-3" size="sm" variant="btn-group">
+      <CFormSelect
+        onChange={(e) => {
+          setSeason(e.target.value)
+          setSemester(`${e.target.value}${yearValue}`)
+        }}
+        className="mb-3"
+        size="sm"
+        variant="btn-group"
+      >
         {seasons.map((season, idx) => {
-          return (
-            <option
-              key={idx}
-              onClick={() => {
-                setSeasonIndex(idx)
-                setSemester(`${seasons[idx]}${years[yearIndex]}`)
-              }}
-              active={idx === seasonIndex}
-            >
-              {season}
-            </option>
-          )
+          return <option key={idx}>{season}</option>
         })}
       </CFormSelect>
-      <CFormSelect className="mb-3" size="sm" variant="btn-group">
+      <CFormSelect
+        onChange={(e) => {
+          setYear(e.target.value)
+          setSemester(`${seasonValue}${e.target.value}`)
+        }}
+        className="mb-3"
+        size="sm"
+        variant="btn-group"
+      >
         {years.map((year, idx) => {
-          return (
-            <option
-              key={idx}
-              onClick={() => {
-                setYearIndex(idx)
-                setSemester(`${seasons[seasonIndex]}${years[idx]}`)
-              }}
-              active={idx === yearIndex}
-            >
-              {year}
-            </option>
-          )
+          return <option key={idx}>{year}</option>
         })}
       </CFormSelect>
     </CInputGroup>

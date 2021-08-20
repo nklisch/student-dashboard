@@ -42,21 +42,18 @@ app.add_middleware(
 
 @app.middleware("http")
 async def audit(request: Request, call_next):
-    try:
-        Action.db = get_db()
-        request_url = request.base_url
-        user_id = request.cookies["user_id"] if "user_id" in request.cookies else None
-        response = await call_next(request)
-        if global_settings.audits:
-            Action(model=Audits).create(
-                AuditCreate(
-                    user_id=user_id,
-                    request=request.base_url.path,
-                    ip=request.client.host,
-                    success=response.status_code < 300,
-                )
+    Action.db = get_db()
+    request_url = request.base_url
+    user_id = request.cookies["user_id"] if "user_id" in request.cookies else None
+    response = await call_next(request)
+    if global_settings.audits:
+        Action(model=Audits).create(
+            AuditCreate(
+                user_id=user_id,
+                request=request.base_url.path,
+                ip=request.client.host,
+                success=response.status_code < 300,
             )
-        Action.db.close()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"A server error has occured: {e}")
+        )
+    Action.db.close()
     return response
