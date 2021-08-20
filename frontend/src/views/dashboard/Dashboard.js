@@ -10,11 +10,7 @@ const Dashboard = ({ user }) => {
     dashboard.component = InstructorDashboard
   }
 
-  return (
-    <CContainer>
-      <dashboard.component user={user} />
-    </CContainer>
-  )
+  return <dashboard.component user={user} />
 }
 
 Dashboard.propTypes = {

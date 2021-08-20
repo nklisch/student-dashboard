@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import {
   CButton,
-  CContainer,
-  CDropdown,
   CFormControl,
-  CDropdownToggle,
-  CDropdownMenu,
-  CDropdownItem,
+  CFormSelect,
+  CInputGroup,
+  CRow,
+  CCol,
+  CInputGroupText,
+  CForm,
+  CFormLabel,
+  CButtonGroup,
 } from '@coreui/react'
 import SprintsTable from './SprintsTable'
 import SprintModal from './SprintModal'
@@ -21,9 +24,6 @@ const SemesterSetup = () => {
   const [sprints, setSprints, sprintActions] = useSprints(semesterCode)
   const [modalOpen, setModalOpen] = useState(false)
   const [modalEditIndex, setModalEditIndex] = useState(-1)
-  const [editOrganization, setEditOrganization] = useState(false)
-  const [editSemesterCode, setEditSemesterCode] = useState(false)
-  const [showEditButton, setShowEditButton] = useState(false)
   useEffect(() => {
     get({ api: 'SetupSemester', queryParameters: { semester: semesterCode } }).then((result) => {
       setSprints(result?.sprints ? result.sprints : [])
@@ -38,69 +38,51 @@ const SemesterSetup = () => {
   }
 
   return (
-    <CContainer className="mb-4">
-      <h2 className="text-center">Class Configuration</h2>
+    <>
+      <CForm className="mb-4">
+        <h2 className="text-center">Class Configuration</h2>
 
-      <hr />
-      <h4 className="fw-bold mb-4">Base Requirements</h4>
-      <h5
-        onMouseOver={() => {
-          setShowEditButton(true)
-        }}
-        onMouseLeave={() => {
-          setShowEditButton(false)
-        }}
-        className="mb-4"
-      >
-        Semester Code:{' '}
-        {editSemesterCode ? <SemesterSelect setSemester={setSemesterCode} /> : semesterCode}
-        {(showEditButton || editSemesterCode) && (
-          <CButton
-            onClick={() => {
-              setEditSemesterCode(!editSemesterCode)
-            }}
-            color="secondary"
-            size="sm"
-          >
-            {editSemesterCode ? <CIcon name="cil-save" /> : <CIcon name="cil-pencil" />}
-          </CButton>
-        )}
-      </h5>
-
-      <h5>GitHub Organization: {organization}</h5>
-      {editOrganization && (
-        <CFormControl
-          type="text"
-          placeholder="ex: csucs314s21"
-          value={organization}
-          onChange={(e) => setOrganization(e.target.value)}
-        />
-      )}
-      <CButton
-        className="mt-2 mb-2"
-        color="info"
-        variant="outline"
-        size="sm"
-        onClick={() => {
-          if (editOrganization && organization?.length > 0) {
-          }
-          setEditOrganization(!editOrganization)
-        }}
-      >
-        {!editOrganization ? 'Edit' : !organization ? 'Cancel' : 'Save'}
-      </CButton>
-
+        <hr />
+        <CRow>
+          <CCol>
+            <CFormLabel className="mb-4">Semester Code: </CFormLabel>
+          </CCol>
+          <CCol xxl={5} xl={6} lg={7} md={8} sm={9} xs={10}>
+            <SemesterSelect setSemester={setSemesterCode} />
+          </CCol>
+        </CRow>
+        <CRow>
+          <CCol>
+            <CFormLabel>GitHub Organization: {organization}</CFormLabel>
+          </CCol>
+          <CCol>
+            <CFormControl
+              size="sm"
+              type="text"
+              placeholder="ex: csucs314s21"
+              value={organization}
+              onChange={(e) => setOrganization(e.target.value)}
+            />
+          </CCol>
+        </CRow>
+      </CForm>
       <hr />
       <h4 className="fw-bold mb-3">Sprints</h4>
+
       <SprintsTable
         sprints={sprints}
         sprintActions={sprintActions}
         openSprintModal={openSprintModal}
       />
       <div className="d-grid gap-2">
-        <CButton color="dark" size="sm" onClick={() => openSprintModal()}>
-          Add Sprint
-        </CButton>
+        <CButtonGroup>
+          <CButton color="dark" size="sm" variant="outline" onClick={() => openSprintModal()}>
+            Add Sprint
+          </CButton>
+          <CButton color="dark" size="sm" variant="outline">
+            <CIcon name="cil-save" />
+          </CButton>
+        </CButtonGroup>
       </div>
 
       <SprintModal
@@ -111,7 +93,7 @@ const SemesterSetup = () => {
         editIndex={modalEditIndex}
         semesterCode={semesterCode}
       />
-    </CContainer>
+    </>
   )
 }
 
@@ -172,46 +154,40 @@ const SemesterSelect = ({ setSemester }) => {
     setSemester(`${seasons[seasonIndex]}${years[yearIndex]}`)
   }, [])
   return (
-    <>
-      <CDropdown variant="btn-group">
-        <CDropdownToggle size="sm">{seasons[seasonIndex]}</CDropdownToggle>
-        <CDropdownMenu>
-          {seasons.map((season, idx) => {
-            return (
-              <CDropdownItem
-                key={idx}
-                onClick={() => {
-                  setSeasonIndex(idx)
-                  setSemester(`${seasons[idx]}${years[yearIndex]}`)
-                }}
-                active={idx === seasonIndex}
-              >
-                {season}
-              </CDropdownItem>
-            )
-          })}
-        </CDropdownMenu>
-      </CDropdown>
-      <CDropdown variant="btn-group" color="primary">
-        <CDropdownToggle color="primary" size="sm">{`${years[yearIndex]}`}</CDropdownToggle>
-        <CDropdownMenu>
-          {years.map((year, idx) => {
-            return (
-              <CDropdownItem
-                key={idx}
-                onClick={() => {
-                  setYearIndex(idx)
-                  setSemester(`${seasons[seasonIndex]}${years[idx]}`)
-                }}
-                active={idx === yearIndex}
-              >
-                {year}
-              </CDropdownItem>
-            )
-          })}
-        </CDropdownMenu>
-      </CDropdown>
-    </>
+    <CInputGroup>
+      <CFormSelect className="mb-3" size="sm" variant="btn-group">
+        {seasons.map((season, idx) => {
+          return (
+            <option
+              key={idx}
+              onClick={() => {
+                setSeasonIndex(idx)
+                setSemester(`${seasons[idx]}${years[yearIndex]}`)
+              }}
+              active={idx === seasonIndex}
+            >
+              {season}
+            </option>
+          )
+        })}
+      </CFormSelect>
+      <CFormSelect className="mb-3" size="sm" variant="btn-group">
+        {years.map((year, idx) => {
+          return (
+            <option
+              key={idx}
+              onClick={() => {
+                setYearIndex(idx)
+                setSemester(`${seasons[seasonIndex]}${years[idx]}`)
+              }}
+              active={idx === yearIndex}
+            >
+              {year}
+            </option>
+          )
+        })}
+      </CFormSelect>
+    </CInputGroup>
   )
 }
 
