@@ -3,10 +3,10 @@ import { Redirect, Switch, Route } from 'react-router-dom'
 import { CContainer, CSpinner } from '@coreui/react'
 
 // routes config
-import routes from '../routes'
-import ProtectedRoute from './routing/ProtectedRoute'
+import routes from '../../routes'
+import ProtectedRoute from '../routing/ProtectedRoute'
 import Login from 'src/views/pages/Login'
-import { LOGIN_PATH } from '../globals'
+import { LOGIN_PATH } from '../../globals'
 
 const AppContent = (props) => {
   return (

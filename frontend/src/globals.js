@@ -7,6 +7,7 @@ export const API_PATHS = {
   UpdateAuth: 'authenticate/update',
   StudentActivity: 'reports/student_activity',
   SetupSemester: 'config/semester',
+  Semesters: 'config/semesters',
 }
 
 export const ACCESS_DENIED = '/access_denied'
