@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { authenticate } from '../requests'
+import { authenticate } from './requests'
 
 export function useAuthentication() {
   const [isAuthenticated, setAuthenticated] = useState(false)

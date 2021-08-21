@@ -52,7 +52,9 @@ const SemesterSetup = () => {
         <hr />
         <CRow>
           <CCol>
-            <CFormLabel className="mb-4">Semester Code: {semesterCode} </CFormLabel>
+            <CFormLabel className="mb-4">
+              <b>Semester Code:</b> {semesterCode}{' '}
+            </CFormLabel>
           </CCol>
           <CCol xxl={5} xl={6} lg={7} md={8} sm={9} xs={10}>
             <SemesterSelect setSemester={setSemesterCode} />
@@ -60,7 +62,9 @@ const SemesterSetup = () => {
         </CRow>
         <CRow>
           <CCol>
-            <CFormLabel>GitHub Organization: {organization}</CFormLabel>
+            <CFormLabel>
+              <b>GitHub Organization:</b> {organization}
+            </CFormLabel>
           </CCol>
           <CCol>
             <CFormControl
