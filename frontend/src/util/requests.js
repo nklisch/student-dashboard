@@ -42,9 +42,6 @@ export async function post({ api, pathParameter = '', queryParameters = {}, body
 }
 
 export function addQueryParameters(parameters) {
-  if (!parameters) {
-    return ''
-  }
   let url = '?'
   for (const [parameter, value] of Object.entries(parameters)) {
     url += `${parameter}=${value}&`

@@ -22,10 +22,6 @@ def get_semester(
     return semester
 
 
-def get_db():
-    return SessionLocal()
-
-
 def get_sprint(sprint: Optional[Sprint]) -> Sprint:
     if sprint:
         return sprint

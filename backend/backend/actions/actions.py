@@ -18,6 +18,7 @@ class Action:
     ):
         self.model = model
         self.request_config = request_config
+        self.db = Action.db.get()
 
     def convert_schema_to_dict(self, data: Union[dict, SchemaType]) -> dict:
         if type(data) is not dict:
@@ -36,7 +37,7 @@ class Action:
         joins: List[ModelType] = [],
         schema: SchemaType = None,
     ) -> Union[List[ModelType], List[SchemaType]]:
-        query = Action.db.query(self.model)
+        query = self.db.query(self.model)
         for model in joins:
             query = query.join(model)
         query = query.filter_by(**filter_by)
@@ -55,7 +56,7 @@ class Action:
         joins: List[ModelType] = [],
         schema: SchemaType = None,
     ) -> Union[ModelType, SchemaType]:
-        query = Action.db.query(self.model)
+        query = self.db.query(self.model)
         for model in joins:
             query = query.join(model)
         result = query.filter_by(**filter_by).one_or_none()
@@ -68,35 +69,35 @@ class Action:
         filter_by: dict = {},
         joins: List[ModelType] = [],
     ) -> Union[ModelType, SchemaType]:
-        query = Action.db.query(self.model)
+        query = self.db.query(self.model)
         for model in joins:
             query = query.join(model)
         return query(self.model).filter_by(**filter_by).count()
 
     # CREATES
     def create(self, data: Union[dict, SchemaType]):
-        db = Action.db
+        db = self.db
         data_db = self.convert_data_to_model(data)
         db.add(data_db)
         db.commit()
         return self
 
     def create_all(self, data: Union[dict, SchemaType]):
-        db = Action.db
+        db = self.db
         data = [self.convert_data_to_model(d) for d in data]
         db.add_all(data)
         db.commit()
         return self
 
     def create_or_update(self, data: Union[dict, SchemaType]):
-        db = Action.db
+        db = self.db
         data_db = self.convert_data_to_model(data)
         db.merge(data_db)
         db.commit()
         return self
 
     def create_or_update_all(self, data: Union[List[dict], List[SchemaType]]):
-        db = Action.db
+        db = self.db
         data = [self.convert_data_to_model(d) for d in data]
         for d in data:
             db.merge(d)
@@ -106,7 +107,7 @@ class Action:
     # UPDATE
 
     def update(self, data: Union[dict, SchemaType]):
-        db = Action.db
+        db = self.db
         data = self.convert_schema_to_dict(data)
         obj = self.model()
         for key in data:
