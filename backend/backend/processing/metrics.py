@@ -7,11 +7,9 @@ from datetime import date
 from ..actions.actions import Action
 
 
-def calculate_metrics(semester: str, sprintId: int):
+def calculate_metrics(semester: str, sprint_id: int):
     f = {"semester": semester}
-    users = Action(model=Users).get_all(
-        filter_by={"role": "Student", **f}, schema=User, joins=[Students]
-    )
+    users = Action(model=Users).get_all(filter_by={**f}, schema=User, joins=[Students])
     metrics = []
     f["sprint_id"] = sprint_id
     for user in users:

@@ -34,7 +34,13 @@ class Automate(Generic[ModelType, SchemaType]):
         self.get_data = get_data
 
     def populate(self) -> Union[List[List[SchemaType]], List[SchemaType]]:
-        self.__create_or_update_data(self.get_data())
+        try:
+            self.__create_or_update_data(self.get_data())
+        except Exception as e:
+            raise HTTPException(
+                status_code=404,
+                detail="Failed to access data from github. Check access tokens, github orginization spelling, and other configuration parameters.",
+            )
 
     def __create_or_update_data(
         self,

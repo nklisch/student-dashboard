@@ -22,16 +22,14 @@ def get_semester(
     return semester
 
 
-def get_sprint(sprint: Optional[Sprint]) -> Sprint:
-    if sprint:
-        return sprint
+def get_sprint() -> Sprint:
     today = date.today()
     semester = determine_semester(today)
     sprints = Action(model=Sprints).get_all(
         filter_by={"semester": semester}, schema=Sprint
     )
     for sprint in sprints:
-        if sprint.startDate <= today <= sprint.endDate:
+        if sprint.start_date <= today <= sprint.end_date:
             return sprint
 
 
