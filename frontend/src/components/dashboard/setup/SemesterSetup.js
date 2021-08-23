@@ -10,6 +10,7 @@ import {
   CForm,
   CFormLabel,
   CButtonGroup,
+  CAlert,
 } from '@coreui/react'
 import SprintsTable from './SprintsTable'
 import SprintModal from './SprintModal'
@@ -19,11 +20,17 @@ import _ from 'lodash'
 import PropTypes from 'prop-types'
 import CIcon from '@coreui/icons-react'
 const SemesterSetup = () => {
+  const [alert, setAlert] = useState('')
   const [semesterCode, setSemesterCode] = useState('fall2021')
   const [organization, setOrganization] = useState('')
   const [sprints, setSprints, sprintActions] = useSprints(semesterCode)
   const [modalOpen, setModalOpen] = useState(false)
   const [modalEditIndex, setModalEditIndex] = useState(-1)
+  useEffect(() => {
+    if (alert) {
+      setTimeout(() => setAlert(''), 5000)
+    }
+  }, [alert])
   useEffect(() => {
     get({ api: 'SetupSemester', queryParameters: { semester: semesterCode } }).then((result) => {
       setSprints(result?.sprints ? result.sprints : [])
@@ -46,6 +53,7 @@ const SemesterSetup = () => {
 
   return (
     <>
+      {alert && <CAlert color="danger">{alert}</CAlert>}
       <CForm className="mb-4">
         <h2 className="text-center">Class Configuration</h2>
 
@@ -94,7 +102,42 @@ const SemesterSetup = () => {
           </CButton>
         </CButtonGroup>
       </div>
-
+      <div className="d-grid gap-2">
+        <CButtonGroup>
+          <CButton
+            onClick={() => {
+              post({ api: 'AutomateRepos', queryParameters: { semester: semesterCode } }).then(
+                (result) => {
+                  if (!result) {
+                    setAlert('Error retrieving the repos has occured.')
+                  }
+                },
+              )
+            }}
+            color="dark"
+            size="sm"
+            variant="outline"
+          >
+            Update Repos from github
+          </CButton>
+          <CButton
+            onClick={() => {
+              post({ api: 'AutomateTeams', queryParameters: { semester: semesterCode } }).then(
+                (result) => {
+                  if (!result) {
+                    setAlert('Error retrieving the teams has occured.')
+                  }
+                },
+              )
+            }}
+            color="dark"
+            size="sm"
+            variant="outline"
+          >
+            Update teams/users from github
+          </CButton>
+        </CButtonGroup>
+      </div>
       <SprintModal
         sprints={sprints}
         sprintActions={sprintActions}

@@ -21,24 +21,17 @@ from pydantic import BaseModel
 from ..database import SQLBase
 from devtools import debug
 from time import sleep
-from ..schemas.requests import RequestConfig
 
 ModelType = TypeVar("ModelType", bound=SQLBase)
 SchemaType = TypeVar("SchemaType", bound=BaseModel)
 
 
 class Automate(Generic[ModelType, SchemaType]):
-    def __init__(
-        self,
-        semester: str,
-        get_data: Callable,
-        request_config: RequestConfig,
-    ):
+    def __init__(self, semester: str, get_data: Callable):
         self.semester = semester
         self.semester_setup = self.__check_semester_setup()
         self.sprints = Action(Sprints).get_all(filter_by={"semester": semester})
         self.get_data = get_data
-        self.request_config = request_config
 
     def populate(self) -> Union[List[List[SchemaType]], List[SchemaType]]:
         self.__create_or_update_data(self.get_data())
@@ -48,13 +41,11 @@ class Automate(Generic[ModelType, SchemaType]):
         data_schema_model: List[Tuple[List[SchemaType], Type[ModelType]]],
     ) -> List[Tuple[Action, Type[SchemaType]]]:
         for data, model in data_schema_model:
-            Action(
-                model=model, request_config=self.request_config
-            ).create_or_update_all(data)
+            Action(model=model).create_or_update_all(data)
 
     def get_valid_team_repos(self):
         for repo in github.get_organization(
-            self.semester_setup.gitOrganization
+            self.semester_setup.git_organization
         ).get_repos():
             if repo.name[0] == "t" and len(repo.name) == 3:
                 try:
@@ -69,21 +60,21 @@ class Automate(Generic[ModelType, SchemaType]):
         if not result:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"The current Semester of {semester} and Orginization have not been setup.",
+                detail=f"The current Semester of {self.semester} and Orginization have not been setup.",
             )
         return result
 
 
 class AutomateRepos(Automate[Repos, Repo]):
-    def __init__(self, semester: str, request_config: RequestConfig):
-        super().__init__(semester, self.get_data, request_config)
+    def __init__(self, semester: str):
+        super().__init__(semester, self.get_data)
 
     def get_data(self) -> List[Tuple[List[Repo], Type[Repo], Type[Repos]]]:
         repos = [
             Repo(
                 id=repo.id,
                 semester=self.semester,
-                fullName=repo.full_name,
+                fullname=repo.full_name,
                 url=repo.url,
             )
             for repo, _ in super().get_valid_team_repos()
@@ -92,8 +83,8 @@ class AutomateRepos(Automate[Repos, Repo]):
 
 
 class AutomateUserTeams(Automate[ModelType, SchemaType]):
-    def __init__(self, semester: str, request_config: RequestConfig):
-        super().__init__(semester, self.get_data, request_config)
+    def __init__(self, semester: str):
+        super().__init__(semester, self.get_data)
 
     def get_data(
         self,
@@ -105,7 +96,7 @@ class AutomateUserTeams(Automate[ModelType, SchemaType]):
         for repo, team_number in super().get_valid_team_repos():
             teams.append(
                 Team(
-                    id=team_number, semester=self.semester, repoId=repo.id, schema=Team
+                    id=team_number, semester=self.semester, repo_id=repo.id, schema=Team
                 )
             )
             for user, student in self.get_users_students(
@@ -129,11 +120,11 @@ class AutomateUserTeams(Automate[ModelType, SchemaType]):
                     yield User(
                         id=member.id,
                         name=member.name,
-                        githubLogin=member.login,
-                        teamId=teamNumber,
+                        github_login=member.login,
+                        team_id=team_number,
                         email=member.email,
                         active=False,
-                        avatarUrl=member.avatar_url,
+                        avatar_url=member.avatar_url,
                         role="Student"
                         if self.is_student(member)
                         else "TeachingAssistant",
@@ -148,14 +139,8 @@ class AutomateUserTeams(Automate[ModelType, SchemaType]):
 
 
 class AutomateCommits(Automate[Commits, Commit]):
-    def __init__(
-        self,
-        semester: str,
-        start_date: datetime,
-        end_date: datetime,
-        request_config: RequestConfig,
-    ):
-        super().__init__(semester, self.get_data, request_config)
+    def __init__(self, semester: str, start_date: datetime, end_date: datetime):
+        super().__init__(semester, self.get_data)
         self.start_date = start_date
         self.end_date = end_date
 
@@ -180,13 +165,8 @@ class AutomateCommits(Automate[Commits, Commit]):
 
 
 class AutomateIssues(Automate[Issues, Issue]):
-    def __init__(
-        self,
-        semester: str,
-        since: datetime,
-        request_config: RequestConfig,
-    ):
-        super().__init__(semester, self.get_data, request_config)
+    def __init__(self, semester: str, since: datetime):
+        super().__init__(semester, self.get_data)
         self.since = since
 
     def get_data(self) -> List[Tuple[List[Issues], Type[Issue], Type[Issues]]]:
@@ -224,13 +204,8 @@ class AutomateIssues(Automate[Issues, Issue]):
 
 
 class AutomatePulls(Automate[Pulls, Pull]):
-    def __init__(
-        self,
-        semester: str,
-        since: datetime,
-        request_config: RequestConfig,
-    ):
-        super().__init__(semester, self.get_data, request_config)
+    def __init__(self, semester: str, since: datetime):
+        super().__init__(semester, self.get_data)
         self.since = since
 
     def get_data(self) -> List[Tuple[List[Pulls], Type[Pull], Type[Pulls]]]:

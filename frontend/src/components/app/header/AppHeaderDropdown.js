@@ -10,11 +10,11 @@ import {
 import CIcon from '@coreui/icons-react'
 import PropTypes from 'prop-types'
 
-const AppHeaderDropdown = (props) => {
+const AppHeaderDropdown = ({ user, logout }) => {
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
-        <ProfileIcon {...props} />
+        <ProfileIcon user={user} />
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
         <CDropdownHeader className="bg-light fw-semibold py-2 mb-1">Account</CDropdownHeader>
@@ -22,7 +22,7 @@ const AppHeaderDropdown = (props) => {
           <CIcon name="cil-user" className="me-2" />
           Profile
         </CDropdownItem>
-        <CDropdownItem href={'/'} onClick={props.logout}>
+        <CDropdownItem href={'/'} onClick={logout}>
           <CIcon name="cil-account-logout" className="me-2" />
           Logout
         </CDropdownItem>
@@ -33,23 +33,26 @@ const AppHeaderDropdown = (props) => {
 
 AppHeaderDropdown.propTypes = {
   logout: PropTypes.func.isRequired,
+  user: PropTypes.object,
 }
 
-const ProfileIcon = (props) => {
-  if (!props.user?.avatar_url) {
-    return (
-      <CAvatar color="primary" size="md" textColor="white">
-        <CIcon name="cil-user" />
-      </CAvatar>
-    )
+const ProfileIcon = ({ user }) => {
+  const extractInitials = (fullname) => {
+    let initials = ''
+    for (const word of fullname.split(' ')) {
+      initials += word[0]
+    }
+    return initials
   }
-
-  return <CAvatar size="md" src={props.user.avatar_url} />
+  return (
+    <CAvatar src={user.avatar_url} color="primary" size="md" textColor="white">
+      {`${extractInitials(user.name)}`}
+    </CAvatar>
+  )
 }
 
 ProfileIcon.propTypes = {
   user: PropTypes.object,
-  avatar_url: PropTypes.string,
 }
 
 export default AppHeaderDropdown

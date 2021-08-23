@@ -9,6 +9,7 @@ from ..database import SQLBase
 from ..dependencies import verify_user, VerifyRole, get_semester
 from ..actions.actions import Action
 from ..schemas.requests import Semester
+from ..processing.automation import AutomateRepos, AutomateUserTeams
 
 requires_TeachingAssistant = VerifyRole("TeachingAssistant")
 router = APIRouter(
@@ -18,12 +19,12 @@ router = APIRouter(
 
 @router.post("/repos", status_code=status.HTTP_201_CREATED)
 def automatic_populate_repos(semester: str = Depends(get_semester)):
-    AutomateRepos(semester=semester, request_config=request_config).populate()
+    AutomateRepos(semester=semester).populate()
 
 
 @router.post("/teams", status_code=status.HTTP_201_CREATED)
 def automatic_populate_teams(semester: str = Depends(get_semester)):
-    AutomateUserTeams(semester=semester, request_config=request_config).populate()
+    AutomateUserTeams(semester=semester).populate()
 
 
 @router.post("/semester", status_code=status.HTTP_201_CREATED)

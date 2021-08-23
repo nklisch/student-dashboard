@@ -101,7 +101,9 @@ class Users(SQLBase):
 
 class Students(SQLBase):
     __tablename__ = "Students"
-    user_id = Column(Integer, autoincrement=False, primary_key=True)
+    user_id = Column(
+        Integer, ForeignKey("Users.id"), autoincrement=False, primary_key=True
+    )
     semester = Column(String(10), ForeignKey("Classes.semester"))
 
     def __repr__(self):

@@ -8,6 +8,9 @@ export const API_PATHS = {
   StudentActivity: 'reports/student_activity',
   SetupSemester: 'config/semester',
   Semesters: 'config/semesters',
+  Users: 'config/users',
+  AutomateRepos: 'config/repos',
+  AutomateTeams: 'config/teams',
 }
 
 export const ACCESS_DENIED = '/access_denied'

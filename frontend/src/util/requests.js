@@ -34,11 +34,14 @@ export async function post({ api, pathParameter = '', queryParameters = {}, body
     LOG.error(
       `post: ${api}, status: ${response.status}:${
         response.statusText
-      }, queryParameters: ${JSON.stringify(queryParameters)}, body: ${JSON.stringify(body)}`,
+      }, queryParameters: ${JSON.stringify(queryParameters)}, request body: ${JSON.stringify(
+        body,
+      )}, server message: ${await response.text()}`,
     )
     return undefined
   }
-  return response.json() || response.ok
+  let json = await response.json()
+  return json || response.ok
 }
 
 export function addQueryParameters(parameters) {
