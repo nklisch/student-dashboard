@@ -1,5 +1,5 @@
 from enum import Enum
-from datetime import date
+from datetime import date, datetime, timedelta
 
 
 class Metrics(str, Enum):
@@ -44,3 +44,7 @@ def determine_sprint(sprints, d: date) -> int:
                 minimum = s.endDate - d
                 sprint = s.id
     return sprint
+
+
+def get_yesterday():
+    return datetime.now() - timedelta(days=1)

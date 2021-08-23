@@ -15,6 +15,7 @@ from ..processing.automation import (
 )
 from ..processing.metrics import calculate_metrics
 from datetime import datetime
+from ..globals import get_yesterday
 
 requires_TeachingAssistant = VerifyRole("TeachingAssistant")
 router = APIRouter(
@@ -25,8 +26,11 @@ router = APIRouter(
 
 
 @router.post("/commits", status_code=status.HTTP_201_CREATED)
-def automatic_populate_commits(start_date: datetime, end_date: datetime):
-    semester = determine_semester(start_date)
+def automatic_populate_commits(
+    semester: str = Depends(get_semester),
+    since: datetime = get_yesterday(),
+    end_date: Optional[datetime] = datetime.now(),
+):
     response = AutomateCommits(
         semester=semester,
         start_date=start_date,
@@ -39,7 +43,7 @@ def automatic_populate_commits(start_date: datetime, end_date: datetime):
 
 @router.post("/issues", status_code=status.HTTP_201_CREATED)
 def automatic_populate_issues(
-    semester: str = Depends(get_semester), since: datetime = datetime.now()
+    semester: str = Depends(get_semester), since: datetime = get_yesterday()
 ):
     AutomateIssues(
         semester=semester, since=since, request_config=request_config
@@ -49,8 +53,8 @@ def automatic_populate_issues(
 
 
 @router.post("/pulls", status_code=status.HTTP_201_CREATED)
-def automatic_populate_issues(
-    semester: str = Depends(get_semester), since: datetime = datetime.now()
+def automatic_populate_teams(
+    semester: str = Depends(get_semester), since: datetime = get_yesterday()
 ):
     AutomatePulls(
         semester=semester, since=since, request_config=request_config
@@ -58,5 +62,5 @@ def automatic_populate_issues(
 
 
 @router.post("/metrics", status_code=status.HTTP_201_CREATED)
-def automatic_calculate_metrics(sprint: Sprint = Depends(get_sprint)):
+def automatic_calculate_metrics(sprint: Optional[Sprint] = Depends(get_sprint)):
     calculate_metrics(semester=sprint.semester, sprint_id=sprint.id)
