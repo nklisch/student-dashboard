@@ -91,15 +91,8 @@ while (( "$#" )); do
       exit 0;
       ;;
     -d|--deploy)
-      if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
-        DOCKERHUB_USERNAME=$2
-        shift 2
         deploy
         exit 0
-      else
-        echo "argument missing for -- $1" >&2
-        exit 1
-      fi
       ;;
     -*|--*=) # unsupported flags
       echo "unrecognized option -- $(echo $1 | sed 's~^-*~~')" >&2
