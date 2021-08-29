@@ -59,7 +59,7 @@ class DatabaseSettings(BaseSettings):
             values.get("DB_PASSWORD"),
             values.get("DB_NAME"),
         )
-        if socket.getfqdn() == "cs.colostate.edu":
+        if global_settings.production:
             url = values.get("DB_PROD_URL")
         return f"mariadb+mariadbconnector://{DB_USER}:{DB_PASSWORD}@{url}/{DB_NAME}"
 

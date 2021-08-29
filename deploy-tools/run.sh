@@ -2,11 +2,11 @@
 
 
 function usage {
-  echo "usage: $0 [dev/prod]";
-  echo "Default is $0 dev";
+  echo "usage: $0 [dev/prod/deploy]";
+  echo "Default is $0 dev. Prod is a production like environment, but not exactly";
+  echo "Deploy creates a tarball that can be untared and used to lauch the apps"
   echo "Options:"
   echo "    -h, --help     :  Display this menu";
-  echo "    -d, --deploy [docker-hub username]  :  Deploy built image to docker hub under your user"
   echo ""
 }
 
@@ -64,20 +64,23 @@ function deploy {
   check_server_dependencies
   check_client_dependencies
   npm --prefix ./frontend run build
-  cp -r ./frontend/build/* ./backend/backend/html/
   if [[ ! -d "./build" ]]; then
       mkdir build
   fi
   if [[ ! -d "./build/backend" ]]; then
-      mkdir backend
+      mkdir ./build/backend
   fi
-  cp ./backend/.env ./build
-  cp -r ./backend/backend/html ./build/backend
+  if [[ ! -d "./build/backend/html" ]]; then
+      mkdir ./build/backend/html
+  fi
+  cp -r ./frontend/build/* ./build/backend/html
   cd backend
   poetry export -f requirements.txt --output requirements.txt
   poetry run pex --sources-directory=.  -r requirements.txt --script=uvicorn -o ../build/student-dashboard.pex
   cd ..
-  tar -czvf student-dashboard.tar.gz ./build
+  cp ./deploy-tools/run-production.sh ./backend/.env ./deploy-tools/dailys.py ./deploy-tools/cron.daily ./build
+  cd build
+  tar -czf ../student-dashboard.tar.gz . 
 }
 
 realpath() {
@@ -125,6 +128,8 @@ eval set -- "$PARAMS";
 
 if [[ $1 = "prod" ]]; then
   run_prod
+elif [[ $1 = "deploy" ]]; then
+  deploy
 else
   run_dev
 fi
