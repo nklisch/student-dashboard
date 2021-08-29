@@ -19,7 +19,6 @@ from typing import Tuple, List, Generic, TypeVar, Type, Dict, Callable, Union
 from datetime import datetime, date
 from pydantic import BaseModel
 from ..database import SQLBase
-from devtools import debug
 from time import sleep
 
 ModelType = TypeVar("ModelType", bound=SQLBase)

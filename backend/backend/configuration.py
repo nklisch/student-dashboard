@@ -1,6 +1,7 @@
 from pydantic import BaseSettings, HttpUrl, validator
 from typing import Any, Dict, Optional
 from .schemas.db_schemas import User, Class
+import socket
 
 
 class Settings(BaseSettings):
@@ -58,7 +59,7 @@ class DatabaseSettings(BaseSettings):
             values.get("DB_PASSWORD"),
             values.get("DB_NAME"),
         )
-        if global_settings.production:
+        if socket.getfqdn() == "cs.colostate.edu":
             url = values.get("DB_PROD_URL")
         return f"mariadb+mariadbconnector://{DB_USER}:{DB_PASSWORD}@{url}/{DB_NAME}"
 

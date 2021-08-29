@@ -21,7 +21,13 @@ function check_server_dependencies {
     exit 1
   fi
   pushd ./backend
+  #!/bin/bash
+  POETRY=`pip list | grep poetry`
+  if [[ -z POETRY ]]; then
+      pip install poetry
+  fi
   poetry install
+  poetry update --lock
   popd
 }
 
@@ -61,8 +67,17 @@ function deploy {
   cp -r ./frontend/build/* ./backend/backend/html/
   if [[ ! -d "./build" ]]; then
       mkdir build
-    fi
-  tar -czvf ./build/student-dashboard.tar.gz ./backend
+  fi
+  if [[ ! -d "./build/backend" ]]; then
+      mkdir backend
+  fi
+  cp ./backend/.env ./build
+  cp -r ./backend/backend/html ./build/backend
+  cd backend
+  poetry export -f requirements.txt --output requirements.txt
+  poetry run pex --sources-directory=.  -r requirements.txt --script=uvicorn -o ../build/student-dashboard.pex
+  cd ..
+  tar -czvf student-dashboard.tar.gz ./build
 }
 
 realpath() {
