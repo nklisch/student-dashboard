@@ -10,8 +10,7 @@ function usage {
   echo ""
 }
 
-
-function check_server_dependencies {
+function check_db_connection {
   DB_CONNECTION=$(ps l | grep faure.cs.colostate.edu | grep -v grep)
   DB_CONNECTION=${DB_CONNECTION// /}
   DOMAINNAME=$(domainname)
@@ -20,7 +19,11 @@ function check_server_dependencies {
     echo "Please run connectdb command."
     exit 1
   fi
-  pushd ./backend
+}
+
+
+function check_server_dependencies {
+  pushd ./backend > /dev/null
   #!/bin/bash
   POETRY=`pip list | grep poetry`
   if [[ -z POETRY ]]; then
@@ -28,7 +31,7 @@ function check_server_dependencies {
   fi
   poetry install
   poetry update --lock
-  popd
+  popd > /dev/null
 }
 
 function check_client_dependencies {
@@ -40,6 +43,7 @@ function run_dev {
 	echo
   export CLIENT_PORT="3000"
   export SERVER_PORT="8000"
+  check_db_connection
   check_server_dependencies
   check_client_dependencies
   npm --prefix ./frontend run devRun
@@ -50,29 +54,29 @@ function run_prod {
   # npm --prefix ./frontend run build
   # cp -r ./frontend/build/* ./backend/backend/html/
   # docker-compose -f ./deploy-tools/docker-compose.yml up --force-recreate --build
-  export CLIENT_PORT="8000"
-  export SERVER_PORT="8000"
+  export CLIENT_PORT="9999"
+  export SERVER_PORT="9999"
+  check_db_connection
   check_server_dependencies
+  rm -r ./frontend/build
   npm --prefix ./frontend run build
   cp -r ./frontend/build/* ./backend/backend/html/
-  pushd ./backend
+  pushd ./backend > /dev/null
   ./start-server.sh
 }
 
 function deploy {
   echo "Building and creating a tar for deployment"
+  rm -r ./build
+  rm -r ./frontend/build
+  export CLIENT_PORT="9999"
+  export SERVER_PORT="9999"
   check_server_dependencies
   check_client_dependencies
   npm --prefix ./frontend run build
-  if [[ ! -d "./build" ]]; then
-      mkdir build
-  fi
-  if [[ ! -d "./build/backend" ]]; then
-      mkdir ./build/backend
-  fi
-  if [[ ! -d "./build/backend/html" ]]; then
-      mkdir ./build/backend/html
-  fi
+  mkdir build
+  mkdir ./build/backend
+  mkdir ./build/backend/html
   cp -r ./frontend/build/* ./build/backend/html
   cd backend
   poetry export -f requirements.txt --output requirements.txt

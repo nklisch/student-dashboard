@@ -1,1 +1,1 @@
-poetry run uvicorn backend.main:app --reload
+poetry run uvicorn backend.main:app --reload --port $SERVER_PORT
