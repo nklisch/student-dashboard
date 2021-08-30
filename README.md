@@ -88,7 +88,7 @@ Deploy builds the front and backend and generates a tarball with all the needed 
 
 This list is not exhuastive but it is the main libraries/frameworks that are used in this project.
 
-### Backend
+## Backend
 
 - [FastAPI](https://fastapi.tiangolo.com/) - Backend Framework
 
@@ -108,9 +108,9 @@ This list is not exhuastive but it is the main libraries/frameworks that are use
 
 - [MariaDB Connector/C](https://mariadb.com/docs/clients/mariadb-connectors/connector-c/install/) - C level DB connector
 
-### Frontend
+## Frontend
 
-- [CoreUI 4.0 - Github](https://github.com/coreui/coreui-free-react-admin-template#installation) - Template and React component Library
+- [CoreUI 4.0 - Github](https://github.com/coreui/coreui-free-react-admin-template#installation) - Website Template and React component Library
 
 - [CoreUI 4.0 - Documentation](https://coreui.io/react/docs/4.0/getting-started/introduction/)
 
