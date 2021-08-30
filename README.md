@@ -1,4 +1,4 @@
-# Setup
+# Getting Started
 
 To be able to build this project you will need python 3.8 or greater.
 
@@ -82,7 +82,7 @@ Prod builds the front end and places it in the backend folder under html and the
 
 Deploy builds the front and backend and generates a tarball with all the needed dependencies and the run-production.sh script. You can copy this tarball to any machine with python on it and the mariaDB connector and it should work. The cs deparment machines already have the nessicary mariaDB connector, so it will work on those machines and wont require dependencies installation.
 
-## Technologies and Libraries used
+# Technologies and Libraries
 
 This list is not exhuastive but it is the main libraries/frameworks that are used in this project.
 
@@ -117,3 +117,5 @@ This list is not exhuastive but it is the main libraries/frameworks that are use
 - [React Router](https://reactrouter.com/) - Frontend Component for react url paths
 
 - [npm](https://docs.npmjs.com/) - Frontend Dependency/package and build manager
+
+# Configuration
