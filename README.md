@@ -22,9 +22,9 @@ After you have installed/verified your python installation, verify that the pip 
 $ python -m ensurepip --upgrade
 ```
 
-## 2. Install MariaDB Connector/C 3.1. This is needed for SQL alchemy mariaDB connector in python.
+## 2. Install MariaDB Connector/C 3.1.
 
-Follow the following steps:
+This is needed for SQL alchemy mariaDB connector in python.
 
 ### 1. Verify you have wget or install it:
 
@@ -33,6 +33,8 @@ Ubuntu
 ```
 $ sudo apt install wget
 ```
+
+CentOS
 
 ```
 $ sudo yum install wget
@@ -48,7 +50,7 @@ $ chmod +x mariadb_es_repo_setup
 ### 3. Configure the package respoitory:
 
 ```
-sudo ./mariadb_repo_setup \
+$ sudo ./mariadb_repo_setup \
    --mariadb-server-version="mariadb-10.5"
 ```
 
@@ -57,13 +59,13 @@ sudo ./mariadb_repo_setup \
 Ubuntu
 
 ```
-sudo apt install libmariadb3 libmariadb-dev
+$ sudo apt install libmariadb3 libmariadb-dev
 ```
 
 CentOS
 
 ```
-sudo yum install MariaDB-shared MariaDB-devel
+$ sudo yum install MariaDB-shared MariaDB-devel
 ```
 
 ## 3. Run the run.sh script
