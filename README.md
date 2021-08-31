@@ -92,7 +92,7 @@ Deploy builds the front and backend and generates a tarball with all the needed 
 
 This list is not exhuastive but it is the main libraries/frameworks that are used in this project.
 
-## Backend
+## Backend - Python
 
 - [FastAPI](https://fastapi.tiangolo.com/) - Backend Framework
 
@@ -102,9 +102,9 @@ This list is not exhuastive but it is the main libraries/frameworks that are use
 
 - [Uvicorn](https://www.uvicorn.org/) - Backend Server
 
-- [Zenhub Connector](https://pypi.org/project/pyzenhub/) - Python
+- [Zenhub Connector](https://pypi.org/project/pyzenhub/) - Backend API python package
 
-- [Github Connector](https://github.com/PyGithub/PyGithub) - Python
+- [Github Connector](https://github.com/PyGithub/PyGithub) - Backend API python package
 
 - [SQLAlchemy](https://www.sqlalchemy.org/) - Backend DB connection and Models
 
@@ -112,13 +112,13 @@ This list is not exhuastive but it is the main libraries/frameworks that are use
 
 - [MariaDB Connector/C](https://mariadb.com/docs/clients/mariadb-connectors/connector-c/install/) - C level DB connector
 
-## Frontend
+## Frontend - React
+
+- [React](https://reactjs.org/) - Frontend framework
 
 - [CoreUI 4.0 - Github](https://github.com/coreui/coreui-free-react-admin-template#installation) - Website Template and React component Library
 
 - [CoreUI 4.0 - Documentation](https://coreui.io/react/docs/4.0/getting-started/introduction/)
-
-- [React](https://reactjs.org/) - Frontend framework
 
 - [React Router](https://reactrouter.com/) - Frontend Component for react url paths
 
