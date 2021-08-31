@@ -112,7 +112,7 @@ This list is not exhuastive but it is the main libraries/frameworks that are use
 
 - [MariaDB Connector/C](https://mariadb.com/docs/clients/mariadb-connectors/connector-c/install/) - C level DB connector
 
-## Frontend - React
+## Frontend - React/Javascript
 
 - [React](https://reactjs.org/) - Frontend framework
 
