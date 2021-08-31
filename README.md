@@ -120,7 +120,7 @@ This list is not exhuastive but it is the main libraries/frameworks that are use
 
 - [CoreUI 4.0 - Documentation](https://coreui.io/react/docs/4.0/getting-started/introduction/)
 
-- [React Router](https://reactrouter.com/) - Frontend Component for react url paths
+- [React Router](https://reactrouter.com/web/guides/primary-components) - Frontend Component for react url paths
 
 - [npm](https://docs.npmjs.com/) - Frontend Dependency/package and build manager
 
