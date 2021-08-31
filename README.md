@@ -68,7 +68,11 @@ CentOS
 $ sudo yum install MariaDB-shared MariaDB-devel
 ```
 
-## 3. Run the run.sh script
+## 3. Create your .env file
+
+You will need to create a _.env_ file in the ./backend folder. A _.env_ file defines environmentail variables. In this case a few of those variables are sensitve, so we will only provide the [template](./CONFIG.md). See Dave/Instructor for the values of the sensitive fields.
+
+## 4. Run the run.sh script
 
 The final step is to run the run.sh script that is in the **deploy-tools** folder
 
@@ -120,4 +124,54 @@ This list is not exhuastive but it is the main libraries/frameworks that are use
 
 - [npm](https://docs.npmjs.com/) - Frontend Dependency/package and build manager
 
-# Configuration
+# Deployment
+
+To deploy this project, run the **./deploy-tools/run.sh** with the parameter **"deploy"**.
+
+```
+$ ./deploy-tools/run.sh deploy
+```
+
+This will create a tarbal called **student-dashboard.tar.gz**. You can copy this tarball over to the desitination computer with scp. The following command will copy the tarball to black-bottle to the student-dashboard on the cs314 user home folder.
+
+```
+$ scp student-dashboard.tar.gz cs314@black-bottle.cs.colostate.edu:~/student-dashboard
+```
+
+Once copied, ssh into black-bottle and then you can untar the contents with:
+
+```
+$ tar -xzf student-dashboard.tar.gz .
+```
+
+Once untared, start a [tmux](https://tmuxcheatsheet.com/) session named student-dashboard with -
+
+```
+$ tmux new -s student-dashboard
+```
+
+Then run **./run-production.sh** script to start the server.
+
+```
+$ ./run-production.sh
+```
+
+You should see something like the following:
+
+```
+INFO:     Started server process [1627092]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:9999 (Press CTRL+C to quit)
+```
+
+Now detach from the tmux session with _ctrl+b_, then _d_.
+Now the server is all setup!
+
+All that is left is to configure a [semester](./CONFIG.md#semester) through the dashboard and setup the [cronjobs](./CONFIG.md#cronjob).
+
+_Note: You can reattach to the tmux session to check on the server status with the following command_:
+
+```
+$ tmux a -t student-dashboard
+```
