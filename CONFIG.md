@@ -20,6 +20,22 @@ See Dave for these fields via messaging. These wont be checked into source contr
 
 ## Configuring Github Oauth
 
+# Setup
+
+Before each semester you must enter some configuration options so that the backend can pull the needed data from github.
+Follow these steps:
+
 ## Semester
+
+### 1. Go to the deployed student dashboard.
+
+Since you are a TA or Instructor you should have the view of a semester.
+
+- Select the semester and year you want to setup.
+- Enter in the exact name of the new github orginization - as it appears in the URL is best.
+- Then click "Add Sprint" to add a sprint. Sprints should be directly next to each other in their date ranges.
+- Finally, once the semester is started and all the repo for the students have been made and all the student's have been assigned to them, you can click to pull the repo and teams/user data. This will update the database with this information.
+
+The last piece needed for setup is to start the cronjobs.
 
 ## Cronjobs
