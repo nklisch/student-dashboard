@@ -1,1 +1,2 @@
-0 0 * * * ~/student-dashboard/dailys.py
+SHELL=/bin/bash
+0 0 * * * ~/student-dashboard/dailys.py 2>> ~/student-dashboard/daily_error.log
