@@ -215,7 +215,7 @@ class Metrics(SQLBase):
     commits = Column(Integer)
     pulls = Column(Integer)
     issues = Column(Integer)
-    active_says = Column(Integer)
+    active_days = Column(Integer)
 
     __table_args__ = (
         ForeignKeyConstraint(

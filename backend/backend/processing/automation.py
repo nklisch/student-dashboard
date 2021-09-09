@@ -32,19 +32,14 @@ class Automate(Generic[ModelType, SchemaType]):
         self.sprints = Action(Sprints).get_all(filter_by={"semester": semester})
         self.get_data = get_data
 
-    def populate(self) -> Union[List[List[SchemaType]], List[SchemaType]]:
-        try:
-            self.__create_or_update_data(self.get_data())
-        except Exception as e:
-            raise HTTPException(
-                status_code=404,
-                detail="Failed to access data from github. Check access tokens, github orginization spelling, and other configuration parameters.",
-            )
+    def populate(self):
+        self.__create_or_update_data(self.get_data())
+        
 
     def __create_or_update_data(
         self,
         data_schema_model: List[Tuple[List[SchemaType], Type[ModelType]]],
-    ) -> List[Tuple[Action, Type[SchemaType]]]:
+    ):
         for data, model in data_schema_model:
             Action(model=model).create_or_update_all(data)
 
@@ -74,7 +69,7 @@ class AutomateRepos(Automate[Repos, Repo]):
     def __init__(self, semester: str):
         super().__init__(semester, self.get_data)
 
-    def get_data(self) -> List[Tuple[List[Repo], Type[Repo], Type[Repos]]]:
+    def get_data(self):
         repos = [
             Repo(
                 id=repo.id,
@@ -157,12 +152,12 @@ class AutomateCommits(Automate[Commits, Commit]):
                 commits.append(
                     Commit(
                         id=commit.sha,
-                        repoId=repo.id,
+                        repo_id=repo.id,
                         date=commit.commit.author.date,
-                        authorId=commit.author.id if commit.author else None,
-                        authorName=commit.commit.author.name,
-                        authorEmail=commit.commit.author.email,
-                        sprintId=determine_sprint(self.sprints, d),
+                        author_id=commit.author.id if commit.author else None,
+                        author_name=commit.commit.author.name,
+                        author_email=commit.commit.author.email,
+                        sprint_id=determine_sprint(self.sprints, d),
                         semester=self.semester,
                     )
                 )
@@ -182,6 +177,9 @@ class AutomateIssues(Automate[Issues, Issue]):
                     repo_id=repo.id, issue_number=issue.number
                 )
                 sleep(0.65)
+                pipeline = zen_issue["pipeline"]["name"] if "pipeline" in zen_issue else None
+                if issue.state == 'closed':
+                    pipeline = 'closed'
                 issues.append(
                     Issue(
                         id=issue.id,
@@ -196,9 +194,7 @@ class AutomateIssues(Automate[Issues, Issue]):
                         sprint_id=determine_sprint(
                             self.sprints, issue.created_at.date()
                         ),
-                        pipeline=zen_issue["pipelines"][-1]["name"]
-                        if "pipelines" in zen_issue
-                        else None,
+                        pipeline=pipeline,
                         created_by=issue.user.id,
                         closed_by=issue.closed_by,
                         semester=self.semester,

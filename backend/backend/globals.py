@@ -35,13 +35,13 @@ def determine_semester(d):
 def determine_sprint(sprints, d: date) -> int:
     sprint = 0
     for s in sprints:
-        if s.startDate <= d <= s.endDate:
+        if s.start_date <= d <= s.end_date:
             sprint = s.id
     if sprint == 0:
         minimum = date(5000, 1, 1) - d
         for s in sprints:
-            if s.endDate - d < minimum:
-                minimum = s.endDate - d
+            if s.end_date - d < minimum:
+                minimum = s.end_date - d
                 sprint = s.id
     return sprint
 

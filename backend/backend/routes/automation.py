@@ -31,11 +31,10 @@ def automatic_populate_commits(
     since: datetime = get_yesterday(),
     end_date: Optional[datetime] = datetime.now(),
 ):
-    response = AutomateCommits(
+    AutomateCommits(
         semester=semester, start_date=since, end_date=end_date
     ).populate()
-    if request_config.get_response_body:
-        return response
+   
 
 
 @router.post("/issues", status_code=status.HTTP_201_CREATED)
@@ -43,8 +42,6 @@ def automatic_populate_issues(
     semester: str = Depends(get_semester), since: datetime = get_yesterday()
 ):
     AutomateIssues(semester=semester, since=since).populate()
-    if request_config.get_response_body:
-        return response
 
 
 @router.post("/pulls", status_code=status.HTTP_201_CREATED)
