@@ -1,6 +1,7 @@
 from pydantic import BaseSettings, HttpUrl, validator
 from typing import Any, Dict, Optional
 from .schemas.db_schemas import User, Class
+import socket
 
 
 class Settings(BaseSettings):

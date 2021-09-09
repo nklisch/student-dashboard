@@ -2,16 +2,15 @@
 
 
 function usage {
-  echo "usage: $0 [dev/prod]";
-  echo "Default is $0 dev";
+  echo "usage: $0 [dev/prod/deploy]";
+  echo "Default is $0 dev. Prod is a production like environment, but not exactly";
+  echo "Deploy creates a tarball that can be untared and used to lauch the apps"
   echo "Options:"
   echo "    -h, --help     :  Display this menu";
-  echo "    -d, --deploy [docker-hub username]  :  Deploy built image to docker hub under your user"
   echo ""
 }
 
-
-function check_server_dependencies {
+function check_db_connection {
   DB_CONNECTION=$(ps l | grep faure.cs.colostate.edu | grep -v grep)
   DB_CONNECTION=${DB_CONNECTION// /}
   DOMAINNAME=$(domainname)
@@ -20,9 +19,19 @@ function check_server_dependencies {
     echo "Please run connectdb command."
     exit 1
   fi
-  pushd ./backend
+}
+
+
+function check_server_dependencies {
+  pushd ./backend > /dev/null
+  #!/bin/bash
+  POETRY=`pip list | grep poetry`
+  if [[ -z POETRY ]]; then
+      pip install poetry
+  fi
   poetry install
-  popd
+  poetry update --lock
+  popd > /dev/null
 }
 
 function check_client_dependencies {
@@ -34,6 +43,7 @@ function run_dev {
 	echo
   export CLIENT_PORT="3000"
   export SERVER_PORT="8000"
+  check_db_connection
   check_server_dependencies
   check_client_dependencies
   npm --prefix ./frontend run devRun
@@ -44,25 +54,37 @@ function run_prod {
   # npm --prefix ./frontend run build
   # cp -r ./frontend/build/* ./backend/backend/html/
   # docker-compose -f ./deploy-tools/docker-compose.yml up --force-recreate --build
-  export CLIENT_PORT="8000"
-  export SERVER_PORT="8000"
+  export CLIENT_PORT="9999"
+  export SERVER_PORT="9999"
+  check_db_connection
   check_server_dependencies
+  rm -r ./frontend/build
   npm --prefix ./frontend run build
   cp -r ./frontend/build/* ./backend/backend/html/
-  pushd ./backend
+  pushd ./backend > /dev/null
   ./start-server.sh
 }
 
 function deploy {
   echo "Building and creating a tar for deployment"
+  rm -r ./build
+  rm -r ./frontend/build
+  export CLIENT_PORT="9999"
+  export SERVER_PORT="9999"
   check_server_dependencies
   check_client_dependencies
   npm --prefix ./frontend run build
-  cp -r ./frontend/build/* ./backend/backend/html/
-  if [[ ! -d "./build" ]]; then
-      mkdir build
-    fi
-  tar -czvf ./build/student-dashboard.tar.gz ./backend
+  mkdir build
+  mkdir ./build/backend
+  mkdir ./build/backend/html
+  cp -r ./frontend/build/* ./build/backend/html
+  cd backend
+  poetry export -f requirements.txt --output requirements.txt
+  poetry run pex --sources-directory=.  -r requirements.txt --script=uvicorn -o ../build/student-dashboard.pex
+  cd ..
+  cp ./deploy-tools/run-production.sh ./backend/.env ./deploy-tools/dailys.py ./deploy-tools/cron.daily ./build
+  cd build
+  tar -czf ../student-dashboard.tar.gz . 
 }
 
 realpath() {
@@ -91,10 +113,8 @@ while (( "$#" )); do
       exit 0;
       ;;
     -d|--deploy)
-      
         deploy
         exit 0
-
       ;;
     -*|--*=) # unsupported flags
       echo "unrecognized option -- $(echo $1 | sed 's~^-*~~')" >&2
@@ -112,6 +132,8 @@ eval set -- "$PARAMS";
 
 if [[ $1 = "prod" ]]; then
   run_prod
+elif [[ $1 = "deploy" ]]; then
+  deploy
 else
   run_dev
 fi

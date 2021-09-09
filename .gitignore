@@ -4,7 +4,7 @@ __pycache__/
 **/html/
 # C extensions
 *.so
-
+*.tar.gz
 # Distribution / packaging
 .Python
 build/
