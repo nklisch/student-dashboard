@@ -16,7 +16,7 @@ export const API_PATHS = {
 export const ACCESS_DENIED = '/access_denied'
 export const LOGIN_PATH = '/login'
 
-export const GITHUB_APP_CLIENTID = '4e07e39677124ccd6c0c'
+export const GITHUB_APP_CLIENTID = 'a22c4f66e8b51bef05f9'
 
 export const GITHUB_AUTH_URL = 'https://github.com/login/oauth/authorize'
 
