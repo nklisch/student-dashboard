@@ -5,8 +5,8 @@ from datetime import datetime
 URL_ROOT = "https://localhost:9999/automation"
 api_paths = ["issues", "pulls", "commits", "metrics"]
 cookies = {
-    "user_id": "47763054",
-    "token": "qMWZRAKubpg_iike2X6FZR5Mkotkac3GXaVpabaScz0I0aMHJJjkYk6bB9hZZRFSa4W5Vdt_HOFTJsHcnLbqbg",
+    "user_id": "",
+    "token": "",
 }
 log = open("daily_log", "a")
 for path in api_paths:
